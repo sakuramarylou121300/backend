@@ -1,6 +1,7 @@
 require('dotenv').config()//secret
 const express = require('express')
 const mongoose = require('mongoose')
+const cors = require('cors')
 // const multer = require('multer')
 //ADMIN
 const adminInfoRoutes = require('./routes/adminInfoRoutes')
@@ -28,6 +29,28 @@ const jobRoutes = require('./routes/jobRoutes')
 
 //instance
 const app = express()
+app.use(
+    cors({
+      origin: '*',
+      credentials: true,
+    })
+  );
+  
+  app.use(
+    cors({
+      origin: '*',
+    }),
+    (req, res, next) => {
+      res.setHeader('Access-Control-Allow-Origin', '*');
+      res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PUT,PATCH,DELETE');
+      res.setHeader(
+        'Access-Control-Allow-Methods',
+        'Content-Type',
+        'Authorization'
+      );
+      next();
+    }
+  );
 
 //middleware
 app.use(express.json())
