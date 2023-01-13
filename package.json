@@ -30,5 +30,8 @@
     "url": "https://github.com/sakuramarylou121300/backend/issues"
   },
   "homepage": "https://github.com/sakuramarylou121300/backend#readme",
-  "description": ""
+  "description": "",
+  "devDependencies": {
+    "nodemon": "^2.0.20"
+  }
 }
