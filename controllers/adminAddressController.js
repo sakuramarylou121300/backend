@@ -1,7 +1,6 @@
 const mongoose = require('mongoose')
 const Province = require('../models/adminAddress').Province
 const City = require('../models/adminAddress').City
-const Barangay = require('../models/adminAddress').Barangay
 
 //PROVINCE
 //CREATE prov
