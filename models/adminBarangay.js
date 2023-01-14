@@ -6,11 +6,10 @@ const barangaySchema = new Schema({
    
     barangay:{
         type: String,
-        required: true,
-        unique: true
+        required: true
     },
     city_id:{
-        type: String, 
+        type: mongoose.Schema.Types.ObjectId, 
         ref: 'AdminCity'
     }
 

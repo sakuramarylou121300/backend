@@ -14,6 +14,7 @@ const{
     adminGetOneSkilled,
     adminUpdateSkilled,
     adminDeleteSkilled,
+    adminGetAllExperience
 } = require('../controllers/adminInfoController')
 
 const adminAuth = require('../middleware/adminAuth')
@@ -26,7 +27,7 @@ router.post('/login', adminLogIn)
 
 //ONLY SUPER ADMIN CAN ACCESS
 //sign up route
-router.post('/signup', adminSignUp)
+router.post('/signup', adminAuth, adminAuth2, adminSignUp)
 
 //get all route
 router.get('/getAll/admin', adminAuth, adminAuth2, adminGetAllAdmin)
@@ -35,7 +36,7 @@ router.get('/getAll/admin', adminAuth, adminAuth2, adminGetAllAdmin)
 router.get('/getOne/admin/:id', adminAuth, adminAuth2, adminGetOneAdmin)
 
 //update route
-router.patch('/update/adminEmail/:id', adminAuth, adminAuth2, adminUpdateUserName)
+router.patch('/update/adminUserName/:id', adminAuth, adminAuth2, adminUpdateUserName)
 
 //update route
 router.patch('/update/adminPass/:id', adminAuth, adminAuth2, adminUpdatePass)
@@ -47,6 +48,7 @@ router.patch('/update/adminInfo/:id', adminAuth, adminAuth2, adminUpdateInfo)
 router.delete('/delete/adminInfo/:id', adminAuth, adminAuth2, adminDeleteInfo)
 
 //DEPENDING ON THE ROLES
+//SKILLED WORKER EXPERIENCE
 //get all route
 router.get('/getAll/Skilled', adminAuth, adminGetAllSkilled)
 
@@ -59,4 +61,6 @@ router.patch('/update/Skilled/:id', adminAuth, adminUpdateSkilled)
 //update route
 router.delete('/delete/Skilled/:id', adminAuth, adminDeleteSkilled)
 
+//get all route
+router.get('/getAll/SkilledExp', adminAuth, adminGetAllExperience)
 module.exports = router

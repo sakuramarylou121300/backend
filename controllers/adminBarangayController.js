@@ -6,10 +6,12 @@ const createBarangay = async(req, res)=>{
 
     try{
         const {barangay, city_id} = req.body
-        //search if existing
-        const adminBarangay = await Barangay.findOne({barangay})
-        if(adminBarangay) return res.status(400).json({messg: 'This barangay already exists.'})
         
+        const existingBarangay = await Barangay.findOne({ barangay, city_id });
+        if (existingBarangay) {
+            return res.status(400).json({ message: "Barangay already exists in this city" });
+        }
+
         //create new skill
         const newBarangay = new Barangay({barangay, city_id})
         await newBarangay.save()

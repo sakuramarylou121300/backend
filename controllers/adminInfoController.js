@@ -316,6 +316,19 @@ const adminDeleteSkilled = async(req, res)=>{
 
 }
 
+//GET all skill exp
+const adminGetAllExperience = async(req, res)=>{
+
+    try{
+        //get all query
+        const experience = await Experience.find({}).sort({createdAt: -1})
+        .populate('skilled_id')
+        res.status(200).json(experience)
+    }
+    catch(error){
+        res.status(404).json({error: error.message})
+    }  
+}
 module.exports = {
     adminLogIn,
     adminSignUp,
@@ -329,4 +342,5 @@ module.exports = {
     adminGetOneSkilled,
     adminUpdateSkilled,
     adminDeleteSkilled,
+    adminGetAllExperience
 }
