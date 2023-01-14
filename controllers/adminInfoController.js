@@ -1,5 +1,8 @@
 const AdminInfo = require('../models/adminInfo')
 const SkilledInfo = require('../models/skilledInfo')
+const Experience = require('../models/experience')
+const Certificate = require('../models/skillCert')
+const Skill = require('../models/skill')
 const mongoose = require('mongoose')
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
@@ -329,6 +332,162 @@ const adminGetAllExperience = async(req, res)=>{
         res.status(404).json({error: error.message})
     }  
 }
+
+//GET one skill exp
+const adminGetOneExperience = async(req, res)=>{
+    const {id} = req.params  
+
+     //check if id is not existing
+     if(!mongoose.Types.ObjectId.isValid(id)){
+        return res.status(404).json({error: 'Invalid id'})
+    }
+
+    //find query
+    const experience = await Experience.findById({_id: id})
+
+    //check if not existing
+    if (!experience){
+        return res.status(404).json({error: 'Skill Experience not found'})
+    }
+
+    res.status(200).json(experience)   
+
+}
+
+//UPDATE skill exp
+const adminUpdateExperience = async(req, res) =>{
+    const {id} = req.params    
+
+    //check if id is not existing
+    if(!mongoose.Types.ObjectId.isValid(id)){
+        return res.status(404).json({error: 'Invalid id'})
+    }
+
+     //delete query
+     const experience = await Experience.findOneAndUpdate({_id: id},{
+         ...req.body //get new value
+     })
+    
+     //check if not existing
+     if (!experience){
+        return res.status(404).json({error: 'Skill Experience not found'})
+    }
+
+    res.status(200).json(experience)
+}
+
+//DELETE skill exp
+const adminDeleteExperience = async(req, res)=>{
+    const {id} = req.params
+    
+    //check if id is not existing
+    if(!mongoose.Types.ObjectId.isValid(id)){
+        return res.status(404).json({error: 'Invalid id'})
+    }
+
+    //delete query
+    const experience = await Experience.findOneAndDelete({_id: id})
+    
+    //check if not existing
+    if (!experience){
+        return res.status(404).json({error: 'Skill Experience not found'})
+    }
+
+    res.status(200).json(experience)
+
+}
+
+//GET all skill cert
+const adminGetAllCertificate = async(req, res)=>{
+
+    try{
+        //get all query
+        const certificate = await Certificate.find({}).sort({createdAt: -1}).populate('skilled_id')
+        res.status(200).json(certificate)
+    }
+    catch(error){
+        res.status(404).json({error: error.message})
+    }  
+}
+
+//GET one skill cert
+const adminGetOneCertificate = async(req, res)=>{
+    const {id} = req.params  
+
+     //check if id is not existing
+     if(!mongoose.Types.ObjectId.isValid(id)){
+        return res.status(404).json({error: 'Invalid id'})
+    }
+
+    //find query
+    const certificate = await Certificate.findById({_id: id})
+
+    //check if not existing
+    if (!certificate){
+        return res.status(404).json({error: 'Skill Certificate not found'})
+    }
+
+    res.status(200).json(certificate)   
+
+}
+
+//UPDATE skill cert
+const adminUpdateCertificate = async(req, res) =>{
+    const {id} = req.params    
+
+    //check if id is not existing
+    if(!mongoose.Types.ObjectId.isValid(id)){
+        return res.status(404).json({error: 'Invalid id'})
+    }
+
+     //delete query
+     const certificate = await Certificate.findOneAndUpdate({_id: id},{
+         ...req.body //get new value
+     })
+    
+     //check if not existing
+     if (!certificate){
+        return res.status(404).json({error: 'Skill Certificate not found'})
+    }
+
+    res.status(200).json(certificate)
+}
+
+//DELETE skill cert
+const adminDeleteCertificate = async(req, res)=>{
+    const {id} = req.params
+    
+    //check if id is not existing
+    if(!mongoose.Types.ObjectId.isValid(id)){
+        return res.status(404).json({error: 'Invalid id'})
+    }
+
+    //delete query
+    const certificate = await Certificate.findOneAndDelete({_id: id})
+    
+    //check if not existing
+    if (!certificate){
+        return res.status(404).json({error: 'Skill Certificate not found'})
+    }
+
+    res.status(200).json(certificate)
+
+}
+
+//GET all skill
+const adminGetAllSkill = async(req, res)=>{
+
+    try{
+        //this is to find skill for specific user
+        //get all query
+        const skill = await Skill.find({}).sort({createdAt: -1}).populate('skilled_id')
+        res.status(200).json(skill)
+    }
+    catch(error){
+        res.status(404).json({error: error.message})
+    }  
+}
+
 module.exports = {
     adminLogIn,
     adminSignUp,
@@ -342,5 +501,13 @@ module.exports = {
     adminGetOneSkilled,
     adminUpdateSkilled,
     adminDeleteSkilled,
-    adminGetAllExperience
+    adminGetAllExperience,
+    adminGetOneExperience,
+    adminUpdateExperience,
+    adminDeleteExperience,
+    adminGetAllCertificate,
+    adminGetOneCertificate,
+    adminUpdateCertificate,
+    adminDeleteCertificate,
+    adminGetAllSkill
 }

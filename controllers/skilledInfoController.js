@@ -184,10 +184,12 @@ const updateSkilledInfo = async(req, res) =>{
         const {lname,
                 fname,
                 mname,
-                contact} = req.body
+                contact,
+                brgyClearance,
+                nbiClearance} = req.body
 
         //validation
-        if (!lname || !fname || !mname || !contact){
+        if (!lname || !fname || !mname || !contact || !brgyClearance  || !nbiClearance ){
             throw Error('Please fill in all the blank fields.')
         }
 
@@ -197,7 +199,9 @@ const updateSkilledInfo = async(req, res) =>{
             {lname,
             fname,
             mname,
-            contact
+            contact,
+            brgyClearance,
+            nbiClearance
         })
 
         //success
