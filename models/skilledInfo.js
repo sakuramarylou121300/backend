@@ -1,5 +1,5 @@
 const AdminInfo = require('../models/adminInfo');
-const findOneModule = require('./findOneModule');
+const findOneModule = require('./findOneModule'); 
 const findOne = findOneModule.findOne;
 
 const mongoose = require('mongoose')

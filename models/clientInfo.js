@@ -4,29 +4,29 @@ const validator = require('validator')
 
 const Schema = mongoose.Schema
 
-const contactSchema = new Schema({
-    contactNo:{
-        type:String
-    }
-})
+// const contactSchema = new Schema({
+//     contactNo:{
+//         type:String
+//     }
+// })
 
-const addressSchema = new Schema({
-    houseNo:{
-        type:String
-    },
-    street:{
-        type:String
-    },
-    barangay:{
-        type:String
-    },
-    city:{
-        type:String
-    },
-    province:{
-        type:String
-    }  
-})
+// const addressSchema = new Schema({
+//     houseNo:{
+//         type:String
+//     },
+//     street:{
+//         type:String
+//     },
+//     barangay:{
+//         type:String
+//     },
+//     city:{
+//         type:String
+//     },
+//     province:{
+//         type:String
+//     }  
+// })
 
 
 const clientInfoSchema = new Schema({
@@ -47,8 +47,8 @@ const clientInfoSchema = new Schema({
     mname:{
         type: String
     },
-    contact:[contactSchema],
-    address:[addressSchema]
+    // contact:[contactSchema],
+    // address:[addressSchema]
 },{
     toJSON: { virtuals: true }, // So `res.json()` and other `JSON.stringify()` functions include virtuals
     toObject: { virtuals: true } // So `console.log()` and other functions that use `toObject()` include virtuals
