@@ -1,0 +1,22 @@
+const express = require('express')
+const {
+    createRoleCapability, 
+    getAllRoleCapability,
+    getOneRoleCapability,
+    updateRoleCapability,
+    deleteRoleCapability
+} = require('../controllers/roleCapabilityController')
+
+const adminControlAdmin = require('../middleware/adminControlAdmin')
+const adminAuth = require('../middleware/adminAuth')
+//instance of router
+router = express.Router()
+ 
+router.post('/post/', adminAuth, adminControlAdmin, createRoleCapability)
+router.get('/getAll/', adminAuth, adminControlAdmin, getAllRoleCapability)
+router.get('/getOne/:id', adminAuth, adminControlAdmin, getOneRoleCapability)
+router.patch('/update/:id', adminAuth, adminControlAdmin, updateRoleCapability)
+router.delete('/delete/:id', adminAuth, adminControlAdmin, deleteRoleCapability)
+
+//export
+module.exports = router

@@ -11,7 +11,8 @@ const adminProvinceRoutes = require('./routes/adminProvinceRoutes')
 const adminCityRoutes = require('./routes/adminCityRoutes')
 const adminBarangayRoutes = require('./routes/adminBarangayRoutes')
 const roleRoutes = require('./routes/roleRoutes')
-
+const capabilityRoutes = require('./routes/capabilityRoutes')
+const roleCapabilityRoutes = require('./routes/roleCapabilityRoutes')
 //SKILLED
 const uploadRoutes = require('./routes/uploadRoutes')
 const skilledInfoRoutes = require('./routes/skilledInfoRoutes')
@@ -26,6 +27,7 @@ const clientInfoRoutes = require('./routes/clientInfoRoutes')
 const clientContactRoutes = require('./routes/clientContactRoutes')
 const clientAddressRoutes = require('./routes/clientAddressRoutes')
 const jobRoutes = require('./routes/jobRoutes')
+const roleCapability = require('./models/roleCapability')
 
 //instance
 const app = express()
@@ -70,6 +72,8 @@ app.use('/api/city', adminCityRoutes)
 app.use('/api/barangay', adminBarangayRoutes)
 app.use('/api/admin', adminAddressRoutes)
 app.use('/api/role', roleRoutes)
+app.use('/api/capability', capabilityRoutes)
+app.use('/api/roleCapability', roleCapabilityRoutes)
 
 //SKILLED
 app.use('/api/skilledInfo', skilledInfoRoutes)

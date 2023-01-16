@@ -2,28 +2,22 @@ const express = require('express')
 const {
     createRole, 
     getAllRole,
-    // getOneCertificate,
-    // updateCertificate,
-    // deleteCertificate
+    getOneRole,
+    updateRole,
+    deleteRole
 } = require('../controllers/roleController')
+
+const adminControlAdmin = require('../middleware/adminControlAdmin')
+const adminAuth = require('../middleware/adminAuth')
 
 //instance of router
 router = express.Router()
 
-//POST role cert
-router.post('/post/', createRole)
-
-//GET all role cert
-router.get('/getAll/', getAllRole)
-
-// //GET single skill cert
-// router.get('/getOne/:id', getOneCertificate)
-
-// //UPDATE skill cert
-// router.patch('/update/:id', updateCertificate)
-
-// //delete skill cert
-// router.delete('/delete/:id', deleteCertificate)
+router.post('/post/', adminAuth, adminControlAdmin, createRole)
+router.get('/getAll/', adminAuth, adminControlAdmin, getAllRole)
+router.get('/getOne/:id', adminAuth, adminControlAdmin, getOneRole)
+router.patch('/update/:id', adminAuth, adminControlAdmin, updateRole)
+router.delete('/delete/:id', adminAuth, adminControlAdmin, deleteRole)
 
 //export
 module.exports = router

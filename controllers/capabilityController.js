@@ -1,15 +1,15 @@
-const Role = require('../models/role')
+const Capability = require('../models/capability')
 const mongoose = require('mongoose')
 
 //CREATE skill
-const createRole = async(req, res)=>{
-    const {roleName} = req.body
+const createCapability = async(req, res)=>{
+    const {capabilityName} = req.body
     
     //check empty fields
     let emptyFields = []
 
-    if(!roleName){
-        emptyFields.push('roleName')
+    if(!capabilityName){
+        emptyFields.push('capabilityName')
     }
 
     //send message if there is an empty fields
@@ -21,10 +21,10 @@ const createRole = async(req, res)=>{
         //this is to assign the job to a specific client user, get id from clientInfo
         
         //create query
-        const role = await Role.create({
-            roleName,
+        const capability = await Capability.create({
+            capabilityName,
         })
-        res.status(200).json(role)
+        res.status(200).json(capability)
     }
     catch(error){
         res.status(404).json({error: error.message})
@@ -32,12 +32,12 @@ const createRole = async(req, res)=>{
 }
 
 //GET all skill
-const getAllRole = async(req, res)=>{
+const getAllCapability = async(req, res)=>{
 
     try{
         //get all query
-        const role = await Role.find({}).sort({createdAt: -1})
-        res.status(200).json(role)
+        const capability = await Capability.find({}).sort({createdAt: -1})
+        res.status(200).json(capability)
     }
     catch(error){
         res.status(404).json({error: error.message})
@@ -45,7 +45,7 @@ const getAllRole = async(req, res)=>{
 }
 
 //GET one skill
-const getOneRole = async(req, res)=>{
+const getOneCapability = async(req, res)=>{
     const {id} = req.params  
 
      //check if id is not existing
@@ -54,19 +54,19 @@ const getOneRole = async(req, res)=>{
     }
 
     //find query
-    const role = await Role.findById({_id: id})
+    const capability = await Capability.findById({_id: id})
 
     //check if not existing
-    if (!role){
-        return res.status(404).json({error: 'Role not found'})
+    if (!capability){
+        return res.status(404).json({error: 'Capability not found'})
     }
 
-    res.status(200).json(role)   
+    res.status(200).json(capability)   
 
 }
 
 //UPDATE skill
-const updateRole = async(req, res) =>{
+const updateCapability = async(req, res) =>{
     const {id} = req.params    
 
     //check if id is not existing
@@ -75,20 +75,20 @@ const updateRole = async(req, res) =>{
     }
 
      //delete query
-     const role = await Role.findOneAndUpdate({_id: id},{
+     const capability = await Capability.findOneAndUpdate({_id: id},{
          ...req.body //get new value
      })
     
      //check if not existing
-     if (!role){
-        return res.status(404).json({error: 'Role not found'})
+     if (!capability){
+        return res.status(404).json({error: 'Capability not found'})
     }
 
-    res.status(200).json(role)
+    res.status(200).json(capability)
 }
 
 //DELETE skill
-const deleteRole = async(req, res)=>{
+const deleteCapability = async(req, res)=>{
     const {id} = req.params
     
     //check if id is not existing
@@ -97,21 +97,21 @@ const deleteRole = async(req, res)=>{
     }
 
     //delete query
-    const role = await Role.findOneAndDelete({_id: id})
+    const capability = await Capability.findOneAndDelete({_id: id})
     
     //check if not existing
-    if (!role){
-        return res.status(404).json({error: 'Role not found'})
+    if (!capability){
+        return res.status(404).json({error: 'Capability not found'})
     }
 
-    res.status(200).json(role)
+    res.status(200).json(capability)
 
 }
 
 module.exports = {
-    createRole,
-    getAllRole,
-    getOneRole,
-    updateRole,
-    deleteRole
+    createCapability,
+    getAllCapability,
+    getOneCapability,
+    updateCapability,
+    deleteCapability
 }

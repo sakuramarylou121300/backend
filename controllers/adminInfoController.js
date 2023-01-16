@@ -41,7 +41,8 @@ const adminSignUp = async(req, res) =>{
         lname,
         fname,
         mname,
-        contact
+        contact,
+        roleCapability
         } = req.body
         
     try{
@@ -52,7 +53,8 @@ const adminSignUp = async(req, res) =>{
             lname,
             fname,
             mname,
-            contact
+            contact,
+            roleCapability
         )
 
             //create token
@@ -71,6 +73,9 @@ const adminGetAllAdmin = async(req, res)=>{
         //get all query
         const adminInfo = await AdminInfo.find({}).sort({createdAt: -1})
         .select("-password")
+        .populate('roleCapabality')
+        // .populate('adminRoleCapabality')
+        // .populate({path: 'adminRoleCapabality',populate: {path:'roleCapability_id',populate:{path:'capability_id'}}})
         res.status(200).json(adminInfo)
     }
     catch(error){
@@ -197,7 +202,8 @@ const adminUpdateInfo = async(req, res) =>{
         const {lname,
                 fname,
                 mname,
-                contact} = req.body
+                contact,
+                roleCapability} = req.body
 
         //validation
         if (!lname || !fname || !mname || !contact){
@@ -210,7 +216,8 @@ const adminUpdateInfo = async(req, res) =>{
             {lname,
             fname,
             mname,
-            contact
+            contact,
+            roleCapability
         })
 
         //success
@@ -333,70 +340,6 @@ const adminGetAllExperience = async(req, res)=>{
     }  
 }
 
-//GET one skill exp
-const adminGetOneExperience = async(req, res)=>{
-    const {id} = req.params  
-
-     //check if id is not existing
-     if(!mongoose.Types.ObjectId.isValid(id)){
-        return res.status(404).json({error: 'Invalid id'})
-    }
-
-    //find query
-    const experience = await Experience.findById({_id: id})
-
-    //check if not existing
-    if (!experience){
-        return res.status(404).json({error: 'Skill Experience not found'})
-    }
-
-    res.status(200).json(experience)   
-
-}
-
-//UPDATE skill exp
-const adminUpdateExperience = async(req, res) =>{
-    const {id} = req.params    
-
-    //check if id is not existing
-    if(!mongoose.Types.ObjectId.isValid(id)){
-        return res.status(404).json({error: 'Invalid id'})
-    }
-
-     //delete query
-     const experience = await Experience.findOneAndUpdate({_id: id},{
-         ...req.body //get new value
-     })
-    
-     //check if not existing
-     if (!experience){
-        return res.status(404).json({error: 'Skill Experience not found'})
-    }
-
-    res.status(200).json(experience)
-}
-
-//DELETE skill exp
-const adminDeleteExperience = async(req, res)=>{
-    const {id} = req.params
-    
-    //check if id is not existing
-    if(!mongoose.Types.ObjectId.isValid(id)){
-        return res.status(404).json({error: 'Invalid id'})
-    }
-
-    //delete query
-    const experience = await Experience.findOneAndDelete({_id: id})
-    
-    //check if not existing
-    if (!experience){
-        return res.status(404).json({error: 'Skill Experience not found'})
-    }
-
-    res.status(200).json(experience)
-
-}
-
 //GET all skill cert
 const adminGetAllCertificate = async(req, res)=>{
 
@@ -408,70 +351,6 @@ const adminGetAllCertificate = async(req, res)=>{
     catch(error){
         res.status(404).json({error: error.message})
     }  
-}
-
-//GET one skill cert
-const adminGetOneCertificate = async(req, res)=>{
-    const {id} = req.params  
-
-     //check if id is not existing
-     if(!mongoose.Types.ObjectId.isValid(id)){
-        return res.status(404).json({error: 'Invalid id'})
-    }
-
-    //find query
-    const certificate = await Certificate.findById({_id: id})
-
-    //check if not existing
-    if (!certificate){
-        return res.status(404).json({error: 'Skill Certificate not found'})
-    }
-
-    res.status(200).json(certificate)   
-
-}
-
-//UPDATE skill cert
-const adminUpdateCertificate = async(req, res) =>{
-    const {id} = req.params    
-
-    //check if id is not existing
-    if(!mongoose.Types.ObjectId.isValid(id)){
-        return res.status(404).json({error: 'Invalid id'})
-    }
-
-     //delete query
-     const certificate = await Certificate.findOneAndUpdate({_id: id},{
-         ...req.body //get new value
-     })
-    
-     //check if not existing
-     if (!certificate){
-        return res.status(404).json({error: 'Skill Certificate not found'})
-    }
-
-    res.status(200).json(certificate)
-}
-
-//DELETE skill cert
-const adminDeleteCertificate = async(req, res)=>{
-    const {id} = req.params
-    
-    //check if id is not existing
-    if(!mongoose.Types.ObjectId.isValid(id)){
-        return res.status(404).json({error: 'Invalid id'})
-    }
-
-    //delete query
-    const certificate = await Certificate.findOneAndDelete({_id: id})
-    
-    //check if not existing
-    if (!certificate){
-        return res.status(404).json({error: 'Skill Certificate not found'})
-    }
-
-    res.status(200).json(certificate)
-
 }
 
 //GET all skill
@@ -502,12 +381,6 @@ module.exports = {
     adminUpdateSkilled,
     adminDeleteSkilled,
     adminGetAllExperience,
-    adminGetOneExperience,
-    adminUpdateExperience,
-    adminDeleteExperience,
     adminGetAllCertificate,
-    adminGetOneCertificate,
-    adminUpdateCertificate,
-    adminDeleteCertificate,
     adminGetAllSkill
 }

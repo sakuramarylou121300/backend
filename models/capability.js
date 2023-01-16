@@ -2,12 +2,12 @@ const mongoose = require('mongoose')
 
 const Schema = mongoose.Schema
 
-const roleSchema = new Schema({
-    roleName:{
+const capabilitySchema = new Schema({
+    capabilityName:{
         type: String,
         required: true,
     }
 
 },{timestamps: true})
 
-module.exports = mongoose.model('Role',roleSchema)
+module.exports = mongoose.model('Capability',capabilitySchema)

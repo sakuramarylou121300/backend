@@ -15,15 +15,17 @@ const{
     adminUpdateSkilled,
     adminDeleteSkilled,
     adminGetAllExperience,
-    adminGetOneExperience,
-    adminUpdateExperience,
-    adminDeleteExperience,
     adminGetAllCertificate,
-    adminGetOneCertificate,
-    adminUpdateCertificate,
-    adminDeleteCertificate,
     adminGetAllSkill
 } = require('../controllers/adminInfoController')
+
+const{
+    createAdminRoleCapability,
+    getAllAdminRoleCapability,
+    getOneAdminRoleCapability,
+    updateAdminRoleCapability,
+    deleteAdminRoleCapability
+} = require('../controllers/adminRoleCapabilityController')
 
 const{
     getOneSkill,
@@ -31,8 +33,21 @@ const{
     deleteSkill
 } = require('../controllers/skillController')
 
+const{
+    getOneExperience,
+    updateExperience,
+    deleteExperience
+} = require('../controllers/experienceController')
+
+const{
+    getOneCertificate,
+    updateCertificate,
+    deleteCertificate
+} = require('../controllers/skillCertController')
+
+const adminControlAdmin = require('../middleware/adminControlAdmin')
 const adminAuth = require('../middleware/adminAuth')
-const adminAuth2 = require('../middleware/adminAuth2')
+const adminControlSkilled = require('../middleware/adminControlSkilled')
 
 const router = express.Router()
 
@@ -40,78 +55,48 @@ const router = express.Router()
 router.post('/login', adminLogIn)
 
 //ONLY SUPER ADMIN CAN ACCESS
-//sign up route
-router.post('/signup', adminAuth, adminAuth2, adminSignUp)
+router.post('/signup', adminSignUp)
+router.get('/getAll/admin', adminAuth, adminControlAdmin, adminGetAllAdmin)
+router.get('/getOne/admin/:id', adminAuth, adminControlAdmin, adminGetOneAdmin)
+router.patch('/update/adminUserName/:id', adminAuth, adminControlAdmin, adminUpdateUserName)
+router.patch('/update/adminPass/:id', adminAuth, adminControlAdmin, adminUpdatePass)
+router.patch('/update/adminInfo/:id', adminAuth, adminControlAdmin, adminUpdateInfo)
+router.delete('/delete/adminInfo/:id', adminAuth, adminControlAdmin, adminDeleteInfo)
 
-//get all route
-router.get('/getAll/admin', adminAuth, adminAuth2, adminGetAllAdmin)
+router.post('/post/adminRoleCap', adminAuth, adminControlAdmin, createAdminRoleCapability)
+router.get('/getAll/adminRoleCap', adminAuth, adminControlAdmin, getAllAdminRoleCapability) 
+router.get('/getOne/adminRoleCap/:id', adminAuth, adminControlAdmin, getOneAdminRoleCapability)
+router.patch('/update/adminRoleCap/:id', adminAuth, adminControlAdmin, updateAdminRoleCapability)
+router.delete('/delete/adminRoleCap/:id', adminAuth, adminControlAdmin, deleteAdminRoleCapability)
 
-//get one route
-router.get('/getOne/admin/:id', adminAuth, adminAuth2, adminGetOneAdmin)
-
-//update route
-router.patch('/update/adminUserName/:id', adminAuth, adminAuth2, adminUpdateUserName)
-
-//update route
-router.patch('/update/adminPass/:id', adminAuth, adminAuth2, adminUpdatePass)
-
-//update route
-router.patch('/update/adminInfo/:id', adminAuth, adminAuth2, adminUpdateInfo)
-
-//delete route
-router.delete('/delete/adminInfo/:id', adminAuth, adminAuth2, adminDeleteInfo)
+//ALL ADMIN CAN ACCESS THIS
+router.patch('/update/adminUserNamee/:id', adminAuth, adminUpdateUserName)
+router.patch('/update/adminPasss/:id', adminAuth, adminUpdatePass)
+router.patch('/update/adminInfoo/:id', adminAuth, adminUpdateInfo)
 
 //DEPENDING ON THE ROLES
 //SKILLED WORKER
-//get all route
-router.get('/getAll/Skilled', adminAuth, adminGetAllSkilled)
-
-//get one route
-router.get('/getOne/Skilled/:id', adminAuth, adminGetOneSkilled)
-
-//update route
-router.patch('/update/Skilled/:id', adminAuth, adminUpdateSkilled)
-
-//delete route
-router.delete('/delete/Skilled/:id', adminAuth, adminDeleteSkilled)
+router.get('/getAll/Skilled', adminAuth, adminControlSkilled, adminGetAllSkilled)
+router.get('/getOne/Skilled/:id', adminAuth, adminControlSkilled, adminGetOneSkilled)
+router.patch('/update/Skilled/:id', adminAuth, adminControlSkilled, adminUpdateSkilled)
+router.delete('/delete/Skilled/:id', adminAuth, adminControlSkilled, adminDeleteSkilled)
 
 //SKILLED WORKER SKILL
-//get all route
-router.get('/getAll/skill', adminAuth, adminGetAllSkill)
-
-//get one route
-router.get('/getOne/skill/:id', adminAuth, getOneSkill)
-
-//update route
-router.patch('/update/skill/:id', adminAuth, updateSkill)
-
-//delete route
-router.delete('/delete/skill/:id', adminAuth, deleteSkill)
+router.get('/getAll/skill', adminAuth, adminControlSkilled, adminGetAllSkill)
+router.get('/getOne/skill/:id', adminAuth, adminControlSkilled, getOneSkill)
+router.patch('/update/skill/:id', adminAuth, adminControlSkilled, updateSkill)
+router.delete('/delete/skill/:id', adminAuth, adminControlSkilled, deleteSkill)
 
 //SKILLED WORKER WORK EXP
-//get all route
-router.get('/getAll/SkilledExp', adminAuth, adminGetAllExperience)
-
-//get one route
-router.get('/getOne/SkilledExp/:id', adminAuth, adminGetOneExperience)
-
-//update route
-router.patch('/update/SkilledExp/:id', adminAuth, adminUpdateExperience)
-
-//delete route
-router.delete('/delete/SkilledExp/:id', adminAuth, adminDeleteExperience)
+router.get('/getAll/SkilledExp', adminAuth, adminControlSkilled, adminGetAllExperience)
+router.get('/getOne/SkilledExp/:id', adminAuth, adminControlSkilled, getOneExperience)
+router.patch('/update/SkilledExp/:id', adminAuth, adminControlSkilled, updateExperience)
+router.delete('/delete/SkilledExp/:id', adminAuth, adminControlSkilled, deleteExperience)
 
 //SKILLED CERT
-//get all route
-router.get('/getAll/Cert', adminAuth, adminGetAllCertificate)
-
-//get one route
-router.get('/getOne/Cert/:id', adminAuth, adminGetOneCertificate)
-
-//update route
-router.patch('/update/Cert/:id', adminAuth, adminUpdateCertificate)
-
-//delete route
-router.delete('/delete/Cert/:id', adminAuth, adminAuth2, adminDeleteCertificate)
+router.get('/getAll/Cert', adminAuth, adminControlSkilled, adminGetAllCertificate)
+router.get('/getOne/Cert/:id', adminAuth, adminControlSkilled, getOneCertificate)
+router.patch('/update/Cert/:id', adminAuth, adminControlSkilled, updateCertificate)
+router.delete('/delete/Cert/:id', adminAuth, adminControlSkilled, deleteCertificate)
 
 module.exports = router

@@ -9,24 +9,15 @@ const{
     deleteProvince
 } = require('../controllers/adminProvinceController')
 
+const adminAuth = require('../middleware/adminAuth')
+const adminControlAdminAddress = require('../middleware/adminControlAdminAddress')
+
 const router = express.Router()
 
-// //log in route
-// router.post('/login', adminLogIn)
-
-//sign up route
-router.post('/post', createProvince)
-
-// //get all route
-router.get('/getAll', getAllProvince)//i have removed the authentication for this to test the dropdown
-
-//get one route
-router.get('/getOne/:id', getOneProvince)
-
-//update route
-router.patch('/update/:id', updateProvince)
-
-//update route
-router.delete('/delete/:id', deleteProvince)
+router.post('/post', adminAuth, adminControlAdminAddress, createProvince)
+router.get('/getAll', adminAuth, adminControlAdminAddress, getAllProvince)
+router.get('/getOne/:id', adminAuth, adminControlAdminAddress, getOneProvince)
+router.patch('/update/:id', adminAuth, adminControlAdminAddress, updateProvince)
+router.delete('/delete/:id', adminAuth, adminControlAdminAddress, deleteProvince)
 
 module.exports = router

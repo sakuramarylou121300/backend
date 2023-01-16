@@ -8,25 +8,17 @@ const {
 } = require('../controllers/adminSkillController')
 
 const adminAuth = require('../middleware/adminAuth')
+const adminControlAdminSkill = require('../middleware/adminControlAdminSkill')
 
 //instance of router
 router = express.Router()
 
-//only admin can post, update and delete skill
-//POST skill
-router.post('/post/', adminAuth, createSkill)
-
-//GET all skill
-router.get('/getAll/', adminAuth, getAllSkill)
-
-//UPDATE skill
-router.get('/getOne/:id', adminAuth, getOneSkill)
-
-//UPDATE skill
-router.put('/update/:id', adminAuth, updateSkill)
-
-//DELETE skill
-router.delete('/delete/:id', adminAuth, deleteSkill)
+//only admin role can post, update and delete skill
+router.post('/post/', adminAuth, adminControlAdminSkill, createSkill)
+router.get('/getAll/', adminAuth, adminControlAdminSkill, getAllSkill)
+router.get('/getOne/:id', adminAuth, adminControlAdminSkill, getOneSkill)
+router.put('/update/:id', adminAuth, adminControlAdminSkill, updateSkill)
+router.delete('/delete/:id', adminAuth, adminControlAdminSkill, deleteSkill)
 
 //export
 module.exports = router

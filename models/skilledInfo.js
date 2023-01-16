@@ -1,6 +1,11 @@
+const AdminInfo = require('../models/adminInfo');
+const findOneModule = require('./findOneModule');
+const findOne = findOneModule.findOne;
+
 const mongoose = require('mongoose')
 const bcrypt = require('bcrypt')
 const validator = require('validator')
+const adminInfo = require('../models/adminInfo')
 
 const Schema = mongoose.Schema
 
@@ -186,7 +191,12 @@ skilledInfoSchema.statics.signup = async function (
     if(password.length <8){
         throw Error('Please enter atleast 8 characters in password.')
     }
-
+    
+    // //check if existing in skilled worker
+    // const adminExists = await AdminInfo.findOne({username})
+    // if (adminExists){
+    //     throw Error('Email already in use. Please enter a new unique .')
+    // }
 
     //check if  is existing
     const exists = await this.findOne({username})

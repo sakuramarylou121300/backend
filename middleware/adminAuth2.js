@@ -1,6 +1,6 @@
 const AdminInfo = require('../models/adminInfo')
 
-const adminAuth = async(req, res, next) =>{
+const adminAuth2 = async(req, res, next) =>{
     try{
         const adminInfo = await AdminInfo.findOne({_id:req.adminInfo.id})
         if(adminInfo.isMainAdmin === 0)
@@ -12,4 +12,4 @@ const adminAuth = async(req, res, next) =>{
     }
 }
 
-module.exports = adminAuth
+module.exports = adminAuth2
