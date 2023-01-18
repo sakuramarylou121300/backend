@@ -1,4 +1,4 @@
-require('dotenv').config()//secret
+require('dotenv').config()//secret 
 const express = require('express')
 const mongoose = require('mongoose')
 mongoose.set('strictQuery', true);
