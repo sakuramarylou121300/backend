@@ -1,7 +1,5 @@
-const SkilledInfo = require('../models/skilledInfo')
-
-const mongoose = require('mongoose')
-const bcrypt = require('bcrypt')
+const mongoose = require('mongoose') 
+const bcrypt = require('bcrypt') 
 const validator = require('validator')
 
 const Schema = mongoose.Schema
@@ -48,7 +46,6 @@ adminInfoSchema.virtual('roleCapabality', {
     foreignField: 'adminInfo_id'
 });
 
-//static sign up method
 //when using this, suggest to use regular function
 adminInfoSchema.statics.signup = async function (
     username, 
@@ -59,7 +56,7 @@ adminInfoSchema.statics.signup = async function (
     contact,
     roleCapability
 ){
-    //validation
+    
     if (!username || !password || !lname || !fname || !contact){
         throw Error('Please fill in all the blank fields.')
     }
@@ -73,11 +70,11 @@ adminInfoSchema.statics.signup = async function (
         throw Error('Please enter atleast 8 characters in password.')
     }
 
-    //admininfo check
-    const skilledExists = await SkilledInfo.findOne({username})
-    if (skilledExists){
-        throw Error('Email already in use. Please enter a new unique .')
-    }
+    //   //check if  is existing
+      const skilledExists = await SkilledInfo.findOne({username})
+      if (skilledExists){
+          throw Error('Email already in use. Please enter a new unique .')
+      }
 
     //check if  is existing
     const exists = await this.findOne({username})
@@ -124,3 +121,4 @@ adminInfoSchema.statics.login = async function(username, password){
 }
 
 module.exports = mongoose.model('AdminInfo', adminInfoSchema)
+const SkilledInfo = require('../models/skilledInfo') 

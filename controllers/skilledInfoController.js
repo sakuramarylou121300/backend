@@ -5,7 +5,6 @@ const validator = require('validator')
 // const multer = require('multer')
 // const upload = multer({dest: '/uploads/'})//the folder destination of uploaded image
 
-
 //to generate json webtoken
 const skilledCreateToken = (_id)=>{
     return jwt.sign({_id}, process.env.SECRET, {expiresIn: '3d'})

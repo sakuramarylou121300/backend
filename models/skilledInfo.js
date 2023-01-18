@@ -1,11 +1,7 @@
-const AdminInfo = require('../models/adminInfo');
-const findOneModule = require('./findOneModule'); 
-const findOne = findOneModule.findOne;
-
 const mongoose = require('mongoose')
 const bcrypt = require('bcrypt')
 const validator = require('validator')
-const adminInfo = require('../models/adminInfo')
+// const userExists = require('../models/userExists');  
 
 const Schema = mongoose.Schema
 
@@ -162,7 +158,7 @@ skilledInfoSchema.virtual('skillCert', {
     localField: '_id',
     foreignField: 'skilled_id'
 });
-
+// const userExists = require('../models/userExists')
 //static sign up method
 //when using this, suggest to use regular function
 skilledInfoSchema.statics.signup = async function (
@@ -177,6 +173,7 @@ skilledInfoSchema.statics.signup = async function (
     nbiClearance,
     bill
 ){
+    // await userExists(username);
     //validation
     if (!username || !password || !lname || !fname || !contact || 
         !address || !brgyClearance ||!nbiClearance || !bill){
@@ -191,11 +188,14 @@ skilledInfoSchema.statics.signup = async function (
     if(password.length <8){
         throw Error('Please enter atleast 8 characters in password.')
     }
-    
-    // //check if existing in skilled worker
-    // const adminExists = await AdminInfo.findOne({username})
-    // if (adminExists){
-    //     throw Error('Email already in use. Please enter a new unique .')
+    //check if  is existing
+    const adminExists = await AdminInfo.findOne({username})
+    if (adminExists){
+        throw Error('Email already in use. Please enter a new unique .')
+    }
+
+    // if (await userExists(username)) {
+    //     throw new Error(`User with username ${username} already exists`);
     // }
 
     //check if  is existing
@@ -246,3 +246,4 @@ skilledInfoSchema.statics.login = async function(username, password){
 }
 
 module.exports = mongoose.model('SkilledInfo', skilledInfoSchema)
+const AdminInfo = require('../models/adminInfo') 

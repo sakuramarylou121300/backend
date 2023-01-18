@@ -1,4 +1,6 @@
 const RoleCapability = require('../models/roleCapability')
+const AdminInfo = require('../models/adminInfo')
+
 const mongoose = require('mongoose')
 
 //CREATE skill
@@ -24,6 +26,14 @@ const createRoleCapability = async(req, res)=>{
     }
     
     try{
+        const roleCapabilityCheck = await RoleCapability.findOne({
+            capability_id: capability_id,
+            adminInfo_id: adminInfo_id
+        })
+        
+        if(roleCapabilityCheck){
+            return res.status(400).json({error: "This capability already assigned to admin"})
+        }
         //create query
         const roleCapability = await RoleCapability.create({
             role_id,
@@ -103,13 +113,19 @@ const deleteRoleCapability = async(req, res)=>{
         return res.status(404).json({error: 'Invalid id'})
     }
 
-    //delete query
-    const roleCapability = await RoleCapability.findOneAndDelete({_id: id})
-    
+     //check for adminInfo isMainAdmin
+    const roleCapability = await RoleCapability.findById(id)
     //check if not existing
     if (!roleCapability){
-        return res.status(404).json({error: 'RoleCapability not found'})
+        return res.status(404).json({error: 'Role Capability not found'})
     }
+     const adminInfo = await AdminInfo.findById(roleCapability.adminInfo_id)
+     if (adminInfo.isMainAdmin === 1) {
+         return res.status(400).json({ error: "Cannot delete role capability from main admin account" });
+     }
+ 
+     //delete query
+     await roleCapability.remove();
 
     res.status(200).json(roleCapability)
 

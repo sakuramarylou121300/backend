@@ -234,10 +234,16 @@ const adminDeleteInfo = async(req, res) =>{
     const {id} = req.params 
 
     try{
-
-        const adminInfo = await AdminInfo.findByIdAndDelete(id)
-        res.status(200).json(adminDeleteInfo)
+        // const adminInfo = await AdminInfo.findByIdAndDelete(id)
+        // res.status(200).json(adminInfo)
+        const adminInfo = await AdminInfo.findById(id)
+        if(adminInfo.isMainAdmin === 1){
+           return res.status(400).json({error: "Cannot delete main admin account"})
+        }
+        await adminInfo.remove()
+        res.status(200).json({ message: "Admin account deleted successfully"})
     }
+    
     catch(error){
         res.status(400).json({error:error.message})
     }

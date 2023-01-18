@@ -1,8 +1,11 @@
 require('dotenv').config()//secret
 const express = require('express')
 const mongoose = require('mongoose')
+mongoose.set('strictQuery', true);
 const cors = require('cors')
+
 // const multer = require('multer')
+
 //ADMIN
 const adminInfoRoutes = require('./routes/adminInfoRoutes')
 const adminSkillRoutes = require('./routes/adminSkillRoutes')
@@ -64,6 +67,7 @@ app.use((req, res, next) => {
 app.use('/uploads', express.static('uploads'))
 
 //routes
+
 //ADMIN
 app.use('/api/admin', adminInfoRoutes)
 app.use('/api/adminSkill', adminSkillRoutes)
