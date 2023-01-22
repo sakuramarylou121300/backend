@@ -1,4 +1,4 @@
-const AdminInfo = require('../models/adminInfo')
+const AdminInfo = require('../models/adminInfo') 
 const SkilledInfo = require('../models/skilledInfo')
 const Experience = require('../models/experience')
 const Certificate = require('../models/skillCert')
@@ -74,7 +74,8 @@ const adminGetAllAdmin = async(req, res)=>{
         //get all query
         const adminInfo = await AdminInfo.find({}).sort({createdAt: -1})
         .select("-password")
-        .populate('roleCapabality')
+        .populate({path: 'roleCapabality', populate: [{path: 'role_id'}, {path: 'capability_id'}, {path: 'adminInfo_id'}]})
+        // .populate('roleCapabality')
         // .populate('adminRoleCapabality')
         // .populate({path: 'adminRoleCapabality',populate: {path:'roleCapability_id',populate:{path:'capability_id'}}})
         res.status(200).json(adminInfo)
