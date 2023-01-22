@@ -1,4 +1,4 @@
-const mongoose = require('mongoose')
+const mongoose = require('mongoose') 
 const bcrypt = require('bcrypt')
 const validator = require('validator')
 
@@ -31,7 +31,7 @@ const Schema = mongoose.Schema
 
 const clientInfoSchema = new Schema({
     
-    email:{
+    username:{
         type: String,
         unique: true
     },
@@ -69,7 +69,7 @@ clientInfoSchema.virtual('location', {
 //static sign up method
 //when using this, suggest to use regular function
 clientInfoSchema.statics.signup = async function (
-    email, 
+    username, 
     password, 
     lname, 
     fname, 
@@ -78,22 +78,37 @@ clientInfoSchema.statics.signup = async function (
     address
 ){
     //validation
-    if (!email || !password || !lname || !fname || !mname){
+    if (!username || !password || !lname || !fname || !mname){
         throw Error('All fields must be  filled')
     }
-    //check if email is true email
-    if (!validator.isEmail(email)){
-        throw Error('Please provide a valid email')
+    //check if username is true username
+    // if (!validator.isusername(username)){
+    //     throw Error('Please provide a valid username')
+    // }
+    // //check if strong password
+    // if(!validator.isStrongPassword(password)){
+    //     throw Error('Please provide a strong password')
+    // }
+
+    if(username.length <8){
+        throw Error('Please enter atleast 8 characters in user name.')
     }
     //check if strong password
-    if(!validator.isStrongPassword(password)){
-        throw Error('Please provide a strong password')
+    if(password.length <8){
+        throw Error('Please enter atleast 8 characters in password.')
     }
-
-    //check if email is existing
-    const exists = await this.findOne({email})
+    //check if  is existing admin, skilled and client
+    const adminExists = await AdminInfo.findOne({username})
+    if (adminExists){
+        throw Error('Email already in use. Please enter a new unique .')
+    }
+    const skilledExists = await SkilledInfo.findOne({username})
+    if (skilledExists){
+        throw Error('Email already in use. Please enter a new unique .')
+    }
+    const exists = await this.findOne({username})
     if (exists){
-        throw Error('Email already in use')
+        throw Error('username already in use')
     }
 
     //salt for additional security of the system
@@ -101,7 +116,7 @@ clientInfoSchema.statics.signup = async function (
     const hash = await bcrypt.hash(password, salt)
 
     const clientInfo = await this.create({
-        email, 
+        username, 
         password: hash, // defining the value to password password with hash
         lname, 
         fname,
@@ -114,15 +129,15 @@ clientInfoSchema.statics.signup = async function (
 }
 
 //static login method
-clientInfoSchema.statics.login = async function(email, password){
-    if (!email || !password){
+clientInfoSchema.statics.login = async function(username, password){
+    if (!username || !password){
         throw Error('All fields must be  filled')
     }
 
-    //check if email is existing
-    const clientInfo = await this.findOne({email})
+    //check if username is existing
+    const clientInfo = await this.findOne({username})
     if (!clientInfo){
-        throw Error('Incorrect email')
+        throw Error('Incorrect username')
     }
     //check if the password and password hash in match
     const match = await bcrypt.compare(password, clientInfo.password)
@@ -135,3 +150,5 @@ clientInfoSchema.statics.login = async function(email, password){
 }
 
 module.exports = mongoose.model('ClientInfo',clientInfoSchema)
+const AdminInfo = require('../models/adminInfo') 
+const SkilledInfo = require('../models/skilledInfo') 

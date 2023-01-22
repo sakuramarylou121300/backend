@@ -69,17 +69,18 @@ adminInfoSchema.statics.signup = async function (
     if(password.length <6){
         throw Error('Please enter atleast 8 characters in password.')
     }
-
-    //   //check if  is existing
+    //check if  is existing skilled, client and admin
       const skilledExists = await SkilledInfo.findOne({username})
       if (skilledExists){
           throw Error('Email already in use. Please enter a new unique .')
       }
-
-    //check if  is existing
+      const clientExists = await ClientInfo.findOne({username})
+      if (clientExists){
+          throw Error('Email already in use. Please enter a new unique .')
+      }
     const exists = await this.findOne({username})
     if (exists){
-        throw Error('Email already in use. Please enter a new unique .')
+    throw Error('Email already in use. Please enter a new unique .')
     }
 
     //salt for additional security of the system
@@ -122,3 +123,4 @@ adminInfoSchema.statics.login = async function(username, password){
 
 module.exports = mongoose.model('AdminInfo', adminInfoSchema)
 const SkilledInfo = require('../models/skilledInfo') 
+const ClientInfo = require('../models/clientInfo') 

@@ -1,7 +1,6 @@
-const mongoose = require('mongoose')
+const mongoose = require('mongoose') 
 const bcrypt = require('bcrypt')
-const validator = require('validator')
-// const userExists = require('../models/userExists');  
+const validator = require('validator') 
 
 const Schema = mongoose.Schema
 
@@ -39,10 +38,6 @@ const skilledInfoSchema = new Schema({
     password:{
         type: String,
         required: true,
-    },
-    role:{
-        type:Number,
-        default: 0
     },
     lname:{
         type: String,
@@ -84,14 +79,6 @@ const skilledInfoSchema = new Schema({
             default: 0
         }
     }, 
-    brgyClearance:{
-        type: String,
-        required: true
-    },
-    nbiClearance:{
-        type: String,
-        required: true
-    },
     bill:{
         billPhoto:{
             type:String,
@@ -104,6 +91,18 @@ const skilledInfoSchema = new Schema({
             type: Number,
             default: 0
         }
+    },
+    brgyClearance:{
+        type: String,
+        required: true
+    },
+    nbiClearance:{
+        type: String,
+        required: true
+    },
+    idIsVerified:{
+        type: Number,
+        default: 0
     },
     userIsVerified:{
         type: Number,
@@ -158,7 +157,12 @@ skilledInfoSchema.virtual('skillCert', {
     localField: '_id',
     foreignField: 'skilled_id'
 });
-// const userExists = require('../models/userExists')
+
+skilledInfoSchema.virtual('skilledBill', {
+    ref: 'SkilledBill',
+    localField: '_id',
+    foreignField: 'skilled_id'
+});
 //static sign up method
 //when using this, suggest to use regular function
 skilledInfoSchema.statics.signup = async function (
@@ -188,17 +192,15 @@ skilledInfoSchema.statics.signup = async function (
     if(password.length <8){
         throw Error('Please enter atleast 8 characters in password.')
     }
-    //check if  is existing
+    //check if  is existing admin, client and skilled
     const adminExists = await AdminInfo.findOne({username})
     if (adminExists){
         throw Error('Email already in use. Please enter a new unique .')
     }
-
-    // if (await userExists(username)) {
-    //     throw new Error(`User with username ${username} already exists`);
-    // }
-
-    //check if  is existing
+    const clientExists = await ClientInfo.findOne({username})
+    if (clientExists){
+        throw Error('Email already in use. Please enter a new unique .')
+    }
     const exists = await this.findOne({username})
     if (exists){
         throw Error('Email already in use. Please enter a new unique .')
@@ -245,5 +247,37 @@ skilledInfoSchema.statics.login = async function(username, password){
     return skilledInfo
 }
 
+exports.updateVerifiedUsers = async (event) => {
+    try {
+        // update all the documents in the 'skilledInfo' collection that match the specified query
+        const skilledInfos = await this.updateMany({
+            idIsVerified: 1,
+            "address.addIsVerified": 1,
+            skilledBill: { $elemMatch: { billIsVerified: 1 } }
+        }, { $set: { userIsVerified: 1 } });
+        return { statusCode: 200, body: 'Users updated successfully' };
+    } catch (err) {
+        return { statusCode: 500, body: err.toString() };
+    }
+};
+
+exports.updateNotVerifiedUsers = async (event) => {
+    try {
+        // update all the documents in the 'skilledInfo' collection that match the specified query
+        const skilledInfos = await this.updateMany({
+            $or: [
+                { idIsVerified: 0 },
+                { "address.addIsVerified": 0},
+                { skilledBill: { $elemMatch: { billIsVerified: 0 } } }
+            ]
+        }, { $set: { userIsVerified: 0 } });
+        return { statusCode: 200, body: 'Users updated successfully' };
+    } catch (err) {
+        return { statusCode: 500, body: err.toString() };
+    }
+};
+
 module.exports = mongoose.model('SkilledInfo', skilledInfoSchema)
 const AdminInfo = require('../models/adminInfo') 
+const ClientInfo = require('../models/clientInfo') 
+

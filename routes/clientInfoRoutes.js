@@ -5,7 +5,7 @@ const{
     clientLogIn,
     clientSignUp,
     getClientInfo,
-    updateClientEmail,
+    updateClientusername,
     updateClientPass,
     updateClientInfo,
     deleteClientInfo,
@@ -30,8 +30,8 @@ router.post('/signup', clientSignUp)
 //GET client info for update
 router.get('/get', clientRequireAuth, getClientInfo)
 
-//UPDATE client email 
-router.patch('/update/email', clientRequireAuth, updateClientEmail)
+//UPDATE client username 
+router.patch('/update/username', clientRequireAuth, updateClientusername)
 
 //UPDATE client password 
 router.patch('/update/password', clientRequireAuth, updateClientPass)

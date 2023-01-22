@@ -1,4 +1,4 @@
-const express = require('express')
+const express = require('express') 
 
 //controller functions
 const{
@@ -16,7 +16,10 @@ const{
     adminDeleteSkilled,
     adminGetAllExperience,
     adminGetAllCertificate,
-    adminGetAllSkill
+    adminGetAllSkill,
+    adminGetAllSkilledBill,
+    adminEditSkilledAddress,
+    adminUpdateBillVer,
 } = require('../controllers/adminInfoController')
 
 const{
@@ -45,6 +48,12 @@ const{
     deleteCertificate
 } = require('../controllers/skillCertController')
 
+const{
+    getOneSkilledBill,
+    updateSkilledBill,
+    deleteSkilledBill
+} = require('../controllers/skilledBillController')
+
 const adminControlAdmin = require('../middleware/adminControlAdmin')
 const adminAuth = require('../middleware/adminAuth')
 const adminControlSkilled = require('../middleware/adminControlSkilled')
@@ -63,6 +72,7 @@ router.patch('/update/adminPass/:id', adminAuth, adminControlAdmin, adminUpdateP
 router.patch('/update/adminInfo/:id', adminAuth, adminControlAdmin, adminUpdateInfo)
 router.delete('/delete/adminInfo/:id', adminAuth, adminControlAdmin, adminDeleteInfo)
 
+
 router.post('/post/adminRoleCap', adminAuth, adminControlAdmin, createAdminRoleCapability)
 router.get('/getAll/adminRoleCap', adminAuth, adminControlAdmin, getAllAdminRoleCapability) 
 router.get('/getOne/adminRoleCap/:id', adminAuth, adminControlAdmin, getOneAdminRoleCapability)
@@ -80,6 +90,14 @@ router.get('/getAll/Skilled', adminAuth, adminControlSkilled, adminGetAllSkilled
 router.get('/getOne/Skilled/:id', adminAuth, adminControlSkilled, adminGetOneSkilled)
 router.patch('/update/Skilled/:id', adminAuth, adminControlSkilled, adminUpdateSkilled)
 router.delete('/delete/Skilled/:id', adminAuth, adminControlSkilled, adminDeleteSkilled)
+
+router.get('/getAll/skilledBill', adminAuth, adminControlSkilled, adminGetAllSkilledBill)
+router.get('/getOne/skilledBill/:id', adminAuth, adminControlSkilled, getOneSkilledBill)
+router.patch('/update/skilledBill/:id', adminAuth, adminControlSkilled, updateSkilledBill)
+router.delete('/delete/skilledBill/:id', adminAuth, adminControlSkilled, deleteSkilledBill)
+
+router.patch('/update/skilled/billVer', adminAuth, adminControlAdmin, adminUpdateBillVer)
+router.patch('/update/skilled/address/:id', adminAuth, adminControlAdmin, adminEditSkilledAddress)
 
 //SKILLED WORKER SKILL
 router.get('/getAll/skill', adminAuth, adminControlSkilled, adminGetAllSkill)

@@ -1,5 +1,5 @@
 const SkilledInfo = require('../models/skilledInfo')
-const jwt = require('jsonwebtoken')
+const jwt = require('jsonwebtoken') 
 const bcrypt = require('bcrypt')
 const validator = require('validator')
 // const multer = require('multer')
@@ -77,6 +77,7 @@ const getSkilledInfo = async(req, res) =>{
         .populate('skills')
         .populate('experience')
         .populate('skillCert')
+        .populate('skilledBill')
 
         res.status(200).json(skilledInfo)
     }

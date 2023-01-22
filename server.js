@@ -24,6 +24,7 @@ const skilledAddressRoutes = require('./routes/skilledAddressRoutes')
 const skillCertRoutes = require('./routes/skillCertRoutes')
 const experienceRoutes = require('./routes/experienceRoutes')
 const skillRoutes = require('./routes/skillRoutes')
+const skilledBillRoutes = require('./routes/skilledBillRoutes')
 
 //CLIENT
 const clientInfoRoutes = require('./routes/clientInfoRoutes')
@@ -86,6 +87,8 @@ app.use('/api/skilledAddress', skilledAddressRoutes)
 app.use('/api/skill', skillRoutes)
 app.use('/api/skillCert', skillCertRoutes)
 app.use('/api/experience', experienceRoutes)
+app.use('/api/experience', experienceRoutes)
+app.use('/api/skilledBill', skilledBillRoutes)
 
 //CLIENT
 app.use('/api/clientInfo', clientInfoRoutes)

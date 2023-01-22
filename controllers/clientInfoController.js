@@ -10,17 +10,17 @@ const clientCreateToken = (_id)=>{
 
 //log in user
 const clientLogIn = async(req, res) =>{
-    const {email, password} = req.body
+    const {username, password} = req.body
     try{
         //just call the function from the model
         const clientInfo = await ClientInfo.login(
-            email, 
+            username, 
             password
         )
 
             //create token
             const token = clientCreateToken(clientInfo._id)
-        res.status(200).json({email, clientInfo, token})
+        res.status(200).json({username, clientInfo, token})
     }
     catch(error){
         res.status(400).json({error:error.message})
@@ -30,7 +30,7 @@ const clientLogIn = async(req, res) =>{
 //sign up user
 const clientSignUp = async(req, res) =>{
     const {
-        email, 
+        username, 
         password, 
         lname, 
         fname, 
@@ -40,7 +40,7 @@ const clientSignUp = async(req, res) =>{
     try{
         //just call the function from the model
         const clientInfo = await ClientInfo.signup(
-            email, 
+            username, 
             password, 
             lname, 
             fname, 
@@ -51,7 +51,7 @@ const clientSignUp = async(req, res) =>{
 
             //create token
             const token = clientCreateToken(clientInfo._id)
-        res.status(200).json({email, clientInfo, token})
+        res.status(200).json({username, clientInfo, token})
     }
     catch(error){
         res.status(400).json({error:error.message})
@@ -74,34 +74,34 @@ const getClientInfo = async(req, res) =>{
     }
 }
 
-//update client info email
-const updateClientEmail = async(req, res) =>{
+//update client info username
+const updateClientusername = async(req, res) =>{
   
     try{
         
         //get info
-        const {email} = req.body
+        const {username} = req.body
 
         //validation
-        if (!email){
-            throw Error('Please enter your new email.')
+        if (!username){
+            throw Error('Please enter your new username.')
         }
 
         //check if strong password
-        if(email.length <8){
-            throw Error('Please enter atleast 8 characters in email.')
+        if(username.length <8){
+            throw Error('Please enter atleast 8 characters in username.')
         }
 
-         //check if email is existing
-        const exists = await ClientInfo.findOne({email})
+         //check if username is existing
+        const exists = await ClientInfo.findOne({username})
         if (exists){
-            throw Error('Email already in use. Please enter a new unique email.')
+            throw Error('username already in use. Please enter a new unique username.')
         }
 
         //update info
         const clientInfo = await ClientInfo.findOneAndUpdate(
             {_id: req.clientInfo._id},
-            {email})
+            {username})
 
         //success
         res.status(200).json({messg: 'Successfully updated'})
@@ -118,10 +118,10 @@ const updateClientPass = async(req, res) =>{
     try{
         
         //get info
-        const {oldpass, newpass, email} = req.body
+        const {oldpass, newpass, username} = req.body
 
         //validation
-        if (!oldpass || !newpass || !email){
+        if (!oldpass || !newpass || !username){
             throw Error('Please enter all blank fields.')
         }
 
@@ -129,9 +129,9 @@ const updateClientPass = async(req, res) =>{
             throw Error('Please do not enter the same current and new password.')
         }
 
-        const client_Info = await ClientInfo.findOne({email})
+        const client_Info = await ClientInfo.findOne({username})
         if (!client_Info){
-            throw Error('Incorrect email.')
+            throw Error('Incorrect username.')
         }
         //check if the password and password hash in match
         const match = await bcrypt.compare(oldpass, client_Info.password)
@@ -333,7 +333,7 @@ module.exports = {
     clientLogIn,
     clientSignUp,
     getClientInfo,
-    updateClientEmail,
+    updateClientusername,
     updateClientPass,
     updateClientInfo,
     deleteClientInfo,

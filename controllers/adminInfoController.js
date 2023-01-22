@@ -3,6 +3,7 @@ const SkilledInfo = require('../models/skilledInfo')
 const Experience = require('../models/experience')
 const Certificate = require('../models/skillCert')
 const Skill = require('../models/skill')
+const SkilledBill = require('../models/skilledBill')
 const mongoose = require('mongoose')
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
@@ -261,6 +262,7 @@ const adminGetAllSkilled = async(req, res)=>{
         .populate('skills')
         .populate('experience')
         .populate('skillCert')
+        .populate('skilledBill')
         res.status(200).json(skilledInfo)
     }
     catch(error){
@@ -372,6 +374,55 @@ const adminGetAllSkill = async(req, res)=>{
         res.status(404).json({error: error.message})
     }  
 }
+//GET all skill cert
+const adminGetAllSkilledBill = async(req, res)=>{
+
+    try{
+        //get all query
+        const skilledBill = await SkilledBill.find({}).sort({createdAt: -1})
+        .populate('skilled_id')
+        res.status(200).json(skilledBill)
+    }
+    catch(error){
+        res.status(404).json({error: error.message})
+    }  
+}
+//update or edit address
+const adminEditSkilledAddress = async(req,res) =>{
+    // const arrayId = req.params.arrayId;
+    const {addIsVerified} = req.body
+    const {id} = req.params 
+    
+    try{
+        const skilledInfo = await SkilledInfo.findByIdAndUpdate(
+        {_id:id},
+    {
+        $set:{
+            "address.addIsVerified":addIsVerified
+        }
+    })
+    res.status(200).json(skilledInfo)
+    }catch(error){
+        res.status(404).json({error: error.message})
+    }
+}
+
+//UPDATE UPDATE BILL VERIFICATION
+const adminUpdateBillVer = async(req, res) =>{
+    try {
+      const skilledBill = await SkilledBill.updateMany(
+        { 
+          // skilled_id: req.skilledInfo._id,
+          billIssuedOn: { $lt: new Date() } 
+        },
+        { $set: { billIsVerified: 0 } }
+      );
+      res.json({ message: 'Bill Expired.', skilledBill });
+    } catch (error) {
+      res.status(500).json({ message: 'Error updating documents', error });
+    }
+}
+
 
 module.exports = {
     adminLogIn,
@@ -388,5 +439,8 @@ module.exports = {
     adminDeleteSkilled,
     adminGetAllExperience,
     adminGetAllCertificate,
-    adminGetAllSkill
+    adminGetAllSkill,
+    adminGetAllSkilledBill,
+    adminEditSkilledAddress,
+    adminUpdateBillVer,
 }
