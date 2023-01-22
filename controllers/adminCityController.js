@@ -26,6 +26,18 @@ const createCity = async(req, res)=>{
 }
 
 //GET all prov
+const getAllProvCity = async(req, res)=>{
+    try{
+        const city = await City.find({province_id: req.body.province_id}).sort({createdAt: -1})
+        .populate('province_id')
+        res.status(200).json(city)
+    }
+    catch(err){
+        return res.status(500).json({messg: err.message})
+    }
+}
+
+//GET all prov
 const getAllCity = async(req, res)=>{
     try{
         const city = await City.find({}).sort({createdAt: -1}).populate('province_id')
@@ -101,6 +113,7 @@ const deleteCity = async(req, res)=>{
 module.exports = {
     createCity,
     getAllCity,
+    getAllProvCity, 
     getOneCity,
     updateCity,
     deleteCity

@@ -23,6 +23,18 @@ const createBarangay = async(req, res)=>{
 }
 
 //GET all prov
+const getCityBarangay = async(req, res)=>{
+    try{
+        const barangay = await Barangay.find({city_id: req.body.city_id}).sort({createdAt: -1})
+        .populate('city_id')
+        res.status(200).json(barangay)
+    }
+    catch(err){
+        return res.status(500).json({messg: err.message})
+    }
+}
+
+//GET all prov
 const getAllBarangay = async(req, res)=>{
     try{
         const barangay = await Barangay.find({}).sort({createdAt: -1}).populate('city_id')
@@ -97,6 +109,7 @@ const deleteBarangay = async(req, res)=>{
 }
 module.exports = {
     createBarangay,
+    getCityBarangay,
     getAllBarangay,
     getOneBarangay,
     updateBarangay,
