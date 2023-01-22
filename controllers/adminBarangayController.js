@@ -24,8 +24,9 @@ const createBarangay = async(req, res)=>{
 
 //GET all prov
 const getCityBarangay = async(req, res)=>{
+    const city_id = req.params.city_id;
     try{
-        const barangay = await Barangay.find({city_id: req.body.city_id}).sort({createdAt: -1})
+        const barangay = await Barangay.find({city_id:city_id}).sort({createdAt: -1})
         .populate('city_id')
         res.status(200).json(barangay)
     }

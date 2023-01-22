@@ -27,8 +27,9 @@ const createCity = async(req, res)=>{
 
 //GET all prov
 const getAllProvCity = async(req, res)=>{
+    const province_id = req.params.province_id;
     try{
-        const city = await City.find({province_id: req.body.province_id}).sort({createdAt: -1})
+        const city = await City.find({province_id:province_id}).sort({createdAt: -1})
         .populate('province_id')
         res.status(200).json(city)
     }

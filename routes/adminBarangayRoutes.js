@@ -17,7 +17,7 @@ const adminControlAdminAddress = require('../middleware/adminControlAdminAddress
 const router = express.Router()
 
 router.post('/post', adminAuth, adminControlAdminAddress, createBarangay)
-router.get('/getAll/cityBarangay', adminAuth, adminControlAdminAddress, getCityBarangay)
+router.get('/getAll/cityBarangay/:city_id', adminAuth, adminControlAdminAddress, getCityBarangay)
 router.get('/getAll', adminAuth, adminControlAdminAddress, getAllBarangay)
 router.get('/getOne/:id', adminAuth, adminControlAdminAddress, getOneBarangay)
 router.patch('/update/:id', adminAuth, adminControlAdminAddress, updateBarangay)

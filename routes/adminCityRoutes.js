@@ -17,7 +17,7 @@ const router = express.Router()
 
 router.post('/post', adminAuth, adminControlAdminAddress, createCity)
 router.get('/getAll', adminAuth, adminControlAdminAddress, getAllCity)
-router.get('/getAll/provCity', adminAuth, adminControlAdminAddress, getAllProvCity)
+router.get('/getAll/provCity/:province_id', adminAuth, adminControlAdminAddress, getAllProvCity)
 router.get('/getOne/:id', adminAuth, adminControlAdminAddress, getOneCity)
 router.patch('/update/:id', adminAuth, adminControlAdminAddress, updateCity)
 router.delete('/delete/:id', adminAuth, adminControlAdminAddress, deleteCity)
