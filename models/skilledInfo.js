@@ -1,4 +1,4 @@
-const mongoose = require('mongoose') 
+const mongoose = require('mongoose')  
 const bcrypt = require('bcrypt')
 const validator = require('validator') 
 
@@ -268,7 +268,8 @@ exports.updateNotVerifiedUsers = async (event) => {
             $or: [
                 { idIsVerified: 0 },
                 { "address.addIsVerified": 0},
-                { skilledBill: { $elemMatch: { billIsVerified: 0 } } }
+                { $and: [{ skilledBill: { $exists: true } }, 
+                    { skilledBill: { $not: { $elemMatch: { billIsVerified: 1 } } } }] }
             ]
         }, { $set: { userIsVerified: 0 } });
         return { statusCode: 200, body: 'Users updated successfully' };

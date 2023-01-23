@@ -409,21 +409,35 @@ const adminEditSkilledAddress = async(req,res) =>{
 }
 
 //UPDATE UPDATE BILL VERIFICATION
-const adminUpdateBillVer = async(req, res) =>{
+const adminUpdateSkilledBill = async(req, res) =>{
     try {
-      const skilledBill = await SkilledBill.updateMany(
-        { 
-          // skilled_id: req.skilledInfo._id,
-          billIssuedOn: { $lt: new Date() } 
-        },
-        { $set: { billIsVerified: 0 } }
-      );
-      res.json({ message: 'Bill Expired.', skilledBill });
+        var currentDate = new Date();
+        const skilledBill = await SkilledBill.updateMany({ billDueDate: {$lt:currentDate}, billIsVerified: 1 }, 
+            {$set: 
+                { billIsVerified: 0, billMessage: "Please pay your bill" } });
+        
+                return res.status(200).json(skilledBill);
+                // console.log(skilledBill)
     } catch (error) {
       res.status(500).json({ message: 'Error updating documents', error });
     }
 }
 
+//UDPATE SKILLED WORKER USER IS VERIFIED
+//UPDATE UPDATE BILL VERIFICATION
+const adminUpdateSkilledAccount = async(req, res) =>{
+    try {
+        // update all the documents in the 'skilledInfo' collection that match the specified query
+        const skilledInfos = await SkilledInfo.updateMany({
+            idIsVerified: 1,
+            "address.addIsVerified": 1,
+            skilledBill: { $elemMatch: { billIsVerified: 1 } }
+        }, { $set: { userIsVerified: 1 } });
+        return res.status(200).json(skilledInfos);
+    } catch (err) {
+        return { statusCode: 500, body: err.toString() };
+    }
+}
 
 module.exports = {
     adminLogIn,
@@ -442,6 +456,7 @@ module.exports = {
     adminGetAllCertificate,
     adminGetAllSkill,
     adminGetAllSkilledBill,
-    adminEditSkilledAddress,
-    adminUpdateBillVer,
+    adminUpdateSkilledBill,
+    adminUpdateSkilledAccount,
+    adminEditSkilledAddress
 }

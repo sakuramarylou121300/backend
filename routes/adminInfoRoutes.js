@@ -18,8 +18,9 @@ const{
     adminGetAllCertificate,
     adminGetAllSkill,
     adminGetAllSkilledBill,
+    adminUpdateSkilledBill,
+    adminUpdateSkilledAccount,
     adminEditSkilledAddress,
-    adminUpdateBillVer,
 } = require('../controllers/adminInfoController')
 
 const{
@@ -96,7 +97,9 @@ router.get('/getOne/skilledBill/:id', adminAuth, adminControlSkilled, getOneSkil
 router.patch('/update/skilledBill/:id', adminAuth, adminControlSkilled, updateSkilledBill)
 router.delete('/delete/skilledBill/:id', adminAuth, adminControlSkilled, deleteSkilledBill)
 
-router.patch('/update/skilled/billVer', adminAuth, adminControlAdmin, adminUpdateBillVer)
+router.put('/update/skilled/billing', adminAuth, adminControlAdmin, adminUpdateSkilledBill)
+router.put('/update/skilled/account', adminAuth, adminControlAdmin, adminUpdateSkilledAccount)
+
 router.patch('/update/skilled/address/:id', adminAuth, adminControlAdmin, adminEditSkilledAddress)
 
 //SKILLED WORKER SKILL

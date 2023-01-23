@@ -1,4 +1,4 @@
-const SkilledBill = require('../models/skilledBill')
+const SkilledBill = require('../models/skilledBill') 
 const Info = require('../models/skilledInfo')
 const mongoose = require('mongoose')
 
