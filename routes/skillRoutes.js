@@ -11,22 +11,12 @@ const requireAuth = require('../middleware/requireAuth')
 //instance of router
 router = express.Router()
 
-router.use(requireAuth)
-
-//POST skill
-router.post('/post/', createSkill)
-
-//GET all skill
-router.get('/getAll/', getAllSkill)
-
-//GET single skill
-router.get('/getOne/:id', getOneSkill)
-
-//UPDATE skill
-router.patch('/update/:id', updateSkill)
-
-//delete skill
-router.delete('/delete/:id', deleteSkill)
+router.post('/post/', requireAuth, createSkill)
+router.get('/getAll/', requireAuth ,getAllSkill)
+router.get('/getAll/skilled', getAllSkill)
+router.get('/getOne/:id', requireAuth, getOneSkill)
+router.patch('/update/:id', requireAuth, updateSkill)
+router.delete('/delete/:id', requireAuth, deleteSkill)
 
 //export
 module.exports = router

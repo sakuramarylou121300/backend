@@ -1,4 +1,4 @@
-const AdminInfo = require('../models/adminInfo') 
+const AdminInfo = require('../models/adminInfo')  
 const SkilledInfo = require('../models/skilledInfo')
 const Experience = require('../models/experience')
 const Certificate = require('../models/skillCert')
@@ -251,6 +251,140 @@ const adminDeleteInfo = async(req, res) =>{
     }
 }
 
+//THIS IS FOR ALL ADMIN ACCESS TO THEIR OWN INFO
+//get one to their specific account
+const getAdminInfo = async(req, res) =>{
+
+    try{
+        const adminInfo = await AdminInfo.findById(req.adminInfo._id)
+        .select("-password")
+
+        res.status(200).json(adminInfo)
+    }
+    catch(error){
+        res.status(400).json({error:error.message})
+    }
+}
+//update admin info username, to their specific account
+const updateAdminUserName = async(req, res) =>{
+  
+    try{
+        
+        //get info
+        const {username} = req.body
+
+        //validation
+        if (!username){
+            throw Error('Please enter your new email.')
+        }
+
+        //check if strong password
+        if(username.length <8){
+            throw Error('Please enter atleast 8 characters in email.')
+        }
+
+         //check if email is existing
+        const exists = await AdminInfo.findOne({username})
+        if (exists){
+            throw Error('Email already in use. Please enter a new unique email.')
+        }
+
+        //update info
+        const adminInfo = await AdminInfo.findOneAndUpdate(
+            {_id: req.adminInfo._id},
+            {username})
+
+        //success
+        res.status(200).json({adminInfo})
+    }
+    catch(error){
+
+        res.status(400).json({error:error.message})
+    }
+}
+//update admin password, to their specific account
+const updateAdminPass = async(req, res) =>{
+  
+    try{
+        
+        //get info
+        const {oldpass, newpass, username} = req.body
+
+        //validation
+        if (!oldpass || !newpass || !username){
+            throw Error('Please enter all blank fields.')
+        }
+
+        if (oldpass===newpass){
+            throw Error('Please do not enter the same current and new password.')
+        }
+
+        const admin_Info = await AdminInfo.findOne({username})
+        if (!admin_Info){
+            throw Error('Incorrect email.')
+        }
+        //check if the password and password hash in match
+        const match = await bcrypt.compare(oldpass, admin_Info.password)
+        //if not match
+        if(!match){
+            throw Error('Incorrect password.')
+        }
+
+        //check if strong password
+        if(newpass.length <8){
+            throw Error('Please enter atleast 8 characters in password.')
+        }
+
+        //salt for additional security of the system
+        const salt = await bcrypt.genSalt(10)
+        const hash = await bcrypt.hash(newpass, salt)
+
+        //update info
+        const adminInfo = await AdminInfo.findOneAndUpdate(
+            {_id: req.adminInfo._id},
+            {password:hash})
+
+        //success
+        res.status(200).json(adminInfo)
+    }
+    catch(error){
+
+        res.status(400).json({error:error.message})
+    }
+}
+//update admin info, to their specific account
+const updateAdminInfo = async(req, res) =>{
+  
+    try{
+        
+        //get info
+        const {lname,
+                fname,
+                mname,
+                contact} = req.body
+
+        //validation
+        if (!lname || !fname || !mname || !contact ){
+            throw Error('Please fill in all the blank fields.')
+        }
+
+        //update info
+        const adminInfo = await AdminInfo.findOneAndUpdate(
+            {_id: req.adminInfo._id},
+            {lname,
+            fname,
+            mname,
+            contact
+        })
+
+        //success
+        res.status(200).json({messg: 'Successfully updated'})
+    }
+    catch(error){
+
+        res.status(400).json({error:error.message})
+    }
+}
 //DEPENDING ON THE ROLE OF THE ADMIN
 
 //GET all skilled
@@ -424,7 +558,6 @@ const adminUpdateSkilledBill = async(req, res) =>{
 }
 
 //UDPATE SKILLED WORKER USER IS VERIFIED
-//UPDATE UPDATE BILL VERIFICATION
 const adminUpdateSkilledAccount = async(req, res) =>{
     try {
         // update all the documents in the 'skilledInfo' collection that match the specified query
@@ -439,6 +572,22 @@ const adminUpdateSkilledAccount = async(req, res) =>{
     }
 }
 
+const adminUpdateSkilledAccountNot = async(req, res) =>{
+    try {
+        // update all the documents in the 'skilledInfo' collection that match the specified query
+        const skilledInfos = await SkilledInfo.updateMany({
+            $or: [
+                { idIsVerified: 0 },
+                { "address.addIsVerified": 0},
+                { $and: [{ skilledBill: { $exists: true } }, 
+                    { skilledBill: { $not: { $elemMatch: { billIsVerified: 1 } } } }] }
+            ]
+        }, { $set: { userIsVerified: 0 } });
+        return res.status(200).json(skilledInfos);
+    } catch (err) {
+        return { statusCode: 500, body: err.toString() };
+    }
+}
 module.exports = {
     adminLogIn,
     adminSignUp,
@@ -448,6 +597,10 @@ module.exports = {
     adminUpdatePass,
     adminUpdateInfo,
     adminDeleteInfo,
+    getAdminInfo, 
+    updateAdminUserName,
+    updateAdminPass,
+    updateAdminInfo,
     adminGetAllSkilled,
     adminGetOneSkilled,
     adminUpdateSkilled,
@@ -458,5 +611,6 @@ module.exports = {
     adminGetAllSkilledBill,
     adminUpdateSkilledBill,
     adminUpdateSkilledAccount,
+    adminUpdateSkilledAccountNot,
     adminEditSkilledAddress
 }

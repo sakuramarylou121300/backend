@@ -1,4 +1,4 @@
-const SkilledInfo = require('../models/skilledInfo')
+const SkilledInfo = require('../models/skilledInfo') 
 const jwt = require('jsonwebtoken') 
 const bcrypt = require('bcrypt')
 const validator = require('validator')
@@ -269,6 +269,77 @@ const deleteSkilledInfo = async(req, res) =>{
     }
 }
 
+//USER ACCOUNT VERFICATION
+//UDPATE SKILLED WORKER USER IS VERIFIED
+const skilledUpdateSkilledAccount = async(req, res) =>{ 
+    try {
+        // Find the document by its _id
+        const skilledInfo = await SkilledInfo.findById(req.skilledInfo._id).populate('skilledBill');
+        if (skilledInfo) {
+            // Check the values of idIsVerified, address.addIsVerified, and skilledBill
+            if (skilledInfo.idIsVerified === 1 &&
+                skilledInfo.address.addIsVerified === 1 &&
+                skilledInfo.skilledBill.some(bill => bill.billIsVerified === 1)) {
+                // Update the userIsVerified field to 1
+                const updatedSkilledInfo = await SkilledInfo.findByIdAndUpdate(req.skilledInfo._id, { $set: { userIsVerified: 1 } }, { new: true });
+                return res.status(200).json(updatedSkilledInfo);
+            } else {
+                return res.status(200).json({ message: "Please check your id, address and your bill if they are verified." });
+            }
+        } else {
+            return res.status(404).json({ message: "SkilledInfo not found" });
+        }   
+    } catch (err) {
+        return res.status(500).json({ message: err.toString() });
+    }
+}
+
+const skilledUpdateNotVerifiedUsers = async (req, res) => {
+    try {
+        // Find the document by its _id
+        const skilledInfo = await SkilledInfo.findById(req.skilledInfo._id).populate('skilledBill');
+        if (skilledInfo) {
+            // Check the values of idIsVerified, address.addIsVerified, and skilledBill
+            if (skilledInfo.idIsVerified === 0 ||
+                skilledInfo.address.addIsVerified === 0 ||
+                (skilledInfo.skilledBill && 
+                !skilledInfo.skilledBill.some(bill => bill.billIsVerified === 1))) {
+                // Update the userIsVerified field to 0
+                const updatedSkilledInfo = await SkilledInfo.findByIdAndUpdate(req.skilledInfo._id, { $set: { userIsVerified: 0 } }, { new: true });
+                return res.status(200).json({ message: "User updated successfully" });
+            } 
+        } else {
+            return res.status(404).json({ message: "SkilledInfo not found" });
+        }
+    } catch (err) {
+        return res.status(500).json({ message: err.toString() });
+    }
+};
+
+const updateSkilledAccount = async (req, res) => {
+    try {
+        // Find the document by its _id
+        const skilledInfo = await SkilledInfo.findById(req.skilledInfo._id).populate('skilledBill');
+        if (skilledInfo) {
+            // Check the values of idIsVerified, address.addIsVerified, and skilledBill
+            if (skilledInfo.idIsVerified === 1 &&
+                skilledInfo.address.addIsVerified === 1 &&
+                skilledInfo.skilledBill.some(bill => bill.billIsVerified === 1)) {
+                return skilledUpdateSkilledAccount(req, res);
+            } else if (skilledInfo.idIsVerified === 0 ||
+                skilledInfo.address.addIsVerified === 0 ||
+                (skilledInfo.skilledBill && 
+                !skilledInfo.skilledBill.some(bill => bill.billIsVerified === 1))) {
+                return skilledUpdateNotVerifiedUsers(req, res);
+            }
+        } else {
+            return res.status(404).json({ message: "SkilledInfo not found" });
+        }
+    } catch (err) {
+        return res.status(500).json({ message: err.toString() });
+    }
+};
+
 //push address
 const pushAddress = async(req,res) =>{
     try{
@@ -404,6 +475,9 @@ module.exports = {
     editAddress,
     editBill,
     deleteSkilledInfo,
+    skilledUpdateSkilledAccount,
+    skilledUpdateNotVerifiedUsers,
+    updateSkilledAccount,
     pushAddress,
     updateAddress,
     pullAddress,

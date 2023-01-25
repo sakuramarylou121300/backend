@@ -247,36 +247,36 @@ skilledInfoSchema.statics.login = async function(username, password){
     return skilledInfo
 }
 
-exports.updateVerifiedUsers = async (event) => {
-    try {
-        // update all the documents in the 'skilledInfo' collection that match the specified query
-        const skilledInfos = await this.updateMany({
-            idIsVerified: 1,
-            "address.addIsVerified": 1,
-            skilledBill: { $elemMatch: { billIsVerified: 1 } }
-        }, { $set: { userIsVerified: 1 } });
-        return { statusCode: 200, body: 'Users updated successfully' };
-    } catch (err) {
-        return { statusCode: 500, body: err.toString() };
-    }
-};
+// exports.updateVerifiedUsers = async (event) => {
+//     try {
+//         // update all the documents in the 'skilledInfo' collection that match the specified query
+//         const skilledInfos = await this.updateMany({
+//             idIsVerified: 1,
+//             "address.addIsVerified": 1,
+//             skilledBill: { $elemMatch: { billIsVerified: 1 } }
+//         }, { $set: { userIsVerified: 1 } });
+//         return { statusCode: 200, body: 'Users updated successfully' };
+//     } catch (err) {
+//         return { statusCode: 500, body: err.toString() };
+//     }
+// };
 
-exports.updateNotVerifiedUsers = async (event) => {
-    try {
-        // update all the documents in the 'skilledInfo' collection that match the specified query
-        const skilledInfos = await this.updateMany({
-            $or: [
-                { idIsVerified: 0 },
-                { "address.addIsVerified": 0},
-                { $and: [{ skilledBill: { $exists: true } }, 
-                    { skilledBill: { $not: { $elemMatch: { billIsVerified: 1 } } } }] }
-            ]
-        }, { $set: { userIsVerified: 0 } });
-        return { statusCode: 200, body: 'Users updated successfully' };
-    } catch (err) {
-        return { statusCode: 500, body: err.toString() };
-    }
-};
+// exports.updateNotVerifiedUsers = async (event) => {
+//     try {
+//         // update all the documents in the 'skilledInfo' collection that match the specified query
+//         const skilledInfos = await this.updateMany({
+//             $or: [
+//                 { idIsVerified: 0 },
+//                 { "address.addIsVerified": 0},
+//                 { $and: [{ skilledBill: { $exists: true } }, 
+//                     { skilledBill: { $not: { $elemMatch: { billIsVerified: 1 } } } }] }
+//             ]
+//         }, { $set: { userIsVerified: 0 } });
+//         return { statusCode: 200, body: 'Users updated successfully' };
+//     } catch (err) {
+//         return { statusCode: 500, body: err.toString() };
+//     }
+// };
 
 module.exports = mongoose.model('SkilledInfo', skilledInfoSchema)
 const AdminInfo = require('../models/adminInfo') 

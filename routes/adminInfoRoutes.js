@@ -10,6 +10,10 @@ const{
     adminUpdatePass,
     adminUpdateInfo,
     adminDeleteInfo,
+    getAdminInfo, 
+    updateAdminUserName,
+    updateAdminPass,
+    updateAdminInfo,
     adminGetAllSkilled,
     adminGetOneSkilled,
     adminUpdateSkilled,
@@ -20,6 +24,7 @@ const{
     adminGetAllSkilledBill,
     adminUpdateSkilledBill,
     adminUpdateSkilledAccount,
+    adminUpdateSkilledAccountNot, 
     adminEditSkilledAddress,
 } = require('../controllers/adminInfoController')
 
@@ -81,9 +86,10 @@ router.patch('/update/adminRoleCap/:id', adminAuth, adminControlAdmin, updateAdm
 router.delete('/delete/adminRoleCap/:id', adminAuth, adminControlAdmin, deleteAdminRoleCapability)
 
 //ALL ADMIN CAN ACCESS THIS
-router.patch('/update/adminUserNamee/:id', adminAuth, adminUpdateUserName)
-router.patch('/update/adminPasss/:id', adminAuth, adminUpdatePass)
-router.patch('/update/adminInfoo/:id', adminAuth, adminUpdateInfo)
+router.get('/get/oneAdminInfo', adminAuth, getAdminInfo)
+router.patch('/update/oneAdminUserName', adminAuth, updateAdminUserName)
+router.patch('/update/oneAdminPass', adminAuth, updateAdminPass)
+router.patch('/update/oneAdminInfo', adminAuth, updateAdminInfo)
 
 //DEPENDING ON THE ROLES
 //SKILLED WORKER
@@ -99,6 +105,7 @@ router.delete('/delete/skilledBill/:id', adminAuth, adminControlSkilled, deleteS
 
 router.put('/update/skilled/billing', adminAuth, adminControlAdmin, adminUpdateSkilledBill)
 router.put('/update/skilled/account', adminAuth, adminControlAdmin, adminUpdateSkilledAccount)
+router.put('/update/skilled/account/not', adminAuth, adminControlAdmin, adminUpdateSkilledAccountNot)
 
 router.patch('/update/skilled/address/:id', adminAuth, adminControlAdmin, adminEditSkilledAddress)
 
