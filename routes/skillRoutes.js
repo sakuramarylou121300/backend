@@ -13,7 +13,6 @@ router = express.Router()
 
 router.post('/post/', requireAuth, createSkill)
 router.get('/getAll/', requireAuth ,getAllSkill)
-router.get('/getAll/skilled', getAllSkill)
 router.get('/getOne/:id', requireAuth, getOneSkill)
 router.patch('/update/:id', requireAuth, updateSkill)
 router.delete('/delete/:id', requireAuth, deleteSkill)
