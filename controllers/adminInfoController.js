@@ -385,6 +385,22 @@ const updateAdminInfo = async(req, res) =>{
         res.status(400).json({error:error.message})
     }
 }
+
+//delete skilled info
+const deleteAdminInfo = async(req, res) =>{
+
+    try{
+        const adminInfo = await AdminInfo.findById(req.adminInfo._id)
+        if(adminInfo.isMainAdmin === 1){
+            return res.status(400).json({error: "Cannot delete main admin account"})
+        }
+        await adminInfo.remove()
+        res.status(200).json({ message: "Admin account deleted successfully"})
+    }
+    catch(error){
+        res.status(400).json({error:error.message})
+    }
+}
 //DEPENDING ON THE ROLE OF THE ADMIN
 
 //GET all skilled
@@ -601,6 +617,7 @@ module.exports = {
     updateAdminUserName,
     updateAdminPass,
     updateAdminInfo,
+    deleteAdminInfo,
     adminGetAllSkilled,
     adminGetOneSkilled,
     adminUpdateSkilled,

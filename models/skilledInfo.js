@@ -81,8 +81,7 @@ const skilledInfoSchema = new Schema({
     }, 
     bill:{
         billPhoto:{
-            type:String,
-            required: true},
+            type:String},
         billIssuedOn:{
             type: String,
             required: true
@@ -93,12 +92,10 @@ const skilledInfoSchema = new Schema({
         }
     },
     brgyClearance:{
-        type: String,
-        required: true
+        type: String
     },
     nbiClearance:{
-        type: String,
-        required: true
+        type: String
     },
     idIsVerified:{
         type: Number,
@@ -180,7 +177,7 @@ skilledInfoSchema.statics.signup = async function (
     // await userExists(username);
     //validation
     if (!username || !password || !lname || !fname || !contact || 
-        !address || !brgyClearance ||!nbiClearance || !bill){
+        !address){
         throw Error('Please fill in all the blank fields.')
     }
 
