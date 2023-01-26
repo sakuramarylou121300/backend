@@ -83,8 +83,7 @@ const skilledInfoSchema = new Schema({
         billPhoto:{
             type:String},
         billIssuedOn:{
-            type: String,
-            required: true
+            type: String
         },
         billIsVerified:{
             type: Number,
