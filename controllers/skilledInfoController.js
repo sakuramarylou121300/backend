@@ -40,8 +40,7 @@ const skilledSignUp = async(req, res) =>{
         contact,
         address,
         brgyClearance,
-        nbiClearance,
-        bill
+        nbiClearance
         } = req.body
         
     try{
@@ -55,8 +54,7 @@ const skilledSignUp = async(req, res) =>{
             contact,
             address,
             brgyClearance,
-            nbiClearance,
-            bill
+            nbiClearance
             )
 
             //create token
@@ -306,7 +304,7 @@ const skilledUpdateNotVerifiedUsers = async (req, res) => {
                 !skilledInfo.skilledBill.some(bill => bill.billIsVerified === 1))) {
                 // Update the userIsVerified field to 0
                 const updatedSkilledInfo = await SkilledInfo.findByIdAndUpdate(req.skilledInfo._id, { $set: { userIsVerified: 0 } }, { new: true });
-                return res.status(200).json({ message: "User updated successfully" });
+                return res.status(200).json({ message: "Please check your barangay clearance, nbi clearance, address and bill if they are verified" });
             } 
         } else {
             return res.status(404).json({ message: "SkilledInfo not found" });
@@ -339,7 +337,7 @@ const updateSkilledAccount = async (req, res) => {
         return res.status(500).json({ message: err.toString() });
     }
 };
-
+ 
 //push address
 const pushAddress = async(req,res) =>{
     try{

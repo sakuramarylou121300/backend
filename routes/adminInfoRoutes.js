@@ -71,7 +71,7 @@ const router = express.Router()
 router.post('/login', adminLogIn)
 
 //ONLY SUPER ADMIN CAN ACCESS
-router.post('/signup', adminSignUp)
+router.post('/signup', adminAuth, adminControlAdmin, adminSignUp)
 router.get('/getAll/admin', adminAuth, adminControlAdmin, adminGetAllAdmin)
 router.get('/getOne/admin/:id', adminAuth, adminControlAdmin, adminGetOneAdmin)
 router.patch('/update/adminUserName/:id', adminAuth, adminControlAdmin, adminUpdateUserName)

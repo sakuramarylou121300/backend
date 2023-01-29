@@ -85,10 +85,10 @@ const skilledInfoSchema = new Schema({
         billIssuedOn:{
             type: String
         },
-        billIsVerified:{
-            type: Number,
-            default: 0
-        }
+        // billIsVerified:{
+        //     type: Number,
+        //     default: 0
+        // }
     },
     brgyClearance:{
         type: String
@@ -170,8 +170,7 @@ skilledInfoSchema.statics.signup = async function (
     contact,
     address,
     brgyClearance,
-    nbiClearance,
-    bill
+    nbiClearance
 ){
     // await userExists(username);
     //validation
@@ -215,8 +214,7 @@ skilledInfoSchema.statics.signup = async function (
         contact,
         address,
         brgyClearance,
-        nbiClearance,
-        bill
+        nbiClearance
     })
     return skilledInfo
 }

@@ -27,12 +27,13 @@ const createRoleCapability = async(req, res)=>{
     
     try{
         const roleCapabilityCheck = await RoleCapability.findOne({
+            role_id: role_id,
             capability_id: capability_id,
             adminInfo_id: adminInfo_id
         })
         
         if(roleCapabilityCheck){
-            return res.status(400).json({error: "This capability already assigned to admin"})
+            return res.status(400).json({error: "This role with the same capability already assigned to admin"})
         }
         //create query
         const roleCapability = await RoleCapability.create({
