@@ -187,7 +187,7 @@ const updateSkilledInfo = async(req, res) =>{
                 nbiClearance} = req.body
 
         //validation
-        if (!lname || !fname || !mname || !contact || !brgyClearance  || !nbiClearance ){
+        if (!lname || !fname || !mname || !contact ){
             throw Error('Please fill in all the blank fields.')
         }
 
