@@ -13,6 +13,7 @@ const{
     deleteSkilledInfo,
     skilledUpdateSkilledAccount,
     skilledUpdateNotVerifiedUsers,
+    skilledUpdateBill,
     updateSkilledAccount,
     pushAddress,
     updateAddress,
@@ -38,6 +39,7 @@ router.put('/edit/bill', requireAuth, editBill)
 router.delete('/delete', requireAuth, deleteSkilledInfo)
 router.put('/update/account', requireAuth, skilledUpdateSkilledAccount)
 router.put('/update/account/not', requireAuth, skilledUpdateNotVerifiedUsers)
+router.put('/update/bill', requireAuth, skilledUpdateBill)
 router.put('/update/skilled/account', requireAuth, updateSkilledAccount)
 router.patch('/push/address', requireAuth, pushAddress)
 router.put('/update/address/:arrayId', requireAuth, updateAddress)

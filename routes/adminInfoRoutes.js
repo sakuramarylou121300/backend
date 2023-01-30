@@ -16,6 +16,7 @@ const{
     updateAdminInfo,
     deleteAdminInfo,
     adminGetAllSkilled,
+    adminGetAllSkilledDetail,
     adminGetOneSkilled,
     adminUpdateSkilled,
     adminDeleteSkilled,
@@ -23,6 +24,7 @@ const{
     adminGetAllCertificate,
     adminGetAllSkill,
     adminGetAllSkilledBill,
+    adminGetAllSkilledBillDetail,
     adminUpdateSkilledBill,
     adminUpdateSkilledAccount,
     adminUpdateSkilledAccountNot, 
@@ -96,11 +98,13 @@ router.delete('/delete/oneAdminInfo', adminAuth, deleteAdminInfo)
 //DEPENDING ON THE ROLES
 //SKILLED WORKER
 router.get('/getAll/Skilled', adminAuth, adminControlSkilled, adminGetAllSkilled)
+router.get('/getAll/Skilled/detail', adminAuth, adminControlSkilled, adminGetAllSkilled)
 router.get('/getOne/Skilled/:id', adminAuth, adminControlSkilled, adminGetOneSkilled)
 router.patch('/update/Skilled/:id', adminAuth, adminControlSkilled, adminUpdateSkilled)
 router.delete('/delete/Skilled/:id', adminAuth, adminControlSkilled, adminDeleteSkilled)
 
 router.get('/getAll/skilledBill', adminAuth, adminControlSkilled, adminGetAllSkilledBill)
+router.get('/getAll/skilledBill/detail', adminAuth, adminControlSkilled, adminGetAllSkilledBillDetail)
 router.get('/getOne/skilledBill/:id', adminAuth, adminControlSkilled, getOneSkilledBill)
 router.patch('/update/skilledBill/:id', adminAuth, adminControlSkilled, updateSkilledBill)
 router.delete('/delete/skilledBill/:id', adminAuth, adminControlSkilled, deleteSkilledBill)

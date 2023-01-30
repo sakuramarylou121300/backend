@@ -10,9 +10,9 @@ const createSkilledBill = async(req, res)=>{
     
     //check empty fields
     let emptyFields = []
-    if(!billPhoto){
-        emptyFields.push('billPhoto')
-    }
+    // if(!billPhoto){
+    //     emptyFields.push('billPhoto')
+    // }
     if(!billIssuedOn){
         emptyFields.push('billIssuedOn')
     }

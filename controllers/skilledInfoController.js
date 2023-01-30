@@ -1,4 +1,5 @@
 const SkilledInfo = require('../models/skilledInfo') 
+const SkilledBill = require('../models/skilledBill')
 const jwt = require('jsonwebtoken') 
 const bcrypt = require('bcrypt')
 const validator = require('validator')
@@ -314,10 +315,26 @@ const skilledUpdateNotVerifiedUsers = async (req, res) => {
     }
 };
 
+//UPDATE UPDATE BILL VERIFICATION
+const skilledUpdateBill = async(req, res) =>{
+    try {
+        var currentDate = new Date();
+        const skilledBill = await SkilledBill.updateMany({ billDueDate: {$lt:currentDate}, billIsVerified: 1 }, 
+            {$set: 
+                { billIsVerified: 0, billMessage: "Please pay your bill" } });
+        
+                return res.status(200).json(skilledBill);
+                // console.log(skilledBill) 
+    } catch (error) {
+      res.status(500).json({ message: 'Error updating documents', error });
+    }
+}
+
 const updateSkilledAccount = async (req, res) => {
     try {
         // Find the document by its _id
         const skilledInfo = await SkilledInfo.findById(req.skilledInfo._id).populate('skilledBill');
+     
         if (skilledInfo) {
             // Check the values of idIsVerified, address.addIsVerified, and skilledBill
             if (skilledInfo.idIsVerified === 1 &&
@@ -475,6 +492,7 @@ module.exports = {
     deleteSkilledInfo,
     skilledUpdateSkilledAccount,
     skilledUpdateNotVerifiedUsers,
+    skilledUpdateBill,
     updateSkilledAccount,
     pushAddress,
     updateAddress,

@@ -421,6 +421,24 @@ const adminGetAllSkilled = async(req, res)=>{
     }  
 }
 
+//GET all skilled
+const adminGetAllSkilledDetail = async(req, res)=>{
+
+    try{
+        //get all query
+        const skilledInfo = await SkilledInfo.find({idIsVerified: 0}).sort({updatedAt: 1})
+        .select("-password")
+        .populate('skills')
+        .populate('experience')
+        .populate('skillCert')
+        .populate('skilledBill')
+        res.status(200).json(skilledInfo)
+    }
+    catch(error){
+        res.status(404).json({error: error.message})
+    }  
+}
+
 //GET one skilled
 const adminGetOneSkilled = async(req, res)=>{
     const {id} = req.params  
@@ -538,6 +556,20 @@ const adminGetAllSkilledBill = async(req, res)=>{
         res.status(404).json({error: error.message})
     }  
 }
+
+//GET all skill cert
+const adminGetAllSkilledBillDetail = async(req, res)=>{
+
+    try{
+        //get all query
+        const skilledBill = await SkilledBill.find({billIsVerified: 0}).sort({updatedAt: 1})
+        .populate('skilled_id')
+        res.status(200).json(skilledBill)
+    }
+    catch(error){
+        res.status(404).json({error: error.message})
+    }  
+}
 //update or edit address
 const adminEditSkilledAddress = async(req,res) =>{
     // const arrayId = req.params.arrayId;
@@ -567,7 +599,7 @@ const adminUpdateSkilledBill = async(req, res) =>{
                 { billIsVerified: 0, billMessage: "Please pay your bill" } });
         
                 return res.status(200).json(skilledBill);
-                // console.log(skilledBill)
+                // console.log(skilledBill) 
     } catch (error) {
       res.status(500).json({ message: 'Error updating documents', error });
     }
@@ -619,6 +651,7 @@ module.exports = {
     updateAdminInfo,
     deleteAdminInfo,
     adminGetAllSkilled,
+    adminGetAllSkilledDetail,
     adminGetOneSkilled,
     adminUpdateSkilled,
     adminDeleteSkilled,
@@ -626,6 +659,7 @@ module.exports = {
     adminGetAllCertificate,
     adminGetAllSkill,
     adminGetAllSkilledBill,
+    adminGetAllSkilledBillDetail,
     adminUpdateSkilledBill,
     adminUpdateSkilledAccount,
     adminUpdateSkilledAccountNot,

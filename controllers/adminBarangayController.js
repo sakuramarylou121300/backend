@@ -38,7 +38,9 @@ const getCityBarangay = async(req, res)=>{
 //GET all prov
 const getAllBarangay = async(req, res)=>{
     try{
-        const barangay = await Barangay.find({}).sort({createdAt: -1}).populate('city_id')
+        const barangay = await Barangay.find({})
+        .populate('city_id')
+        .sort({city_id: 1 })
         res.status(200).json(barangay)
     }
     catch(err){

@@ -31,6 +31,7 @@ const getAllProvCity = async(req, res)=>{
     try{
         const city = await City.find({province_id:province_id}).sort({createdAt: -1})
         .populate('province_id')
+        // .populate('province_id').sort({ 'province_id.province': 1 })
         res.status(200).json(city)
     }
     catch(err){
@@ -41,7 +42,9 @@ const getAllProvCity = async(req, res)=>{
 //GET all prov
 const getAllCity = async(req, res)=>{
     try{
-        const city = await City.find({}).sort({createdAt: -1}).populate('province_id')
+        const city = await City.find({})
+        .populate('province_id')
+        .sort({province_id: 1 })
         res.status(200).json(city)
     }
     catch(err){
