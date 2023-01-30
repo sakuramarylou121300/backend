@@ -150,26 +150,16 @@ const adminUpdatePass = async(req, res) =>{
     try{
         
         //get info
-        const {oldpass, newpass, username} = req.body
+        const {newpass, username} = req.body
 
         //validation
-        if (!oldpass || !newpass || !username){
+        if (!newpass || !username){
             throw Error('Please enter all blank fields.')
-        }
-
-        if (oldpass===newpass){
-            throw Error('Please do not enter the same current and new password.')
         }
 
         const admin_Info = await AdminInfo.findOne({username})
         if (!admin_Info){
             throw Error('Incorrect email.')
-        }
-        //check if the password and password hash in match
-        const match = await bcrypt.compare(oldpass, admin_Info.password)
-        //if not match
-        if(!match){
-            throw Error('Incorrect password.')
         }
 
         //check if strong password
