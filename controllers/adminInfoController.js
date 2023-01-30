@@ -150,17 +150,17 @@ const adminUpdatePass = async(req, res) =>{
     try{
         
         //get info
-        const {newpass, username} = req.body
+        const {newpass} = req.body
 
         //validation
-        if (!newpass || !username){
+        if (!newpass){
             throw Error('Please enter all blank fields.')
         }
 
-        const admin_Info = await AdminInfo.findOne({username})
-        if (!admin_Info){
-            throw Error('Incorrect email.')
-        }
+        // const admin_Info = await AdminInfo.findOne({username})
+        // if (!admin_Info){
+        //     throw Error('Incorrect email.')
+        // }
 
         //check if strong password
         if(newpass.length <8){
