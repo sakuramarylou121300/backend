@@ -78,16 +78,16 @@ const updateBarangay = async(req, res) =>{
     }
 
      //delete query
-     const Barangay = await Barangay.findOneAndUpdate({_id: id},{
+     const barangay = await Barangay.findOneAndUpdate({_id: id},{
          ...req.body //get new value
      })
     
      //check if not existing
-     if (!Barangay){
+     if (!barangay){
         return res.status(404).json({error: 'Barangay not found'})
     }
 
-    res.status(200).json(Barangay)//nadagdag
+    res.status(200).json(barangay)//nadagdag
 }
 
 //DELETE skill
