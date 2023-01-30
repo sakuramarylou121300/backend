@@ -58,14 +58,14 @@ const getOneBarangay = async(req, res)=>{
     }
 
     //find query
-    const Barangay = await Barangay.findById({_id: id})
+    const barangay = await Barangay.findById({_id: id})
 
     //check if not existing
-    if (!Barangay){
+    if (!barangay){
         return res.status(404).json({error: 'Barangay not found'})
     }
 
-    res.status(200).json(Barangay)   
+    res.status(200).json(barangay)   
 }
 
 //UPDATE prov
@@ -100,14 +100,14 @@ const deleteBarangay = async(req, res)=>{
     }
 
     //delete query
-    const Barangay = await Barangay.findOneAndDelete({_id: id})
+    const barangay = await Barangay.findOneAndDelete({_id: id})
     
     //check if not existing
-    if (!Barangay){
+    if (!barangay){
         return res.status(404).json({error: 'Barangay not found'})
     }
 
-    res.status(200).json(Barangay)
+    res.status(200).json(barangay)
 
 }
 module.exports = {
