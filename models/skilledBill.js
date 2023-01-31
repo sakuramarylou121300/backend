@@ -4,8 +4,7 @@ const Schema = mongoose.Schema
 
 const billSchema = new Schema({
     billPhoto:{
-        type: String,
-        required: true
+        type: String
     },
     billIssuedOn:{
         type: Date,
