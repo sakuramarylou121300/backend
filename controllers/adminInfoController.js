@@ -349,7 +349,7 @@ const updateAdminInfo = async(req, res) =>{
                 contact} = req.body
 
         //validation
-        if (!lname || !fname || !mname || !contact ){
+        if (!lname || !fname || !contact ){
             throw Error('Please fill in all the blank fields.')
         }
 
