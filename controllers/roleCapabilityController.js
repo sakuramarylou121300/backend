@@ -88,23 +88,35 @@ const getOneRoleCapability = async(req, res)=>{
 //UPDATE skill
 const updateRoleCapability = async(req, res) =>{
     const {id} = req.params    
-
-    //check if id is not existing
-    if(!mongoose.Types.ObjectId.isValid(id)){
-        return res.status(404).json({error: 'Invalid id'})
-    }
-
-     //delete query
-     const roleCapability = await RoleCapability.findOneAndUpdate({_id: id},{
-         ...req.body //get new value
-     })
+    const {role_id, capability_id, adminInfo_id} = req.body
     
-     //check if not existing
-     if (!roleCapability){
-        return res.status(404).json({error: 'RoleCapability not found'})
+    // //check if id is not existing
+    // if(!mongoose.Types.ObjectId.isValid(id)){
+    //     return res.status(404).json({error: 'Invalid id'})
+    // }
+    try{
+        const roleCapabilityCheck = await RoleCapability.findOne({
+        role_id,
+        capability_id,
+        adminInfo_id
+    })
+    
+    if(roleCapabilityCheck){
+        return res.status(400).json({error: "This role with the same capability already assigned to admin"})
     }
 
-    res.status(200).json(roleCapability)
+     const roleCapability = await RoleCapability.findOneAndUpdate({_id: id},{
+        role_id,
+        capability_id,
+        adminInfo_id
+        //  ...req.body //get new value
+     })
+     res.status(200).json(roleCapability)
+    }
+
+    catch(error){
+        res.status(404).json({error: error.message})
+    } 
 }
 
 //DELETE skill
