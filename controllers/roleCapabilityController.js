@@ -53,7 +53,7 @@ const getAllRoleCapability = async(req, res)=>{
 
     try{
         //get all query
-        const roleCapability = await RoleCapability.find({}).sort({createdAt: -1})
+        const roleCapability = await RoleCapability.find({}).sort({adminInfo_id: -1})
         .populate('role_id')
         .populate('capability_id')
         .populate('adminInfo_id')
