@@ -19,18 +19,16 @@ const experienceSchema = new Schema({
         type: String,
         required: true
     },
-    refName:{
-        lname:{
-            type: String,
-            required: true
-        },
-        fname:{
-            type: String,
-            required: true
-        },
-        mname:{
-            type: String,
-        }
+    refLname:{
+        type: String,
+        required: true
+    },
+    refFname:{
+        type: String,
+        required: true
+    },
+    refMname:{
+        type: String
     },
     refPosition:{
         type: String,

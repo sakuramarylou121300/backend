@@ -6,10 +6,11 @@ const mongoose = require('mongoose')
 const createExperience = async(req, res)=>{
     const {categorySkill,
             title,
-            issuedOn,
             desc,
             photo,
-            refName,
+            refLname, 
+            refFname,
+            refMname,
             refPosition,
             refOrg,
             refContactNo} = req.body
@@ -25,8 +26,14 @@ const createExperience = async(req, res)=>{
     if(!photo){
         emptyFields.push('photo')
     }
-    if(!refName){
-        emptyFields.push('refName')
+    if(!photo){
+        emptyFields.push('refLname')
+    }
+    if(!photo){
+        emptyFields.push('refFname')
+    }
+    if(!photo){
+        emptyFields.push('refLMame')
     }
     if(!refPosition){
         emptyFields.push('refPosition')
@@ -53,7 +60,9 @@ const createExperience = async(req, res)=>{
             title,
             desc,
             photo,
-            refName,
+            refLname,
+            refFname,
+            refMname,
             refPosition,
             refOrg,
             refContactNo,
@@ -96,7 +105,7 @@ const getOneExperience = async(req, res)=>{
 
     //check if not existing
     if (!experience){
-        return res.status(404).json({error: 'Skill Experience not found'})
+        return res.status(404).json({error: 'Skill Experience not found'}) 
     }
 
     res.status(200).json(experience)   
