@@ -7,8 +7,14 @@ const createProvince = async(req, res)=>{
     try{
         const {province} = req.body
         //search if existing
-        const adminProvince = await Province.findOne({province})
-        if(adminProvince) return res.status(400).json({messg: 'This province already exists.'})
+        const provinceCheck = await Province.findOne({
+            province:province,
+            isDeleted: 0
+        })
+        
+        if(provinceCheck){
+            return res.status(400).json({error: "Province already exists."})
+        }
         
         //create new skill
         const newProvince = new Province({province})
@@ -76,19 +82,19 @@ const updateProvince = async(req, res) =>{
     res.status(200).json(adminProvince)//nadagdag
 }
 
-//UPDATE prov
-const updateProvinceDelete = async(req, res) =>{
-    const {id} = req.params   
-    const {isDeleted} = req.body 
+//DELETE skill
+const deleteProvince = async(req, res)=>{
+     const {id} = req.params   
+    // const {isDeleted} = req.body 
 
     //check if id is not existing
     if(!mongoose.Types.ObjectId.isValid(id)){
         return res.status(404).json({error: 'Invalid id'})
     }
      //delete query
-     const adminProvince = await Province.findOneAndUpdate({_id: id},{
-        isDeleted:1
-     })
+     const adminProvince = await Province.findOneAndUpdate({_id: id},
+        {isDeleted:1}
+        )
     
      //check if not existing
      if (!adminProvince){
@@ -96,26 +102,6 @@ const updateProvinceDelete = async(req, res) =>{
     }
 
     res.status(200).json(adminProvince)//nadagdag
-}
-//DELETE skill
-const deleteProvince = async(req, res)=>{
-    const {id} = req.params
-    
-    //check if id is not existing
-    if(!mongoose.Types.ObjectId.isValid(id)){
-        return res.status(404).json({error: 'Invalid id'})
-    }
-
-    //delete query
-    const province = await Province.findOneAndDelete({_id: id})
-    
-    //check if not existing
-    if (!province){
-        return res.status(404).json({error: 'Province not found'})
-    }
-
-    res.status(200).json(province)
-
 }
 module.exports = {
     createProvince,

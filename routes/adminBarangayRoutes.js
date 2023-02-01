@@ -21,7 +21,7 @@ router.get('/getAll/cityBarangay/:city_id', adminAuth, adminControlAdminAddress,
 router.get('/getAll', adminAuth, adminControlAdminAddress, getAllBarangay)
 router.get('/getOne/:id', adminAuth, adminControlAdminAddress, getOneBarangay)
 router.patch('/update/:id', adminAuth, adminControlAdminAddress, updateBarangay)
-router.delete('/delete/:id', adminAuth, adminControlAdminAddress, deleteBarangay)
+router.patch('/delete/:id', adminAuth, adminControlAdminAddress, deleteBarangay)
 
 router.get('/getAll/cityBarangay/skilled/:city_id', getCityBarangay)
 router.get('/getAll/skilled', getAllBarangay)

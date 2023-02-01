@@ -11,7 +11,11 @@ const barangaySchema = new Schema({
     city_id:{
         type: mongoose.Schema.Types.ObjectId, 
         ref: 'AdminCity'
-    }
+    },
+    isDeleted:{
+        type: String,
+        default: 0
+    },
 
 },{timestamps: true})
 

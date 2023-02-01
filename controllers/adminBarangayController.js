@@ -7,9 +7,14 @@ const createBarangay = async(req, res)=>{
     try{
         const {barangay, city_id} = req.body
         
-        const existingBarangay = await Barangay.findOne({ barangay, city_id });
-        if (existingBarangay) {
-            return res.status(400).json({ message: "Barangay already exists in this city" });
+        const barangayCheck = await Barangay.findOne({
+            barangay:barangay,
+            city_id:city_id,
+            isDeleted: 0
+        })
+        
+        if(barangayCheck){
+            return res.status(400).json({error: "Barangay already exists in this city."})
         }
 
         //create new skill
@@ -38,7 +43,7 @@ const getCityBarangay = async(req, res)=>{
 //GET all prov
 const getAllBarangay = async(req, res)=>{
     try{
-        const barangay = await Barangay.find({})
+        const barangay = await Barangay.find({isDeleted: 0})
         .populate('city_id')
         .sort({city_id: 1 })
         res.status(200).json(barangay)
@@ -104,7 +109,8 @@ const deleteBarangay = async(req, res)=>{
     }
 
     //delete query
-    const barangay = await Barangay.findOneAndDelete({_id: id})
+    const barangay = await Barangay.findOneAndUpdate({_id: id},
+        {isDeleted:1})
     
     //check if not existing
     if (!barangay){

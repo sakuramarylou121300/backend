@@ -20,7 +20,7 @@ router.get('/getAll', adminAuth, adminControlAdminAddress, getAllCity)
 router.get('/getAll/provCity/:province_id', adminAuth, adminControlAdminAddress, getAllProvCity)
 router.get('/getOne/:id', adminAuth, adminControlAdminAddress, getOneCity)
 router.patch('/update/:id', adminAuth, adminControlAdminAddress, updateCity)
-router.delete('/delete/:id', adminAuth, adminControlAdminAddress, deleteCity)
+router.patch('/delete/:id', adminAuth, adminControlAdminAddress, deleteCity) 
 
 router.get('/getAll/skilled', getAllCity)
 router.get('/getAll/provCity/skilled/:province_id', getAllProvCity)

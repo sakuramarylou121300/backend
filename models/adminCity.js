@@ -11,7 +11,11 @@ const citySchema = new Schema({
     province_id:{
         type: mongoose.Schema.Types.ObjectId, 
         ref: 'AdminProvince'
-    }
+    },
+    isDeleted:{
+        type: Number,
+        default: 0
+    },
 
 },{timestamps: true})
 

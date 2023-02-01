@@ -7,12 +7,14 @@ const createCity = async(req, res)=>{
     try{
         const {city, province_id} = req.body
 
-        // const adminCity = await City.findOne({city})
-        // if(adminCity) return res.status(400).json({messg: 'This city already exists.'})
+        const cityCheck = await City.findOne({
+            city:city,
+            province_id:province_id,
+            isDeleted: 0
+        })
 
-        const existingCity = await City.findOne({ city, province_id });
-        if (existingCity) {
-            return res.status(400).json({ message: "City already exists in this province" });
+        if(cityCheck){
+            return res.status(400).json({error: "City already exists."})
         }
         
         //create new skill
@@ -42,7 +44,7 @@ const getAllProvCity = async(req, res)=>{
 //GET all prov
 const getAllCity = async(req, res)=>{
     try{
-        const city = await City.find({})
+        const city = await City.find({isDeleted: 0})
         .populate('province_id')
         .sort({province_id: 1 })
         res.status(200).json(city)
@@ -73,7 +75,7 @@ const getOneCity = async(req, res)=>{
 }
 
 //UPDATE prov
-const updateCity = async(req, res) =>{
+const updateCityProvince = async(req, res) =>{
     const {id} = req.params    
     const {city, province_id} = req.body
 
@@ -98,6 +100,31 @@ const updateCity = async(req, res) =>{
     res.status(200).json(adminCity)//nadagdag
 }
 
+//UPDATE prov
+const updateCity = async(req, res) =>{
+    const {id} = req.params    
+    const {city, province_id} = req.body
+
+    //check if id is not existing
+    if(!mongoose.Types.ObjectId.isValid(id)){
+        return res.status(404).json({error: 'Invalid id'})
+    }
+    const existingCity = await City.findOne({ city, province_id });
+        if (existingCity) {
+            return res.status(400).json({ message: "City already exists in this province" });
+        }
+     //delete query
+     const adminCity = await City.findOneAndUpdate({_id: id},{
+         ...req.body //get new value
+     })
+    
+     //check if not existing
+     if (!adminCity){
+        return res.status(404).json({error: 'City not found'})
+    }
+
+    res.status(200).json(adminCity)//nadagdag
+}
 //DELETE skill
 const deleteCity = async(req, res)=>{
     const {id} = req.params
@@ -108,7 +135,9 @@ const deleteCity = async(req, res)=>{
     }
 
     //delete query
-    const city = await City.findOneAndDelete({_id: id})
+    const city = await City.findOneAndUpdate({_id: id},
+        {isDeleted:1}
+        )
     
     //check if not existing
     if (!city){

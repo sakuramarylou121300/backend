@@ -6,8 +6,7 @@ const provinceSchema = new Schema({
    
     province:{
         type: String,
-        required: true,
-        unique: true
+        required: true
     },
     isDeleted:{
         type: Number,
