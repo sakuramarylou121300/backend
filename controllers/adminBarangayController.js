@@ -71,23 +71,27 @@ const getOneBarangay = async(req, res)=>{
 //UPDATE prov
 const updateBarangay = async(req, res) =>{
     const {id} = req.params    
+    const {barangay, city_id} = req.body
 
     //check if id is not existing
     if(!mongoose.Types.ObjectId.isValid(id)){
         return res.status(404).json({error: 'Invalid id'})
     }
-
+    const existingBarangay = await Barangay.findOne({ barangay, city_id });
+        if (existingBarangay) {
+            return res.status(400).json({ message: "Barangay already exists in this city" });
+        }
      //delete query
-     const barangay = await Barangay.findOneAndUpdate({_id: id},{
+     const adminBarangay = await Barangay.findOneAndUpdate({_id: id},{
          ...req.body //get new value
      })
     
      //check if not existing
-     if (!barangay){
+     if (!adminBarangay){
         return res.status(404).json({error: 'Barangay not found'})
     }
 
-    res.status(200).json(barangay)//nadagdag
+    res.status(200).json(adminBarangay)//nadagdag
 }
 
 //DELETE skill

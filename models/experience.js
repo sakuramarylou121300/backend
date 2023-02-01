@@ -47,7 +47,7 @@ const experienceSchema = new Schema({
         default: 0
     },
     skilled_id:{
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
         required: true,
         ref: 'SkilledInfo'
     },

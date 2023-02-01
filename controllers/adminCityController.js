@@ -75,23 +75,27 @@ const getOneCity = async(req, res)=>{
 //UPDATE prov
 const updateCity = async(req, res) =>{
     const {id} = req.params    
+    const {city, province_id} = req.body
 
     //check if id is not existing
     if(!mongoose.Types.ObjectId.isValid(id)){
         return res.status(404).json({error: 'Invalid id'})
     }
-
+    const existingCity = await City.findOne({ city, province_id });
+        if (existingCity) {
+            return res.status(400).json({ message: "City already exists in this province" });
+        }
      //delete query
-     const city = await City.findOneAndUpdate({_id: id},{
+     const adminCity = await City.findOneAndUpdate({_id: id},{
          ...req.body //get new value
      })
     
      //check if not existing
-     if (!city){
+     if (!adminCity){
         return res.status(404).json({error: 'City not found'})
     }
 
-    res.status(200).json(city)//nadagdag
+    res.status(200).json(adminCity)//nadagdag
 }
 
 //DELETE skill

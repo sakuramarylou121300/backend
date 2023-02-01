@@ -56,12 +56,15 @@ const getOneSkill = async(req, res)=>{
 //UPDATE skill
 const updateSkill = async(req, res) =>{
     const {id} = req.params    
-
+    const {skill} = req.body
     //check if id is not existing
     if(!mongoose.Types.ObjectId.isValid(id)){
         return res.status(404).json({error: 'Invalid id'})
     }
 
+    const checkAdminSkill = await AdminSkill.findOne({skill})
+        if(checkAdminSkill) return res.status(400).json({messg: 'This skill already exists.'})
+        
      //delete query
      const adminSkill = await AdminSkill.findOneAndUpdate({_id: id},{
          ...req.body //get new value

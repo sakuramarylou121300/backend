@@ -18,7 +18,8 @@ const createRole = async(req, res)=>{
     }
     
     try{
-        //this is to assign the job to a specific client user, get id from clientInfo
+        const checkRole = await Role.findOne({roleName})
+        if(checkRole) return res.status(400).json({messg: 'This role already exists.'})
         
         //create query
         const role = await Role.create({
@@ -68,6 +69,7 @@ const getOneRole = async(req, res)=>{
 //UPDATE skill
 const updateRole = async(req, res) =>{
     const {id} = req.params    
+    const {roleName} = req.body
 
     //check if id is not existing
     if(!mongoose.Types.ObjectId.isValid(id)){
@@ -75,6 +77,9 @@ const updateRole = async(req, res) =>{
     }
 
      //delete query
+     const checkRole = await Role.findOne({roleName})
+     if(checkRole) return res.status(400).json({messg: 'This role already exists.'})
+     
      const role = await Role.findOneAndUpdate({_id: id},{
          ...req.body //get new value
      })

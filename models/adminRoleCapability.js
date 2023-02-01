@@ -9,7 +9,7 @@ const adminRoleCapabilitySchema = new Schema({
         required: true,
     },
     adminInfo_id:{
-        type: mongoose.Schema.Types.ObjectId, 
+        type: mongoose.Schema.Types.ObjectId,  
         ref: 'AdminInfo'
     }
 

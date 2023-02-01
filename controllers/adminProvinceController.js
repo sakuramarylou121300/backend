@@ -53,24 +53,27 @@ const getOneProvince = async(req, res)=>{
 
 //UPDATE prov
 const updateProvince = async(req, res) =>{
-    const {id} = req.params    
+    const {id} = req.params   
+    const {province} = req.body 
 
     //check if id is not existing
     if(!mongoose.Types.ObjectId.isValid(id)){
         return res.status(404).json({error: 'Invalid id'})
     }
-
+    const checkProvince = await Province.findOne({province})
+    if(checkProvince) return res.status(400).json({messg: 'This province already exists.'})
+    
      //delete query
-     const province = await Province.findOneAndUpdate({_id: id},{
+     const adminProvince = await Province.findOneAndUpdate({_id: id},{
          ...req.body //get new value
      })
     
      //check if not existing
-     if (!province){
+     if (!adminProvince){
         return res.status(404).json({error: 'Province not found'})
     }
 
-    res.status(200).json(province)//nadagdag
+    res.status(200).json(adminProvince)//nadagdag
 }
 
 //DELETE skill

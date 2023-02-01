@@ -16,7 +16,6 @@ const{
     updateAdminInfo,
     deleteAdminInfo,
     adminGetAllSkilled,
-    adminGetAllSkilledDetail,
     adminGetOneSkilled,
     adminUpdateSkilled,
     adminDeleteSkilled,
@@ -24,6 +23,9 @@ const{
     adminGetAllCertificate,
     adminGetAllSkill,
     adminGetAllSkilledBill,
+    adminGetAllSkilledDetail,
+    adminGetAllSkilledExpDetail,
+    adminGetAllSkilledCertDetail,
     adminGetAllSkilledBillDetail,
     adminUpdateSkilledBill,
     adminUpdateSkilledAccount,
@@ -98,7 +100,7 @@ router.delete('/delete/oneAdminInfo', adminAuth, deleteAdminInfo)
 //DEPENDING ON THE ROLES
 //SKILLED WORKER
 router.get('/getAll/Skilled', adminAuth, adminControlSkilled, adminGetAllSkilled)
-router.get('/getAll/Skilled/detail', adminAuth, adminControlSkilled, adminGetAllSkilled)
+router.get('/getAll/Skilled/detail', adminAuth, adminControlSkilled, adminGetAllSkilledDetail)
 router.get('/getOne/Skilled/:id', adminAuth, adminControlSkilled, adminGetOneSkilled)
 router.patch('/update/Skilled/:id', adminAuth, adminControlSkilled, adminUpdateSkilled)
 router.delete('/delete/Skilled/:id', adminAuth, adminControlSkilled, adminDeleteSkilled)
@@ -123,12 +125,14 @@ router.delete('/delete/skill/:id', adminAuth, adminControlSkilled, deleteSkill)
 
 //SKILLED WORKER WORK EXP
 router.get('/getAll/SkilledExp', adminAuth, adminControlSkilled, adminGetAllExperience)
+router.get('/getAll/SkilledExp/detail', adminAuth, adminControlSkilled, adminGetAllSkilledExpDetail)
 router.get('/getOne/SkilledExp/:id', adminAuth, adminControlSkilled, getOneExperience)
 router.patch('/update/SkilledExp/:id', adminAuth, adminControlSkilled, updateExperience)
 router.delete('/delete/SkilledExp/:id', adminAuth, adminControlSkilled, deleteExperience)
 
 //SKILLED CERT
 router.get('/getAll/Cert', adminAuth, adminControlSkilled, adminGetAllCertificate)
+router.get('/getAll/Cert/detail', adminAuth, adminControlSkilled, adminGetAllSkilledCertDetail)
 router.get('/getOne/Cert/:id', adminAuth, adminControlSkilled, getOneCertificate)
 router.patch('/update/Cert/:id', adminAuth, adminControlSkilled, updateCertificate)
 router.delete('/delete/Cert/:id', adminAuth, adminControlSkilled, deleteCertificate)
