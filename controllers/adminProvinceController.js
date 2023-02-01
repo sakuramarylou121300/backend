@@ -23,7 +23,7 @@ const createProvince = async(req, res)=>{
 //GET all prov
 const getAllProvince = async(req, res)=>{
     try{
-        const province = await Province.find({}).sort({createdAt: -1})
+        const province = await Province.find({isDeleted: 0}).sort({createdAt: -1})
         res.status(200).json(province)
     }
     catch(err){
@@ -76,6 +76,27 @@ const updateProvince = async(req, res) =>{
     res.status(200).json(adminProvince)//nadagdag
 }
 
+//UPDATE prov
+const updateProvinceDelete = async(req, res) =>{
+    const {id} = req.params   
+    const {isDeleted} = req.body 
+
+    //check if id is not existing
+    if(!mongoose.Types.ObjectId.isValid(id)){
+        return res.status(404).json({error: 'Invalid id'})
+    }
+     //delete query
+     const adminProvince = await Province.findOneAndUpdate({_id: id},{
+        isDeleted:1
+     })
+    
+     //check if not existing
+     if (!adminProvince){
+        return res.status(404).json({error: 'Province not found'})
+    }
+
+    res.status(200).json(adminProvince)//nadagdag
+}
 //DELETE skill
 const deleteProvince = async(req, res)=>{
     const {id} = req.params

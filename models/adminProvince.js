@@ -8,6 +8,10 @@ const provinceSchema = new Schema({
         type: String,
         required: true,
         unique: true
+    },
+    isDeleted:{
+        type: Number,
+        default: 0
     }
 },{timestamps: true})
 
