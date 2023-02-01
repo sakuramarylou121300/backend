@@ -103,6 +103,10 @@ const skilledInfoSchema = new Schema({
     userIsVerified:{
         type: Number,
         default: 0
+    },
+    isDeleted:{
+        type: Number,
+        default: 0
     }
     // validId:{
     //     type:String
@@ -188,15 +192,15 @@ skilledInfoSchema.statics.signup = async function (
         throw Error('Please enter atleast 8 characters in password.')
     }
     //check if  is existing admin, client and skilled
-    const adminExists = await AdminInfo.findOne({username})
+    const adminExists = await AdminInfo.findOne({username, isDeleted: 0})
     if (adminExists){
         throw Error('Email already in use. Please enter a new unique .')
     }
-    const clientExists = await ClientInfo.findOne({username})
+    const clientExists = await ClientInfo.findOne({username,  isDeleted: 0})
     if (clientExists){
         throw Error('Email already in use. Please enter a new unique .')
     }
-    const exists = await this.findOne({username})
+    const exists = await this.findOne({username, isDeleted: 0})
     if (exists){
         throw Error('Email already in use. Please enter a new unique .')
     }

@@ -8,9 +8,14 @@ const createSkill = async(req, res)=>{
     try{
         const {skill} = req.body
         //search if existing
-        const adminSkill = await AdminSkill.findOne({skill})
-        if(adminSkill) return res.status(400).json({messg: 'This skill already exists.'})
-        
+        const skillCheck = await AdminSkill.findOne({
+            skill:skill,
+            isDeleted: 0
+        })
+
+        if(skillCheck){
+            return res.status(400).json({error: "Skill already exists."})
+        }
         //create new skill
         const newSkill = new AdminSkill({skill})
         await newSkill.save()
@@ -24,7 +29,7 @@ const createSkill = async(req, res)=>{
 //GET all skill
 const getAllSkill = async(req, res)=>{
     try{
-        const skill = await AdminSkill.find({}).sort({createdAt: -1})
+        const skill = await AdminSkill.find({isDeleted: 0}).sort({createdAt: -1})
         res.status(200).json(skill)
     }
     catch(err){
@@ -88,14 +93,15 @@ const deleteSkill = async(req, res)=>{
     }
 
     //delete query
-    const adminSkill = await AdminSkill.findOneAndDelete({_id: id})
+    const adminSkill = await AdminSkill.findOneAndUpdate({_id: id},
+        {isDeleted:1})
     
     //check if not existing
     if (!adminSkill){
         return res.status(404).json({error: 'Skill not found'})
     }
 
-    res.status(200).json({message: 'Successfully deleted'})
+    res.status(200).json(adminSkill)
 
 }
 

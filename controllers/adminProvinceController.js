@@ -1,4 +1,4 @@
-const Province = require('../models/adminProvince') 
+const Province = require('../models/adminProvince')  
 const mongoose = require('mongoose')
 
 //CREATE prov exp

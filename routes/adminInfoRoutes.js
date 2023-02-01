@@ -75,13 +75,13 @@ const router = express.Router()
 router.post('/login', adminLogIn)
 
 //ONLY SUPER ADMIN CAN ACCESS
-router.post('/signup', adminAuth, adminControlAdmin, adminSignUp)
-router.get('/getAll/admin', adminAuth, adminControlAdmin, adminGetAllAdmin)
+router.post('/signup', adminAuth, adminSignUp)
+router.get('/getAll/admin', adminAuth, adminGetAllAdmin)
 router.get('/getOne/admin/:id', adminAuth, adminControlAdmin, adminGetOneAdmin)
 router.patch('/update/adminUserName/:id', adminAuth, adminControlAdmin, adminUpdateUserName)
 router.patch('/update/adminPass/:id', adminAuth, adminControlAdmin, adminUpdatePass)
 router.patch('/update/adminInfo/:id', adminAuth, adminControlAdmin, adminUpdateInfo)
-router.delete('/delete/adminInfo/:id', adminAuth, adminControlAdmin, adminDeleteInfo)
+router.patch('/delete/adminInfo/:id', adminAuth, adminDeleteInfo)
 
 
 router.post('/post/adminRoleCap', adminAuth, adminControlAdmin, createAdminRoleCapability)

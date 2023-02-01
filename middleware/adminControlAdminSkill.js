@@ -3,9 +3,12 @@ const AdminInfo = require('../models/adminInfo')
 
 const adminControlAdminSkill = async(req, res, next) =>{
     try{
-        const adminInfo = await AdminInfo.findOne({_id:req.adminInfo.id}).populate('roleCapabality')
+        const adminInfo = await AdminInfo.findOne({_id:req.adminInfo.id}).populate({
+            path: 'roleCapabality',
+            match: { isDeleted: 0} 
+        })
         console.log(adminInfo)
-        let hasAccess = adminInfo.roleCapabality.some(capability => capability.capability_id.toString() === "63c54671ae6d45453aaf0b4c")
+        let hasAccess = adminInfo.roleCapabality.some(capability => capability.capability_id.toString() === "63da85a285bb5180f0eabbab")
         if(!hasAccess)
             return res.status(400).json({messg: 'Admin access denied.'})
         next()

@@ -18,8 +18,15 @@ const createCapability = async(req, res)=>{
     }
     
     try{
-        //this is to assign the job to a specific client user, get id from clientInfo
-        
+        const capabilityCheck = await Capability.findOne({
+            capabilityName:capabilityName,
+            isDeleted: 0
+        })
+
+        if(capabilityCheck){
+            return res.status(400).json({error: "Capability already exists."})
+        }
+
         //create query
         const capability = await Capability.create({
             capabilityName,
@@ -36,7 +43,7 @@ const getAllCapability = async(req, res)=>{
 
     try{
         //get all query
-        const capability = await Capability.find({}).sort({createdAt: -1})
+        const capability = await Capability.find({isDeleted: 0}).sort({createdAt: -1})
         res.status(200).json(capability)
     }
     catch(error){
@@ -97,7 +104,9 @@ const deleteCapability = async(req, res)=>{
     }
 
     //delete query
-    const capability = await Capability.findOneAndDelete({_id: id})
+    const capability = await Capability.findOneAndUpdate({_id: id},
+        {isDeleted:1}
+        )
     
     //check if not existing
     if (!capability){

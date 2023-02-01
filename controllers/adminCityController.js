@@ -104,7 +104,7 @@ const updateCityProvince = async(req, res) =>{
 const updateCity = async(req, res) =>{
     const {id} = req.params    
     const {city, province_id} = req.body
-
+ 
     //check if id is not existing
     if(!mongoose.Types.ObjectId.isValid(id)){
         return res.status(404).json({error: 'Invalid id'})

@@ -6,6 +6,10 @@ const capabilitySchema = new Schema({
     capabilityName:{
         type: String,
         required: true,
+    },
+    isDeleted:{
+        type: Number,
+        default: 0,
     }
 
 },{timestamps: true})

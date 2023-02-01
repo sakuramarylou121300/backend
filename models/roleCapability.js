@@ -17,7 +17,11 @@ const roleCapabilitySchema = new Schema({
     adminInfo_id:{
         type: mongoose.Schema.Types.ObjectId, 
         ref: 'AdminInfo'
-    }
+    },
+    isDeleted:{
+        type: Number,
+        default: 0
+    },
 
 },{timestamps: true})
 

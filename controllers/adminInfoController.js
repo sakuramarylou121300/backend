@@ -72,7 +72,7 @@ const adminGetAllAdmin = async(req, res)=>{
 
     try{
         //get all query
-        const adminInfo = await AdminInfo.find({}).sort({createdAt: -1})
+        const adminInfo = await AdminInfo.find({isDeleted: 0}).sort({createdAt: -1})
         .select("-password")
         .populate({path: 'roleCapabality', populate: [{path: 'role_id'}, {path: 'capability_id'}, {path: 'adminInfo_id'}]})
         // .populate('roleCapabality')
@@ -227,7 +227,8 @@ const adminDeleteInfo = async(req, res) =>{
         if(adminInfo.isMainAdmin === 1){
            return res.status(400).json({error: "Cannot delete main admin account"})
         }
-        await adminInfo.remove()
+        adminInfo.isDeleted = 1;
+        await adminInfo.save() 
         res.status(200).json({ message: "Admin account deleted successfully"})
     }
     

@@ -18,9 +18,14 @@ const createRole = async(req, res)=>{
     }
     
     try{
-        const checkRole = await Role.findOne({roleName})
-        if(checkRole) return res.status(400).json({messg: 'This role already exists.'})
-        
+        const checkRole = await Role.findOne({
+            roleName:roleName,
+            isDeleted: 0
+        })
+
+        if(checkRole){
+            return res.status(400).json({error: "Role already exists."})
+        }
         //create query
         const role = await Role.create({
             roleName,
@@ -37,7 +42,7 @@ const getAllRole = async(req, res)=>{
 
     try{
         //get all query
-        const role = await Role.find({}).sort({createdAt: -1})
+        const role = await Role.find({isDeleted: 0}).sort({createdAt: -1})
         res.status(200).json(role)
     }
     catch(error){
@@ -102,7 +107,8 @@ const deleteRole = async(req, res)=>{
     }
 
     //delete query
-    const role = await Role.findOneAndDelete({_id: id})
+    const role = await Role.findOneAndUpdate({_id: id},
+        {isDeleted:1})
     
     //check if not existing
     if (!role){

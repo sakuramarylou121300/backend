@@ -29,7 +29,8 @@ const createRoleCapability = async(req, res)=>{
         const roleCapabilityCheck = await RoleCapability.findOne({
             role_id: role_id,
             capability_id: capability_id,
-            adminInfo_id: adminInfo_id
+            adminInfo_id: adminInfo_id,
+            isDeleted: 0
         })
         
         if(roleCapabilityCheck){
@@ -53,7 +54,7 @@ const getAllRoleCapability = async(req, res)=>{
 
     try{
         //get all query
-        const roleCapability = await RoleCapability.find({}).sort({adminInfo_id: -1})
+        const roleCapability = await RoleCapability.find({isDeleted: 0}).sort({adminInfo_id: -1})
         .populate('role_id')
         .populate('capability_id')
         .populate('adminInfo_id')
@@ -134,13 +135,15 @@ const deleteRoleCapability = async(req, res)=>{
     if (!roleCapability){
         return res.status(404).json({error: 'Role Capability not found'})
     }
+
+     roleCapability.isDeleted = 1;
      const adminInfo = await AdminInfo.findById(roleCapability.adminInfo_id)
      if (adminInfo.isMainAdmin === 1) {
          return res.status(400).json({ error: "Cannot delete role capability from main admin account" });
      }
  
      //delete query
-     await roleCapability.remove();
+     await roleCapability.save();
 
     res.status(200).json(roleCapability)
 
