@@ -547,7 +547,7 @@ const adminGetAllSkilledExpDetail = async(req, res)=>{
 
     try{
         //get all query
-        const experience = await Experience.find({expIsVerified: 0}).sort({updatedAt: 1})
+        const skilledExp = await Experience.find({expIsVerified: 0}).sort({updatedAt: 1})
         .populate('skilled_id')
         res.status(200).json(skilledExp)
     }
