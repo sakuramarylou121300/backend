@@ -13,11 +13,11 @@ const adminAuth = require('../middleware/adminAuth')
 //instance of router
 router = express.Router()
 
-router.post('/post/', adminAuth, createRole)
-router.get('/getAll/', adminAuth, getAllRole)
-router.get('/getOne/:id', adminAuth, getOneRole)
-router.patch('/update/:id', adminAuth, updateRole)
-router.patch('/delete/:id', adminAuth, deleteRole)
+router.post('/post/', adminAuth, adminControlAdmin, createRole)
+router.get('/getAll/', adminAuth, adminControlAdmin, getAllRole)
+router.get('/getOne/:id', adminAuth, adminControlAdmin, getOneRole)
+router.patch('/update/:id', adminAuth, adminControlAdmin, updateRole)
+router.patch('/delete/:id', adminAuth, adminControlAdmin, deleteRole)
 
 //export
 module.exports = router

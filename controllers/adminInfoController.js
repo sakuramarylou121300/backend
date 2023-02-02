@@ -574,7 +574,11 @@ const adminGetAllSkilledExpDetail = async(req, res)=>{
 
     try{
         //get all query
-        const skilledExp = await Experience.find({expIsVerified: 0, isDeleted: 0}).sort({updatedAt: 1})
+        const skilledExp = await Experience.find({
+            expIsVerified: 0, 
+            isDeleted: 0
+        })
+        .sort({updatedAt: 1})
         .populate('skilled_id')
         res.status(200).json(skilledExp)
     }
@@ -610,6 +614,71 @@ const adminGetAllSkilledBillDetail = async(req, res)=>{
         res.status(404).json({error: error.message})
     }  
 }
+
+const adminUpdateExperience = async(req, res) =>{
+    const {id} = req.params 
+
+    //check if id is not existing
+    if(!mongoose.Types.ObjectId.isValid(id)){
+        return res.status(404).json({error: 'Invalid id'})
+    }
+
+     //delete query
+     const experience = await Experience.findOneAndUpdate({_id: id},{
+         ...req.body //get new value
+     })
+    
+     //check if not existing
+     if (!experience){
+        return res.status(404).json({error: 'Skill Experience not found'})
+    }
+
+    res.status(200).json(experience)
+}
+
+//UPDATE skill cert
+const adminUpdateCertificate = async(req, res) =>{
+    const {id} = req.params   
+
+    //check if id is not existing
+    if(!mongoose.Types.ObjectId.isValid(id)){
+        return res.status(404).json({error: 'Invalid id'})
+    }
+
+     //delete query
+     const certificate = await Certificate.findOneAndUpdate({_id: id},{
+         ...req.body //get new value
+     })
+    
+     //check if not existing
+     if (!certificate){
+        return res.status(404).json({error: 'Skill Certificate not found'})
+    }
+
+    res.status(200).json(certificate)
+}
+
+const adminEditSkilledBill = async(req, res) =>{
+    const {id} = req.params  
+
+    //check if id is not existing
+    if(!mongoose.Types.ObjectId.isValid(id)){
+        return res.status(404).json({error: 'Invalid id'})
+    }
+
+     //delete query
+     const skilledBill = await SkilledBill.findOneAndUpdate({_id: id},{
+         ...req.body //get new value
+     })
+    
+     //check if not existing
+     if (!skilledBill){
+        return res.status(404).json({error: 'Bill not found'})
+    }
+
+    res.status(200).json(skilledBill)
+}
+
 //update or edit address
 const adminEditSkilledAddress = async(req,res) =>{
     // const arrayId = req.params.arrayId;
@@ -702,6 +771,9 @@ module.exports = {
     adminGetAllSkilledExpDetail,
     adminGetAllSkilledCertDetail,
     adminGetAllSkilledBillDetail,
+    adminUpdateExperience,
+    adminUpdateCertificate,
+    adminEditSkilledBill,
     adminUpdateSkilledBill,
     adminUpdateSkilledAccount,
     adminUpdateSkilledAccountNot,

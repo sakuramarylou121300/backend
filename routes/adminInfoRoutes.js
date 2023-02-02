@@ -27,6 +27,9 @@ const{
     adminGetAllSkilledExpDetail,
     adminGetAllSkilledCertDetail,
     adminGetAllSkilledBillDetail,
+    adminUpdateExperience,
+    adminUpdateCertificate,
+    adminEditSkilledBill,
     adminUpdateSkilledBill,
     adminUpdateSkilledAccount,
     adminUpdateSkilledAccountNot, 
@@ -49,19 +52,16 @@ const{
 
 const{
     getOneExperience,
-    updateExperience,
     deleteExperience
 } = require('../controllers/experienceController')
 
 const{
     getOneCertificate,
-    updateCertificate,
     deleteCertificate
 } = require('../controllers/skillCertController')
 
 const{
     getOneSkilledBill,
-    updateSkilledBill,
     deleteSkilledBill
 } = require('../controllers/skilledBillController')
 
@@ -75,13 +75,13 @@ const router = express.Router()
 router.post('/login', adminLogIn)
 
 //ONLY SUPER ADMIN CAN ACCESS
-router.post('/signup', adminAuth, adminSignUp)
-router.get('/getAll/admin', adminAuth, adminGetAllAdmin)
+router.post('/signup', adminAuth, adminControlAdmin, adminSignUp)
+router.get('/getAll/admin', adminAuth, adminControlAdmin, adminGetAllAdmin)
 router.get('/getOne/admin/:id', adminAuth, adminControlAdmin, adminGetOneAdmin)
 router.patch('/update/adminUserName/:id', adminAuth, adminControlAdmin, adminUpdateUserName)
 router.patch('/update/adminPass/:id', adminAuth, adminControlAdmin, adminUpdatePass)
 router.patch('/update/adminInfo/:id', adminAuth, adminControlAdmin, adminUpdateInfo)
-router.patch('/delete/adminInfo/:id', adminAuth, adminDeleteInfo)
+router.patch('/delete/adminInfo/:id', adminAuth, adminControlAdmin, adminDeleteInfo)
 
 
 router.post('/post/adminRoleCap', adminAuth, adminControlAdmin, createAdminRoleCapability)
@@ -108,7 +108,7 @@ router.delete('/delete/Skilled/:id', adminAuth, adminControlSkilled, adminDelete
 router.get('/getAll/skilledBill', adminAuth, adminControlSkilled, adminGetAllSkilledBill)
 router.get('/getAll/skilledBill/detail', adminAuth, adminControlSkilled, adminGetAllSkilledBillDetail)
 router.get('/getOne/skilledBill/:id', adminAuth, adminControlSkilled, getOneSkilledBill)
-router.patch('/update/skilledBill/:id', adminAuth, adminControlSkilled, updateSkilledBill)
+router.patch('/update/skilledBill/:id', adminAuth, adminControlSkilled, adminEditSkilledBill)
 router.delete('/delete/skilledBill/:id', adminAuth, adminControlSkilled, deleteSkilledBill)
 
 router.put('/update/skilled/billing', adminAuth, adminControlAdmin, adminUpdateSkilledBill)
@@ -127,14 +127,14 @@ router.delete('/delete/skill/:id', adminAuth, adminControlSkilled, deleteSkill)
 router.get('/getAll/SkilledExp', adminAuth, adminControlSkilled, adminGetAllExperience)
 router.get('/getAll/SkilledExp/detail', adminAuth, adminControlSkilled, adminGetAllSkilledExpDetail)
 router.get('/getOne/SkilledExp/:id', adminAuth, adminControlSkilled, getOneExperience)
-router.patch('/update/SkilledExp/:id', adminAuth, adminControlSkilled, updateExperience)
+router.patch('/update/SkilledExp/:id', adminAuth, adminControlSkilled, adminUpdateExperience)
 router.delete('/delete/SkilledExp/:id', adminAuth, adminControlSkilled, deleteExperience)
 
 //SKILLED CERT
 router.get('/getAll/Cert', adminAuth, adminControlSkilled, adminGetAllCertificate)
 router.get('/getAll/Cert/detail', adminAuth, adminControlSkilled, adminGetAllSkilledCertDetail)
 router.get('/getOne/Cert/:id', adminAuth, adminControlSkilled, getOneCertificate)
-router.patch('/update/Cert/:id', adminAuth, adminControlSkilled, updateCertificate)
+router.patch('/update/Cert/:id', adminAuth, adminControlSkilled, adminUpdateCertificate)
 router.delete('/delete/Cert/:id', adminAuth, adminControlSkilled, deleteCertificate)
 
 module.exports = router
