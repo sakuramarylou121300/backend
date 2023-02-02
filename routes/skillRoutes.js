@@ -15,7 +15,7 @@ router.post('/post/', requireAuth, createSkill)
 router.get('/getAll/', requireAuth ,getAllSkill)
 router.get('/getOne/:id', requireAuth, getOneSkill)
 router.patch('/update/:id', requireAuth, updateSkill)
-router.delete('/delete/:id', requireAuth, deleteSkill)
+router.patch('/delete/:id', requireAuth, deleteSkill)
 
 //export
 module.exports = router

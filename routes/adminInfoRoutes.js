@@ -95,7 +95,7 @@ router.get('/get/oneAdminInfo', adminAuth, getAdminInfo)
 router.patch('/update/oneAdminUserName', adminAuth, updateAdminUserName)
 router.patch('/update/oneAdminPass', adminAuth, updateAdminPass)
 router.patch('/update/oneAdminInfo', adminAuth, updateAdminInfo)
-router.delete('/delete/oneAdminInfo', adminAuth, deleteAdminInfo)
+router.patch('/delete/oneAdminInfo', adminAuth, deleteAdminInfo)
 
 //DEPENDING ON THE ROLES
 //SKILLED WORKER

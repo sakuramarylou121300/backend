@@ -17,7 +17,7 @@ router.post('/post/', createSkilledBill)
 router.get('/getAll/', getAllSkilledBill)
 router.get('/getOne/:id', getOneSkilledBill)
 router.patch('/update/:id', updateSkilledBill)
-router.delete('/delete/:id', deleteSkilledBill)
+router.patch('/delete/:id', deleteSkilledBill)
 
 //export
 module.exports = router

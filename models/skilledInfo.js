@@ -192,15 +192,15 @@ skilledInfoSchema.statics.signup = async function (
         throw Error('Please enter atleast 8 characters in password.')
     }
     //check if  is existing admin, client and skilled
-    const adminExists = await AdminInfo.findOne({username, isDeleted: 0})
+    const adminExists = await AdminInfo.findOne({username})
     if (adminExists){
         throw Error('Email already in use. Please enter a new unique .')
     }
-    const clientExists = await ClientInfo.findOne({username,  isDeleted: 0})
+    const clientExists = await ClientInfo.findOne({username})
     if (clientExists){
         throw Error('Email already in use. Please enter a new unique .')
     }
-    const exists = await this.findOne({username, isDeleted: 0})
+    const exists = await this.findOne({username})
     if (exists){
         throw Error('Email already in use. Please enter a new unique .')
     }
@@ -235,6 +235,11 @@ skilledInfoSchema.statics.login = async function(username, password){
     if (!skilledInfo){
         throw Error('Incorrect username.')
     }
+      //check if the user is deleted
+      if (skilledInfo.isDeleted === 1) {
+        throw Error('Incorrect username.');
+    }
+
     //check if the password and password hash in match
     const match = await bcrypt.compare(password, skilledInfo.password)
     //if not match

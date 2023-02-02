@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require('mongoose'); 
 const AdminInfo = require('../models/adminInfo')
 
 const adminControlAdmin = async(req, res, next) =>{

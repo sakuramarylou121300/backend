@@ -1,4 +1,4 @@
-const mongoose = require('mongoose')  
+const mongoose = require('mongoose') 
 const bcrypt = require('bcrypt') 
 const validator = require('validator')
 
@@ -116,7 +116,7 @@ adminInfoSchema.statics.login = async function(username, password){
     }
      //check if the user is deleted
      if (adminInfo.isDeleted === 1) {
-        throw Error('This user account has been deleted.');
+        throw Error('Incorrect username.');
     }
     //check if the password and password hash in match
     const match = await bcrypt.compare(password, adminInfo.password)

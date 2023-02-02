@@ -1,4 +1,4 @@
-const Experience = require('../models/experience')
+const Experience = require('../models/experience') 
 const Info = require('../models/skilledInfo')
 const mongoose = require('mongoose')
 
@@ -53,6 +53,25 @@ const createExperience = async(req, res)=>{
     try{
         //this is to assign the job to a specific client user, get id from clientInfo
         const skilled_id = req.skilledInfo._id
+
+        const expCheck = await Experience.findOne({
+            categorySkill:categorySkill,
+            title:title,
+            desc:desc,
+            photo:photo,
+            refLname:refLname, 
+            refFname:refFname,
+            refMname:refMname,
+            refPosition:refPosition,
+            refOrg:refOrg,
+            refContactNo:refContactNo,
+            skilled_id:skilled_id,
+            isDeleted: 0
+        })
+        
+        if(expCheck){
+            return res.status(400).json({error: "Work experience already exists in this user."})
+        }
         
         //create query
         const experience = await Experience.create({
@@ -82,7 +101,7 @@ const getAllExperience = async(req, res)=>{
         //this is to find skill for specific user
         const skilled_id = req.skilledInfo._id
         //get all query
-        const experience = await Experience.find({skilled_id}).sort({createdAt: -1})
+        const experience = await Experience.find({skilled_id, isDeleted: 0}).sort({createdAt: -1})
         .populate('skilled_id')
         res.status(200).json(experience)
     }
@@ -139,13 +158,41 @@ const editRefName = async(req,res) =>{
 }
 //UPDATE skill exp
 const updateExperience = async(req, res) =>{
-    const {id} = req.params    
+    const {id} = req.params 
+    const {categorySkill,
+        title,
+        desc,
+        photo,
+        refLname, 
+        refFname,
+        refMname,
+        refPosition,
+        refOrg,
+        refContactNo} = req.body   
+        const skilled_id = req.skilledInfo._id
 
     //check if id is not existing
     if(!mongoose.Types.ObjectId.isValid(id)){
         return res.status(404).json({error: 'Invalid id'})
     }
-
+    const expCheck = await Experience.findOne({
+        categorySkill:categorySkill,
+        title:title,
+        desc:desc,
+        photo:photo,
+        refLname:refLname, 
+        refFname:refFname,
+        refMname:refMname,
+        refPosition:refPosition,
+        refOrg:refOrg,
+        refContactNo:refContactNo,
+        skilled_id:skilled_id,
+        isDeleted: 0
+    })
+    
+    if(expCheck){
+        return res.status(400).json({error: "Work experience already exists in this user."})
+    }
      //delete query
      const experience = await Experience.findOneAndUpdate({_id: id},{
          ...req.body //get new value
@@ -169,7 +216,8 @@ const deleteExperience = async(req, res)=>{
     }
 
     //delete query
-    const experience = await Experience.findOneAndDelete({_id: id})
+    const experience = await Experience.findOneAndUpdate({_id: id},
+        {isDeleted:1})
     
     //check if not existing
     if (!experience){

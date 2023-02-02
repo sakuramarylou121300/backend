@@ -13,7 +13,10 @@ const skillSchema = new Schema({
         required: true,
         ref: 'SkilledInfo'
     },
-
+    isDeleted:{
+        type: Number,
+        default: 0,
+    },
 },{timestamps: true})
 
 module.exports = mongoose.model('Skill',skillSchema)

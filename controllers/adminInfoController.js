@@ -380,7 +380,8 @@ const deleteAdminInfo = async(req, res) =>{
         if(adminInfo.isMainAdmin === 1){
             return res.status(400).json({error: "Cannot delete main admin account"})
         }
-        await adminInfo.remove()
+        adminInfo.isDeleted = 1;
+        await adminInfo.save()
         res.status(200).json({ message: "Admin account deleted successfully"})
     }
     catch(error){
@@ -394,12 +395,24 @@ const adminGetAllSkilled = async(req, res)=>{
 
     try{
         //get all query
-        const skilledInfo = await SkilledInfo.find({}).sort({createdAt: -1})
+        const skilledInfo = await SkilledInfo.find({isDeleted: 0}).sort({createdAt: -1})
         .select("-password")
-        .populate('skills')
-        .populate('experience')
-        .populate('skillCert')
-        .populate('skilledBill')
+        .populate({
+            path: 'skills',
+            match: { isDeleted: 0} 
+        })
+        .populate({
+            path: 'experience',
+            match: { isDeleted: 0} 
+        })
+        .populate({
+            path: 'skillCert',
+            match: { isDeleted: 0} 
+        })
+        .populate({
+            path: 'skilledBill',
+            match: { isDeleted: 0} 
+        })
         res.status(200).json(skilledInfo)
     }
     catch(error){
@@ -460,7 +473,8 @@ const adminDeleteSkilled = async(req, res)=>{
     }
 
     //delete query
-    const skilledInfo = await SkilledInfo.findOneAndDelete({_id: id})
+    const skilledInfo = await SkilledInfo.findOneAndUpdate({_id: id},
+        {isDeleted: 1})
     
     //check if not existing
     if (!skilledInfo){
@@ -476,7 +490,7 @@ const adminGetAllExperience = async(req, res)=>{
 
     try{
         //get all query
-        const experience = await Experience.find({}).sort({createdAt: -1})
+        const experience = await Experience.find({isDeleted: 0}).sort({createdAt: -1})
         .populate('skilled_id')
         res.status(200).json(experience)
     }
@@ -490,7 +504,7 @@ const adminGetAllCertificate = async(req, res)=>{
 
     try{
         //get all query
-        const certificate = await Certificate.find({}).sort({createdAt: -1}).populate('skilled_id')
+        const certificate = await Certificate.find({isDeleted: 0}).sort({createdAt: -1}).populate('skilled_id')
         res.status(200).json(certificate)
     }
     catch(error){
@@ -504,7 +518,7 @@ const adminGetAllSkill = async(req, res)=>{
     try{
         //this is to find skill for specific user
         //get all query
-        const skill = await Skill.find({}).sort({createdAt: -1}).populate('skilled_id')
+        const skill = await Skill.find({isDeleted: 0}).sort({createdAt: -1}).populate('skilled_id')
         res.status(200).json(skill)
     }
     catch(error){
@@ -516,7 +530,7 @@ const adminGetAllSkilledBill = async(req, res)=>{
 
     try{
         //get all query
-        const skilledBill = await SkilledBill.find({}).sort({createdAt: -1})
+        const skilledBill = await SkilledBill.find({isDeleted: 0}).sort({createdAt: -1})
         .populate('skilled_id')
         res.status(200).json(skilledBill)
     }
@@ -530,12 +544,24 @@ const adminGetAllSkilledDetail = async(req, res)=>{
 
     try{
         //get all query
-        const skilledInfo = await SkilledInfo.find({idIsVerified: 0}).sort({updatedAt: 1})
+        const skilledInfo = await SkilledInfo.find({idIsVerified: 0, isDeleted: 0}).sort({updatedAt: 1})
         .select("-password")
-        .populate('skills')
-        .populate('experience')
-        .populate('skillCert')
-        .populate('skilledBill')
+        .populate({
+            path: 'skills',
+            match: { isDeleted: 0} 
+        })
+        .populate({
+            path: 'experience',
+            match: { isDeleted: 0} 
+        })
+        .populate({
+            path: 'skillCert',
+            match: { isDeleted: 0} 
+        })
+        .populate({
+            path: 'skilledBill',
+            match: { isDeleted: 0} 
+        })
         res.status(200).json(skilledInfo)
     }
     catch(error){
@@ -548,7 +574,7 @@ const adminGetAllSkilledExpDetail = async(req, res)=>{
 
     try{
         //get all query
-        const skilledExp = await Experience.find({expIsVerified: 0}).sort({updatedAt: 1})
+        const skilledExp = await Experience.find({expIsVerified: 0, isDeleted: 0}).sort({updatedAt: 1})
         .populate('skilled_id')
         res.status(200).json(skilledExp)
     }
@@ -562,7 +588,7 @@ const adminGetAllSkilledCertDetail = async(req, res)=>{
 
     try{
         //get all query
-        const certificate = await Certificate.find({skillIsVerified: 0}).sort({updatedAt: 1})
+        const certificate = await Certificate.find({skillIsVerified: 0, isDeleted: 0}).sort({updatedAt: 1})
         .populate('skilled_id')
         res.status(200).json(certificate)
     }
@@ -576,7 +602,7 @@ const adminGetAllSkilledBillDetail = async(req, res)=>{
 
     try{
         //get all query
-        const skilledBill = await SkilledBill.find({billIsVerified: 0}).sort({updatedAt: 1})
+        const skilledBill = await SkilledBill.find({billIsVerified: 0, isDeleted: 0}).sort({updatedAt: 1})
         .populate('skilled_id')
         res.status(200).json(skilledBill)
     }

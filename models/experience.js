@@ -51,6 +51,10 @@ const experienceSchema = new Schema({
         required: true,
         ref: 'SkilledInfo'
     },
+    isDeleted:{
+        type: Number,
+        default: 0
+    },
 
 },{timestamps: true})
 

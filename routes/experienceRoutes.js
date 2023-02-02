@@ -30,7 +30,7 @@ router.patch('/update/:id', updateExperience)
 router.put('/edit/refName/:id', editRefName)
 
 //delete skill cert
-router.delete('/delete/:id', deleteExperience)
+router.patch('/delete/:id', deleteExperience)
 
 //export
 module.exports = router

@@ -1,4 +1,4 @@
-const SkilledInfo = require('../models/skilledInfo') 
+const SkilledInfo = require('../models/skilledInfo')    
 const SkilledBill = require('../models/skilledBill')
 const jwt = require('jsonwebtoken') 
 const bcrypt = require('bcrypt')
@@ -73,10 +73,22 @@ const getSkilledInfo = async(req, res) =>{
     try{
         const skilledInfo = await SkilledInfo.findById(req.skilledInfo._id)
         .select("-password")
-        .populate('skills')
-        .populate('experience')
-        .populate('skillCert')
-        .populate('skilledBill')
+        .populate({
+            path: 'skills',
+            match: { isDeleted: 0} 
+        })
+        .populate({
+            path: 'experience',
+            match: { isDeleted: 0} 
+        })
+        .populate({
+            path: 'skillCert',
+            match: { isDeleted: 0} 
+        })
+        .populate({
+            path: 'skilledBill',
+            match: { isDeleted: 0} 
+        })
 
         res.status(200).json(skilledInfo)
     }
@@ -260,7 +272,8 @@ const editBill = async(req,res) =>{
 const deleteSkilledInfo = async(req, res) =>{
 
     try{
-        const skilledInfo = await SkilledInfo.findByIdAndDelete(req.skilledInfo._id)
+        const skilledInfo = await SkilledInfo.findOneAndUpdate({_id: req.skilledInfo._id},
+            {isDeleted:1})
         res.status(200).json(skilledInfo)
     }
     catch(error){

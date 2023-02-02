@@ -40,7 +40,21 @@ const createCertificate = async(req, res)=>{
     try{
         //this is to assign the job to a specific client user, get id from clientInfo
         const skilled_id = req.skilledInfo._id
+
+        const certCheck = await Certificate.findOne({
+            categorySkill:categorySkill,
+            title:title,
+            issuedOn:issuedOn,
+            validUntil:validUntil,
+            desc:desc,
+            photo:photo,
+            skilled_id:skilled_id,
+            isDeleted: 0
+        })
         
+        if(certCheck){
+            return res.status(400).json({error: "Skill certificate already exists in this user."})
+        }
         //create query
         const certificate = await Certificate.create({
             categorySkill,
@@ -65,7 +79,7 @@ const getAllCertificate = async(req, res)=>{
         //this is to find skill for specific user
         const skilled_id = req.skilledInfo._id
         //get all query
-        const certificate = await Certificate.find({skilled_id}).sort({createdAt: -1}).populate('skilled_id')
+        const certificate = await Certificate.find({skilled_id,  isDeleted: 0}).sort({createdAt: -1}).populate('skilled_id')
         res.status(200).json(certificate)
     }
     catch(error){
@@ -96,11 +110,33 @@ const getOneCertificate = async(req, res)=>{
 
 //UPDATE skill cert
 const updateCertificate = async(req, res) =>{
-    const {id} = req.params    
+    const {id} = req.params   
+    const {categorySkill,
+        title,
+        issuedOn,
+        validUntil,
+        desc,
+        photo} = req.body 
+        const skilled_id = req.skilledInfo._id
 
     //check if id is not existing
     if(!mongoose.Types.ObjectId.isValid(id)){
         return res.status(404).json({error: 'Invalid id'})
+    }
+
+    const certCheck = await Certificate.findOne({
+        categorySkill:categorySkill,
+        title:title,
+        issuedOn:issuedOn,
+        validUntil:validUntil,
+        desc:desc,
+        photo:photo,
+        skilled_id:skilled_id,
+        isDeleted: 0
+    })
+    
+    if(certCheck){
+        return res.status(400).json({error: "Skill certificate already exists in this user."})
     }
 
      //delete query
@@ -126,7 +162,8 @@ const deleteCertificate = async(req, res)=>{
     }
 
     //delete query
-    const certificate = await Certificate.findOneAndDelete({_id: id})
+    const certificate = await Certificate.findOneAndUpdate({_id: id},
+        {isDeleted:1})
     
     //check if not existing
     if (!certificate){
