@@ -48,10 +48,11 @@ const skilledInfoSchema = new Schema({
         required: true
     },
     mname:{
-        type: String
+        type: String,
+        default: ''
     }, 
     contact:{
-        type:String,
+        type: Number,
         required: true
     },
     address:{
@@ -69,7 +70,8 @@ const skilledInfoSchema = new Schema({
         },
         city:{
             type:String,
-            default: "San Fernando"},
+            default: "San Fernando"
+        },
         prov:{
             type:String,
             default: "Pampanga"
@@ -211,6 +213,7 @@ skilledInfoSchema.statics.signup = async function (
 
     const skilledInfoWithSameDetails = await this.findOne({
     fname: fname,
+    mname: mname,
     lname: lname,
     contact: contact,
     "address.houseNo": address.houseNo,

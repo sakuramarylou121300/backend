@@ -23,10 +23,11 @@ const adminInfoSchema = new Schema({
         required: true
     },
     mname:{
-        type: String
+        type: String,
+        default: ''
     }, 
     contact:{
-        type:String,
+        type: Number,
         required: true
     },
     isMainAdmin:{
@@ -87,7 +88,8 @@ adminInfoSchema.statics.signup = async function (
     }
 
     const adminInfoWithSameDetails = await this.findOne({
-        fname: fname,
+        fname: mname,
+        mname: lname,
         lname: lname,
         contact: contact,
         isDeleted:0
