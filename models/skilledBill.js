@@ -22,6 +22,10 @@ const billSchema = new Schema({
         type: String,
         default:''
     },
+    // billMessage:{
+    //     type: String,
+    //     default: ''
+    // }, 
     skilled_id:{
         type: String,
         required: true,

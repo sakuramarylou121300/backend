@@ -30,6 +30,10 @@ const skillCertSchema = new Schema({
         type: Number,
         default: 0
     },
+    // certMessage:{
+    //     type: String,
+    //     default: ''
+    // }, 
     skilled_id:{
         type: String,
         required: true,

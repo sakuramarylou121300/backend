@@ -659,7 +659,7 @@ const adminUpdateCertificate = async(req, res) =>{
 }
 
 const adminEditSkilledBill = async(req, res) =>{
-    const {id} = req.params  
+    const {id} = req.params   
 
     //check if id is not existing
     if(!mongoose.Types.ObjectId.isValid(id)){
@@ -679,6 +679,8 @@ const adminEditSkilledBill = async(req, res) =>{
     res.status(200).json(skilledBill)
 }
 
+
+//THIS IS NOT OFFICIAL
 //update or edit address
 const adminEditSkilledAddress = async(req,res) =>{
     // const arrayId = req.params.arrayId;

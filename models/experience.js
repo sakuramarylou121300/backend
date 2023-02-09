@@ -1,4 +1,4 @@
-const mongoose = require('mongoose')
+const mongoose = require('mongoose') 
 
 const Schema = mongoose.Schema
 
@@ -46,6 +46,10 @@ const experienceSchema = new Schema({
         type: Number,
         default: 0
     },
+    // expMessage:{
+    //     type: String,
+    //     default: ''
+    // }, 
     skilled_id:{
         type: mongoose.Schema.Types.ObjectId,
         required: true,

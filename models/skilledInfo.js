@@ -104,6 +104,10 @@ const skilledInfoSchema = new Schema({
         type: Number,
         default: 0
     },
+    // skilledMessage:{
+    //     type: String,
+    //     default: ''
+    // }, 
     isDeleted:{
         type: Number,
         default: 0
@@ -203,6 +207,22 @@ skilledInfoSchema.statics.signup = async function (
     const exists = await this.findOne({username})
     if (exists){
         throw Error('Email already in use. Please enter a new unique .')
+    }
+
+    const skilledInfoWithSameDetails = await this.findOne({
+    fname: fname,
+    lname: lname,
+    contact: contact,
+    "address.houseNo": address.houseNo,
+    "address.street": address.street,
+    "address.barangay": address.barangay,
+    "address.city": address.city,
+    "address.prov": address.prov,
+    isDeleted:0
+    });
+
+    if (skilledInfoWithSameDetails) {
+    throw Error("User already exist.");
     }
 
     //salt for additional security of the system

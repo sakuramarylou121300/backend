@@ -86,6 +86,17 @@ adminInfoSchema.statics.signup = async function (
     throw Error('Email already in use. Please enter a new unique .')
     }
 
+    const adminInfoWithSameDetails = await this.findOne({
+        fname: fname,
+        lname: lname,
+        contact: contact,
+        isDeleted:0
+    });
+    
+    if (adminInfoWithSameDetails) {
+    throw Error("User already exist.");
+    }
+
     //salt for additional security of the system
     const salt = await bcrypt.genSalt(10)
     const hash = await bcrypt.hash(password, salt)

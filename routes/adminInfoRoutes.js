@@ -103,7 +103,7 @@ router.get('/getAll/Skilled', adminAuth, adminControlSkilled, adminGetAllSkilled
 router.get('/getAll/Skilled/detail', adminAuth, adminControlSkilled, adminGetAllSkilledDetail)
 router.get('/getOne/Skilled/:id', adminAuth, adminControlSkilled, adminGetOneSkilled)
 router.patch('/update/Skilled/:id', adminAuth, adminControlSkilled, adminUpdateSkilled)
-router.delete('/delete/Skilled/:id', adminAuth, adminControlSkilled, adminDeleteSkilled)
+router.patch('/delete/Skilled/:id', adminAuth, adminControlSkilled, adminDeleteSkilled)
 
 router.get('/getAll/skilledBill', adminAuth, adminControlSkilled, adminGetAllSkilledBill)
 router.get('/getAll/skilledBill/detail', adminAuth, adminControlSkilled, adminGetAllSkilledBillDetail)
