@@ -69,11 +69,11 @@ const skilledInfoSchema = new Schema({
     },
     city:{
         type:String,
-        default: "San Fernando"
+        required: true
     },
     prov:{
         type:String,
-        default: "Pampanga"
+        required: true
     },
     addIsVerified:{
         type: Number,
