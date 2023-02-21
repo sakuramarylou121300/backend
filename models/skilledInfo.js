@@ -55,32 +55,56 @@ const skilledInfoSchema = new Schema({
         type: Number,
         required: true
     },
-    address:{
-        houseNo:{
-            type:Number,
-            default:0
-        },
-        street:{
-            type:String,
-            required: true
-        },
-        barangay:{
-            type:String,
-            required: true
-        },
-        city:{
-            type:String,
-            default: "San Fernando"
-        },
-        prov:{
-            type:String,
-            default: "Pampanga"
-        },
-        addIsVerified:{
-            type: Number,
-            default: 0
-        }
-    }, 
+    houseNo:{
+        type:Number,
+        required: true
+    },
+    street:{
+        type:String,
+        required: true
+    },
+    barangay:{
+        type:String,
+        required: true
+    },
+    city:{
+        type:String,
+        default: "San Fernando"
+    },
+    prov:{
+        type:String,
+        default: "Pampanga"
+    },
+    addIsVerified:{
+        type: Number,
+        default: 0
+    },
+    // address:{ 
+    //     houseNo:{
+    //         type:Number,
+    //         default:0
+    //     },
+    //     street:{
+    //         type:String,
+    //         required: true
+    //     },
+    //     barangay:{
+    //         type:String,
+    //         required: true
+    //     },
+    //     city:{
+    //         type:String,
+    //         default: "San Fernando"
+    //     },
+    //     prov:{
+    //         type:String,
+    //         default: "Pampanga"
+    //     },
+    //     addIsVerified:{
+    //         type: Number,
+    //         default: 0
+    //     }
+    // }, 
     bill:{
         billPhoto:{
             type:String},
@@ -178,14 +202,18 @@ skilledInfoSchema.statics.signup = async function (
     fname,
     mname,
     contact,
-    address,
+    houseNo,
+    street,
+    barangay,
+    city,
+    prov,
     brgyClearance,
     nbiClearance
 ){
     // await userExists(username);
     //validation
     if (!username || !password || !lname || !fname || !contact || 
-        !address){
+        !houseNo || !street || !barangay || !city || !prov){
         throw Error('Please fill in all the blank fields.')
     }
 
@@ -216,11 +244,11 @@ skilledInfoSchema.statics.signup = async function (
     mname: mname,
     lname: lname,
     contact: contact,
-    "address.houseNo": address.houseNo,
-    "address.street": address.street,
-    "address.barangay": address.barangay,
-    "address.city": address.city,
-    "address.prov": address.prov,
+    houseNo: houseNo,
+    street: street,
+    barangay: barangay,
+    city: city,
+    prov: prov,
     isDeleted:0
     });
 
@@ -239,7 +267,11 @@ skilledInfoSchema.statics.signup = async function (
         fname,
         mname,
         contact,
-        address,
+        houseNo,
+        street,
+        barangay,
+        city,
+        prov,
         brgyClearance,
         nbiClearance
     })

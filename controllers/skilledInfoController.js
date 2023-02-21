@@ -39,7 +39,11 @@ const skilledSignUp = async(req, res) =>{
         fname,
         mname,
         contact,
-        address,
+        houseNo,
+        street,
+        barangay,
+        city,
+        prov,
         brgyClearance,
         nbiClearance
         } = req.body
@@ -53,7 +57,11 @@ const skilledSignUp = async(req, res) =>{
             fname,
             mname,
             contact,
-            address,
+            houseNo,
+            street,
+            barangay,
+            city,
+            prov,
             brgyClearance,
             nbiClearance
             )
@@ -196,11 +204,17 @@ const updateSkilledInfo = async(req, res) =>{
                 fname,
                 mname,
                 contact,
+                houseNo,
+                street,
+                barangay,
+                city,
+                prov,
                 brgyClearance,
                 nbiClearance} = req.body
 
         //validation
-        if (!lname || !fname || !mname || !contact ){
+        if (!lname || !fname || !mname || !contact ||  
+            !houseNo || !street || !barangay || !city || !prov){
             throw Error('Please fill in all the blank fields.')
         }
 
@@ -211,12 +225,17 @@ const updateSkilledInfo = async(req, res) =>{
             fname,
             mname,
             contact,
+            houseNo,
+            street,
+            barangay,
+            city,
+            prov,
             brgyClearance,
             nbiClearance
         })
 
         //success
-        res.status(200).json({messg: 'Successfully updated'})
+        res.status(200).json(skilledInfo)
     }
     catch(error){
 
