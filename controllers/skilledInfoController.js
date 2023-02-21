@@ -233,6 +233,7 @@ const updateSkilledInfo = async(req, res) =>{
             barangay,
             city,
             prov,
+            region,
             brgyClearance,
             nbiClearance
         })
