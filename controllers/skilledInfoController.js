@@ -208,16 +208,17 @@ const updateSkilledInfo = async(req, res) =>{
                 contact,
                 houseNo,
                 street,
-                barangay,
-                city,
-                prov,
-                region,
+                barangayAddr,
+                cityAddr,
+                provinceAddr,
+                regionAddr,
                 brgyClearance,
                 nbiClearance} = req.body
 
         //validation
         if (!lname || !fname || !contact ||  
-            !houseNo || !street || !barangay || !city || !prov || !region){
+            !houseNo || !street || !barangayAddr || !cityAddr ||
+            !provinceAddr || !regionAddr){
             throw Error('Please fill in all the blank fields.')
         }
 
@@ -230,10 +231,10 @@ const updateSkilledInfo = async(req, res) =>{
             contact,
             houseNo,
             street,
-            barangay,
-            city,
-            prov,
-            region,
+            barangayAddr,
+            cityAddr,
+            provinceAddr,
+            regionAddr,
             brgyClearance,
             nbiClearance
         })
