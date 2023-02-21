@@ -44,6 +44,7 @@ const skilledSignUp = async(req, res) =>{
         barangay,
         city,
         prov,
+        region,
         brgyClearance,
         nbiClearance
         } = req.body
@@ -62,6 +63,7 @@ const skilledSignUp = async(req, res) =>{
             barangay,
             city,
             prov,
+            region,
             brgyClearance,
             nbiClearance
             )

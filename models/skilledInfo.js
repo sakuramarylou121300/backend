@@ -75,36 +75,14 @@ const skilledInfoSchema = new Schema({
         type:String,
         required: true
     },
+    region:{
+        type:String,
+        required: true
+    },
     addIsVerified:{
         type: Number,
         default: 0
     },
-    // address:{ 
-    //     houseNo:{
-    //         type:Number,
-    //         default:0
-    //     },
-    //     street:{
-    //         type:String,
-    //         required: true
-    //     },
-    //     barangay:{
-    //         type:String,
-    //         required: true
-    //     },
-    //     city:{
-    //         type:String,
-    //         default: "San Fernando"
-    //     },
-    //     prov:{
-    //         type:String,
-    //         default: "Pampanga"
-    //     },
-    //     addIsVerified:{
-    //         type: Number,
-    //         default: 0
-    //     }
-    // }, 
     bill:{
         billPhoto:{
             type:String},
@@ -207,13 +185,14 @@ skilledInfoSchema.statics.signup = async function (
     barangay,
     city,
     prov,
+    region,
     brgyClearance,
     nbiClearance
 ){
     // await userExists(username);
     //validation
     if (!username || !password || !lname || !fname || !contact || 
-        !houseNo || !street || !barangay || !city || !prov){
+        !houseNo || !street || !barangay || !city || !prov || !region){
         throw Error('Please fill in all the blank fields.')
     }
 
@@ -240,16 +219,17 @@ skilledInfoSchema.statics.signup = async function (
     }
 
     const skilledInfoWithSameDetails = await this.findOne({
-    fname: fname,
-    mname: mname,
-    lname: lname,
-    contact: contact,
-    houseNo: houseNo,
-    street: street,
-    barangay: barangay,
-    city: city,
-    prov: prov,
-    isDeleted:0
+        fname: fname,
+        mname: mname,
+        lname: lname,
+        contact: contact,
+        houseNo: houseNo,
+        street: street,
+        barangay: barangay,
+        city: city,
+        prov: prov,
+        region: region,
+        isDeleted:0
     });
 
     if (skilledInfoWithSameDetails) {
@@ -272,6 +252,7 @@ skilledInfoSchema.statics.signup = async function (
         barangay,
         city,
         prov,
+        region,
         brgyClearance,
         nbiClearance
     })
