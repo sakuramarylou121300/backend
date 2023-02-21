@@ -211,12 +211,13 @@ const updateSkilledInfo = async(req, res) =>{
                 barangay,
                 city,
                 prov,
+                region,
                 brgyClearance,
                 nbiClearance} = req.body
 
         //validation
-        if (!lname || !fname || !mname || !contact ||  
-            !houseNo || !street || !barangay || !city || !prov){
+        if (!lname || !fname || !contact ||  
+            !houseNo || !street || !barangay || !city || !prov || !region){
             throw Error('Please fill in all the blank fields.')
         }
 
