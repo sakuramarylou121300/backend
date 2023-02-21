@@ -41,10 +41,10 @@ const skilledSignUp = async(req, res) =>{
         contact,
         houseNo,
         street,
-        barangay,
-        city,
-        prov,
-        region,
+        barangayAddr,
+        cityAddr,
+        provinceAddr,
+        regionAddr,
         brgyClearance,
         nbiClearance
         } = req.body
@@ -60,10 +60,10 @@ const skilledSignUp = async(req, res) =>{
             contact,
             houseNo,
             street,
-            barangay,
-            city,
-            prov,
-            region,
+            barangayAddr,
+            cityAddr,
+            provinceAddr,
+            regionAddr,
             brgyClearance,
             nbiClearance
             )
@@ -251,7 +251,7 @@ const updateSkilledInfo = async(req, res) =>{
 //update or edit address
 const editAddress = async(req,res) =>{
     // const arrayId = req.params.arrayId;
-    const {houseNo, street, barangay, city, prov} = req.body
+    const {houseNo, street, barangayAddr, cityAddr, provinceAddr} = req.body
     
     try{
         const skilledInfo = await SkilledInfo.findByIdAndUpdate(
@@ -260,9 +260,9 @@ const editAddress = async(req,res) =>{
         $set:{
             "address.houseNo":houseNo,
             "address.street":street,
-            "address.barangay":barangay,
-            "address.city":city,
-            "address.prov":prov
+            "address.barangayAddr":barangayAddr,
+            "address.cityAddr":cityAddr,
+            "address.provinceAddr":provinceAddr
         }
     })
     res.status(200).json(skilledInfo)
@@ -342,7 +342,7 @@ const skilledUpdateNotVerifiedUsers = async (req, res) => {
                 !skilledInfo.skilledBill.some(bill => bill.billIsVerified === 1))) {
                 // Update the userIsVerified field to 0
                 const updatedSkilledInfo = await SkilledInfo.findByIdAndUpdate(req.skilledInfo._id, { $set: { userIsVerified: 0 } }, { new: true });
-                return res.status(200).json({ message: "Please check your barangay clearance, nbi clearance, address and bill if they are verified" });
+                return res.status(200).json({ message: "Please check your barangayAddr clearance, nbi clearance, address and bill if they are verified" });
             } 
         } else {
             return res.status(404).json({ message: "SkilledInfo not found" });
@@ -413,7 +413,7 @@ const pushAddress = async(req,res) =>{
 //update or edit address
 const updateAddress = async(req,res) =>{
     const arrayId = req.params.arrayId;
-    const {houseNo, street, barangay, city, province} = req.body
+    const {houseNo, street, barangayAddr, cityAddr, provinceAddr} = req.body
     
     const address = await SkilledInfo.updateOne({
         "address._id":arrayId
@@ -422,9 +422,9 @@ const updateAddress = async(req,res) =>{
         $set:{
             "address.$.houseNo":houseNo,
             "address.$.street":street,
-            "address.$.barangay":barangay,
-            "address.$.city":city,
-            "address.$.province":province
+            "address.$.barangayAddr":barangayAddr,
+            "address.$.cityAddr":cityAddr,
+            "address.$.provinceAddr":provinceAddr
         }
     })
 

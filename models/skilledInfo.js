@@ -17,13 +17,13 @@ const Schema = mongoose.Schema
 //     street:{
 //         type:String
 //     },
-//     barangay:{
+//     barangayAddr:{
 //         type:String
 //     },
-//     city:{
+//     cityAddr:{
 //         type:String
 //     },
-//     province:{
+//     provinceAddrince:{
 //         type:String
 //     }  
 // })
@@ -63,19 +63,19 @@ const skilledInfoSchema = new Schema({
         type:String,
         required: true
     },
-    barangay:{
+    barangayAddr:{
         type:String,
         required: true
     },
-    city:{
+    cityAddr:{
         type:String,
         required: true
     },
-    prov:{
+    provinceAddr:{
         type:String,
         required: true
     },
-    region:{
+    regionAddr:{
         type:String,
         required: true
     },
@@ -182,17 +182,17 @@ skilledInfoSchema.statics.signup = async function (
     contact,
     houseNo,
     street,
-    barangay,
-    city,
-    prov,
-    region,
+    barangayAddr,
+    cityAddr,
+    provinceAddr,
+    regionAddr,
     brgyClearance,
     nbiClearance
 ){
     // await userExists(username);
     //validation
     if (!username || !password || !lname || !fname || !contact || 
-        !houseNo || !street || !barangay || !city || !prov || !region){
+        !houseNo || !street || !barangayAddr || !cityAddr || !provinceAddr || !regionAddr){
         throw Error('Please fill in all the blank fields.')
     }
 
@@ -225,10 +225,10 @@ skilledInfoSchema.statics.signup = async function (
         contact: contact,
         houseNo: houseNo,
         street: street,
-        barangay: barangay,
-        city: city,
-        prov: prov,
-        region: region,
+        barangayAddr: barangayAddr,
+        cityAddr: cityAddr,
+        provinceAddr: provinceAddr,
+        regionAddr: regionAddr,
         isDeleted:0
     });
 
@@ -249,10 +249,10 @@ skilledInfoSchema.statics.signup = async function (
         contact,
         houseNo,
         street,
-        barangay,
-        city,
-        prov,
-        region,
+        barangayAddr,
+        cityAddr,
+        provinceAddr,
+        regionAddr,
         brgyClearance,
         nbiClearance
     })
