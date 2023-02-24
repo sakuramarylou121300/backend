@@ -17,8 +17,8 @@ const roleRoutes = require('./routes/roleRoutes')
 const capabilityRoutes = require('./routes/capabilityRoutes')
 const roleCapabilityRoutes = require('./routes/roleCapabilityRoutes')
 //SKILLED
-const uploadRoutes = require('./routes/uploadRoutes')
 const skilledInfoRoutes = require('./routes/skilledInfoRoutes')
+const skilledIdRoutes = require('./routes/skilledIdRoutes')
 const skilledContactRoutes = require('./routes/skilledContactRoutes')
 const skilledAddressRoutes = require('./routes/skilledAddressRoutes')
 const skillCertRoutes = require('./routes/skillCertRoutes')
@@ -65,7 +65,7 @@ app.use((req, res, next) => {
     next()
 })
 //upload picture
-app.use('/uploads', express.static('uploads'))
+// app.use('/uploads', express.static('uploads'))
 
 //routes
 
@@ -82,6 +82,7 @@ app.use('/api/roleCapability', roleCapabilityRoutes)
 
 //SKILLED
 app.use('/api/skilledInfo', skilledInfoRoutes)
+app.use('/api/skilledId', skilledIdRoutes)
 app.use('/api/skilledContact', skilledContactRoutes)
 app.use('/api/skilledAddress', skilledAddressRoutes)
 app.use('/api/skill', skillRoutes)
@@ -95,7 +96,7 @@ app.use('/api/clientInfo', clientInfoRoutes)
 app.use('/api/clientContact', clientContactRoutes)
 app.use('/api/clientAddress', clientAddressRoutes)
 app.use('/api/jobs', jobRoutes)
-app.use(uploadRoutes)
+// app.use(uploadRoutes)
 
 //connect to db
 mongoose.connect(process.env.MONGO_URI)

@@ -29,7 +29,7 @@ const createSkill = async(req, res)=>{
 //GET all skill
 const getAllSkill = async(req, res)=>{
     try{
-        const skill = await AdminSkill.find({isDeleted: 0}).sort({createdAt: -1})
+        const skill = await AdminSkill.find({isDeleted: 0}).sort({skill: 1})
         res.status(200).json(skill)
     }
     catch(err){
