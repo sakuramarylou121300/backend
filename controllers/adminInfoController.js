@@ -72,7 +72,7 @@ const adminGetAllAdmin = async(req, res)=>{
 
     try{
         //get all query
-        const adminInfo = await AdminInfo.find({isDeleted: 0}).sort({createdAt: -1})
+        const adminInfo = await AdminInfo.find({isDeleted: 0}).sort({username: -1})
         .select("-password")
         .populate({path: 'roleCapabality', populate: [{path: 'role_id'}, {path: 'capability_id'}, {path: 'adminInfo_id'}]})
         // .populate('roleCapabality')
@@ -571,10 +571,20 @@ const adminGetAllSkilledDetail = async(req, res)=>{
 
 //GET all skill cert
 const adminGetAllSkilledExpDetail = async(req, res)=>{
+    const username = req.params.username;
 
     try{
+        // Find skilled_id document based on username
+    const skilledIdDoc = await SkilledInfo.findOne({ username: username });
+
+    // Check if skilled_id exists for the given username
+    if (!skilledIdDoc) {
+      return res.status(404).json({ error: 'Skilled Worker not found' });
+    }
+
         //get all query
         const skilledExp = await Experience.find({
+            skilled_id: skilledIdDoc._id,
             expIsVerified: 0, 
             isDeleted: 0
         })
@@ -678,7 +688,6 @@ const adminEditSkilledBill = async(req, res) =>{
 
     res.status(200).json(skilledBill)
 }
-
 
 //THIS IS NOT OFFICIAL
 //update or edit address

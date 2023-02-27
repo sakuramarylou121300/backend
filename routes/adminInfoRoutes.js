@@ -123,9 +123,9 @@ router.get('/getOne/skill/:id', adminAuth, adminControlSkilled, getOneSkill)
 router.patch('/update/skill/:id', adminAuth, adminControlSkilled, updateSkill)
 router.delete('/delete/skill/:id', adminAuth, adminControlSkilled, deleteSkill)
 
-//SKILLED WORKER WORK EXP
+//SKILLED WORKER WORK EXP   
 router.get('/getAll/SkilledExp', adminAuth, adminControlSkilled, adminGetAllExperience)
-router.get('/getAll/SkilledExp/detail', adminAuth, adminControlSkilled, adminGetAllSkilledExpDetail)
+router.get('/getAll/SkilledExp/detail/:username', adminAuth, adminControlSkilled, adminGetAllSkilledExpDetail)
 router.get('/getOne/SkilledExp/:id', adminAuth, adminControlSkilled, getOneExperience)
 router.patch('/update/SkilledExp/:id', adminAuth, adminControlSkilled, adminUpdateExperience)
 router.delete('/delete/SkilledExp/:id', adminAuth, adminControlSkilled, deleteExperience)

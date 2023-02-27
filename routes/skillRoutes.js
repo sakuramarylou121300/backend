@@ -1,5 +1,6 @@
 const express = require('express')
 const {
+    createSkills,
     createSkill, 
     getAllSkill,
     getOneSkill,
@@ -11,7 +12,7 @@ const requireAuth = require('../middleware/requireAuth')
 //instance of router
 router = express.Router()
 
-router.post('/post/', requireAuth, createSkill)
+router.post('/post/', requireAuth, createSkills)
 router.get('/getAll/', requireAuth ,getAllSkill)
 router.get('/getOne/:id', requireAuth, getOneSkill)
 router.patch('/update/:id', requireAuth, updateSkill)

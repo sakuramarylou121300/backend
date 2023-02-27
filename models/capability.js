@@ -5,7 +5,7 @@ const Schema = mongoose.Schema
 const capabilitySchema = new Schema({
     capabilityName:{
         type: String,
-        required: true,
+        required: true
     },
     isDeleted:{
         type: Number,

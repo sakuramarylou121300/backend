@@ -6,7 +6,8 @@ const adminSkill = new Schema({
    
     skill:{
         type: String,
-        required: true
+        required: true,
+        trim: true
     },
     isDeleted:{
         type: Number,

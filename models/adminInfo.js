@@ -8,7 +8,8 @@ const adminInfoSchema = new Schema({
     
     username:{
         type: String,
-        required: true
+        required: true,
+        trim: true
     },
     password:{
         type: String,

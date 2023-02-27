@@ -3,11 +3,41 @@ const Skill = require('../models/skill')
 const AdminInfo = require('../models/adminInfo')
 const mongoose = require('mongoose')
 
+const createSkills = async(req, res)=>{
+    try {
+        const skilled_id = req.skilledInfo._id;
+        const skillsToAdd = req.body.map(skillName => ({ ...skillName, skilled_id }));
+
+        // Check for empty skill names
+        const emptySkills = skillsToAdd.filter(skill => !skill.skillName);
+        if (emptySkills.length > 0) {
+            res.status(400).send({ message: "Please enter your skill" });
+            return;
+        }
+
+        const existingSkills = await Skill.find({ skilled_id });
+        const newSkills = [];
+        const existingSkillNames = existingSkills.map(skill => skill.skillName);
+
+        for (const skill of skillsToAdd) {
+            if (existingSkillNames.includes(skill.skillName)) {
+            res.status(400).send({ message: `${skill.skillName} already exists` });
+            return;
+            }
+            newSkills.push(skill);
+        }
+  
+        const skills = await Skill.insertMany(skillsToAdd);
+        res.status(201).send(skills);
+    } catch (error) {
+      res.status(400).send(error);
+    }
+}
 //CREATE skill
 const createSkill = async(req, res)=>{
     const {skillName} = req.body
-    
-    //check empty fields
+
+    // check empty fields
     let emptyFields = []
     
     if(!skillName){
@@ -137,6 +167,7 @@ const deleteSkill = async(req, res)=>{
 }
 
 module.exports = {
+    createSkills,
     createSkill,
     getAllSkill,
     getOneSkill,

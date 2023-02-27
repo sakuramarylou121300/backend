@@ -18,7 +18,7 @@ const capabilityRoutes = require('./routes/capabilityRoutes')
 const roleCapabilityRoutes = require('./routes/roleCapabilityRoutes')
 //SKILLED
 const skilledInfoRoutes = require('./routes/skilledInfoRoutes')
-const skilledIdRoutes = require('./routes/skilledIdRoutes')
+const skilledBarangayRoutes = require('./routes/skilledBarangayRoutes')
 const skilledContactRoutes = require('./routes/skilledContactRoutes')
 const skilledAddressRoutes = require('./routes/skilledAddressRoutes')
 const skillCertRoutes = require('./routes/skillCertRoutes')
@@ -82,7 +82,7 @@ app.use('/api/roleCapability', roleCapabilityRoutes)
 
 //SKILLED
 app.use('/api/skilledInfo', skilledInfoRoutes)
-app.use('/api/skilledId', skilledIdRoutes)
+app.use('/api/skilledBarangay', skilledBarangayRoutes)
 app.use('/api/skilledContact', skilledContactRoutes)
 app.use('/api/skilledAddress', skilledAddressRoutes)
 app.use('/api/skill', skillRoutes)
