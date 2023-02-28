@@ -26,9 +26,9 @@ const createExperience = async(req, res)=>{
     if(!workStart){
         emptyFields.push('workStart')
     }
-    if(!photo){
-        emptyFields.push('photo')
-    }
+    // if(!photo){
+    //     emptyFields.push('photo')
+    // }
     if(!refLname){
         emptyFields.push('refLname')
     }
