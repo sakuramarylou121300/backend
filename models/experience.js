@@ -8,12 +8,25 @@ const experienceSchema = new Schema({
         type: String,
         required: true
     },
-    title:{
+    isHousehold:{
         type: String,
+        default: 'false'
+    },
+    company:{
+        type: String,
+        default: ''
+    },
+    isWorking:{
+        type: String,
+        default: 'false'
+    },
+    workStart:{
+        type: Date,
         required: true
     },
-    desc:{
-        type: String
+    workEnd:{
+        type: Date,
+        default: Date.now()
     },
     photo:{
         type: String,
@@ -28,36 +41,33 @@ const experienceSchema = new Schema({
         required: true
     },
     refMname:{
-        type: String
+        type: String,
+        default: ''
     },
     refPosition:{
         type: String,
-        required: true
+        default: ''
     },
     refOrg:{
         type: String,
-        required: true
+        default: ''
     },
     refContactNo:{
-        type: String,
+        type: Number,
         required: true
     },
     expIsVerified:{
         type: Number,
         default: 0
     },
-    // expMessage:{
-    //     type: String,
-    //     default: ''
-    // }, 
+    isDeleted:{
+        type: Number,
+        default: 0
+    },
     skilled_id:{
         type: mongoose.Schema.Types.ObjectId,
         required: true,
         ref: 'SkilledInfo'
-    },
-    isDeleted:{
-        type: Number,
-        default: 0
     },
 
 },{timestamps: true})

@@ -5,8 +5,11 @@ const mongoose = require('mongoose')
 //CREATE skill exp
 const createExperience = async(req, res)=>{
     const {categorySkill,
-            title,
-            desc,
+            isHousehold,
+            company,
+            isWorking,
+            workStart,
+            workEnd,
             photo,
             refLname, 
             refFname,
@@ -20,31 +23,21 @@ const createExperience = async(req, res)=>{
     if(!categorySkill){
         emptyFields.push('categorySkill')
     }
-    if(!title){
-        emptyFields.push('title')
+    if(!workStart){
+        emptyFields.push('workStart')
     }
     if(!photo){
         emptyFields.push('photo')
     }
-    if(!photo){
+    if(!refLname){
         emptyFields.push('refLname')
     }
-    if(!photo){
+    if(!refFname){
         emptyFields.push('refFname')
-    }
-    if(!photo){
-        emptyFields.push('refLMame')
-    }
-    if(!refPosition){
-        emptyFields.push('refPosition')
-    }
-    if(!refOrg){
-        emptyFields.push('refOrg')
     }
     if(!refContactNo){
         emptyFields.push('refContactNo')
     }
-
     //send message if there is an empty fields
     if(emptyFields.length >0){
         return res.status(400).json({error: 'Please fill in all the blank fields.', emptyFields})
@@ -56,8 +49,11 @@ const createExperience = async(req, res)=>{
 
         const expCheck = await Experience.findOne({
             categorySkill:categorySkill,
-            title:title,
-            desc:desc,
+            isHousehold:isHousehold ,
+            company:company,
+            isWorking:isWorking,
+            workStart:workStart,
+            workEnd:workEnd,
             photo:photo,
             refLname:refLname, 
             refFname:refFname,
@@ -76,10 +72,13 @@ const createExperience = async(req, res)=>{
         //create query
         const experience = await Experience.create({
             categorySkill,
-            title,
-            desc,
+            isHousehold,
+            company,
+            isWorking,
+            workStart,
+            workEnd,
             photo,
-            refLname,
+            refLname, 
             refFname,
             refMname,
             refPosition,
@@ -160,15 +159,18 @@ const editRefName = async(req,res) =>{
 const updateExperience = async(req, res) =>{
     const {id} = req.params 
     const {categorySkill,
-        title,
-        desc,
-        photo,
-        refLname, 
-        refFname,
-        refMname,
-        refPosition,
-        refOrg,
-        refContactNo} = req.body   
+            isHousehold,
+            company,
+            isWorking,
+            workStart,
+            workEnd,
+            photo,
+            refLname, 
+            refFname,
+            refMname,
+            refPosition,
+            refOrg,
+            refContactNo} = req.body   
         const skilled_id = req.skilledInfo._id
 
     //check if id is not existing
@@ -177,8 +179,11 @@ const updateExperience = async(req, res) =>{
     }
     const expCheck = await Experience.findOne({
         categorySkill:categorySkill,
-        title:title,
-        desc:desc,
+        isHousehold:isHousehold ,
+        company:company,
+        isWorking:isWorking,
+        workStart:workStart,
+        workEnd:workEnd,
         photo:photo,
         refLname:refLname, 
         refFname:refFname,
