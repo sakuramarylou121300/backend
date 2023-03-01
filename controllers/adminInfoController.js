@@ -571,20 +571,21 @@ const adminGetAllSkilledDetail = async(req, res)=>{
 
 //GET all skill cert
 const adminGetAllSkilledExpDetail = async(req, res)=>{
-    const username = req.params.username;
+    const skilled_id = req.params.skilled_id;
 
     try{
         // Find skilled_id document based on username
-    const skilledIdDoc = await SkilledInfo.findOne({ username: username });
+    // const skilledIdDoc = await SkilledInfo.findOne({ username: username });
 
-    // Check if skilled_id exists for the given username
-    if (!skilledIdDoc) {
-      return res.status(404).json({ error: 'Skilled Worker not found' });
-    }
+    // // Check if skilled_id exists for the given username
+    // if (!skilledIdDoc) {
+    //   return res.status(404).json({ error: 'Skilled Worker not found' });
+    // }
 
         //get all query
         const skilledExp = await Experience.find({
-            skilled_id: skilledIdDoc._id,
+            // skilled_id: skilledIdDoc._id,
+            skilled_id:skilled_id,
             expIsVerified: 0, 
             isDeleted: 0
         })

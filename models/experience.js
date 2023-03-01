@@ -21,12 +21,12 @@ const experienceSchema = new Schema({
         default: 'false'
     },
     workStart:{
-        type: Date,
+        type: String,
         required: true
     },
     workEnd:{
-        type: Date,
-        default: Date.now()
+        type: String,
+        default: ''
     },
     // photo:{
     //     type: String,
