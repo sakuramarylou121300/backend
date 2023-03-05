@@ -40,6 +40,36 @@ const getAllBarangay = async(req, res)=>{
         res.status(404).json({error: error.message})
     }  
 }
+
+const updateBarangay = async(req,res)=>{
+    // const {id} = req.params  
+
+    try{
+        // const skilled_id = req.skilledInfo._id
+        let skilledBarangay = await SkilledBarangay.findById(req.params.id)
+        
+        //remove the recent image
+        await cloudinary.uploader.destroy(skilledBarangay.cloudinary_id)
+        //upload the new image
+        let result
+        if(req.file){
+            result = await cloudinary.uploader.upload(req.file.path)
+        }
+        const data = {
+            barangayExp: req.body.barangayExp || skilledBarangay.barangayExp,
+            barangayPhoto: result?.secure_url || skilledBarangay.barangayPhoto,
+            cloudinary_id: result?.public_id || skilledBarangay.cloudinary_id
+        }
+
+        skilledBarangay = await SkilledBarangay.findByIdAndUpdate(req.params.id, 
+            data, {new: true})
+            res.json(skilledBarangay)
+   }
+   catch(error){
+        res.status(404).json({error: error.message})
+    }
+}
+
 //DELETE skill cert
 const deleteBarangay = async(req, res)=>{
     const {id} = req.params
@@ -64,5 +94,6 @@ const deleteBarangay = async(req, res)=>{
 module.exports = {
     createBarangay,
     getAllBarangay,
+    updateBarangay, 
     deleteBarangay
 }

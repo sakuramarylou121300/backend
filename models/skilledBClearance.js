@@ -2,20 +2,20 @@ const mongoose = require('mongoose')
 
 const Schema = mongoose.Schema 
 
-const skilledBarangay = new Schema({
-    barangayPhoto:{
+const skilledBClearance = new Schema({
+    bClearancePhoto:{
         type: String,
         required: true,
     },
-    barangayExp:{
+    bClearanceExp:{
         type: Date,
         required: true,
     },
-    cloudinary_id:{
-        type: String,
-        required: true,
+    bClearanceIsVerified:{
+        type: Number,
+        default: 0,
     },
-    barangayIsVerified:{
+    isDeleted:{
         type: Number,
         default: 0,
     },
@@ -24,10 +24,6 @@ const skilledBarangay = new Schema({
         required: true,
         ref: 'SkilledInfo'
     },
-    isDeleted:{
-        type: Number,
-        default: 0,
-    },
 },{timestamps: true})
 
-module.exports = mongoose.model('SkilledBarangay',skilledBarangay)
+module.exports = mongoose.model('SkilledBClearance',skilledBClearance)

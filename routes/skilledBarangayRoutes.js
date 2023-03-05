@@ -4,6 +4,7 @@ const upload = require("../utils/multer")
 const {
     createBarangay,
     getAllBarangay,
+    updateBarangay, 
     deleteBarangay
 } = require('../controllers/skilledBarangayController')
 const requireAuth = require('../middleware/requireAuth')
@@ -13,8 +14,9 @@ router = express.Router()
 
 router.use(requireAuth)
 
-router.post('/post/', upload.single('barangayPhoto'), createBarangay)
+router.post('/post/', upload.single("barangayPhoto"), createBarangay)
 router.get('/get/', getAllBarangay)
+router.patch('/update/:id', upload.single('barangayPhoto'), updateBarangay)
 router.patch('/delete/:id', deleteBarangay)
 
 //export
