@@ -3,6 +3,7 @@ const express = require('express')
 const mongoose = require('mongoose')
 mongoose.set('strictQuery', true);
 const cors = require('cors')
+const bodyParser = require('body-parser');
 
 // const multer = require('multer')
 
@@ -58,6 +59,9 @@ app.use(
       next();
     }
   );
+
+app.use(bodyParser.json({ limit: '10mb' }));
+app.use(bodyParser.urlencoded({ extended: true, limit: '10mb' }));
 
 //middleware
 app.use(express.json())
