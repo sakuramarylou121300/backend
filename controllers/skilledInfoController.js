@@ -1,10 +1,9 @@
-const SkilledInfo = require('../models/skilledInfo')    
+const SkilledInfo = require('../models/skilledInfo')   
 const SkilledBill = require('../models/skilledBill')
 const jwt = require('jsonwebtoken') 
 const bcrypt = require('bcrypt')
 const validator = require('validator')
-// const multer = require('multer')
-// const upload = multer({dest: '/uploads/'})//the folder destination of uploaded image
+
 
 //to generate json webtoken
 const skilledCreateToken = (_id)=>{
@@ -20,7 +19,6 @@ const skilledLogIn = async(req, res) =>{
             username, 
             password
         )
-
             //create token
             const token = skilledCreateToken(skilledInfo._id)
         res.status(200).json({username, skilledInfo, token})
@@ -44,9 +42,7 @@ const skilledSignUp = async(req, res) =>{
         barangayAddr,
         cityAddr,
         provinceAddr,
-        regionAddr,
-        brgyClearance,
-        nbiClearance
+        regionAddr
         } = req.body
         
     try{
@@ -63,9 +59,7 @@ const skilledSignUp = async(req, res) =>{
             barangayAddr,
             cityAddr,
             provinceAddr,
-            regionAddr,
-            brgyClearance,
-            nbiClearance
+            regionAddr
             )
 
             //create token
@@ -211,9 +205,7 @@ const updateSkilledInfo = async(req, res) =>{
                 barangayAddr,
                 cityAddr,
                 provinceAddr,
-                regionAddr,
-                brgyClearance,
-                nbiClearance} = req.body
+                regionAddr} = req.body
 
         //validation
         if (!lname || !fname || !contact ||  
@@ -221,7 +213,23 @@ const updateSkilledInfo = async(req, res) =>{
             !provinceAddr || !regionAddr){
             throw Error('Please fill in all the blank fields.')
         }
-
+        const skilledInfoCheck = await SkilledInfo.findOne({
+            fname: fname,
+            mname: mname,
+            lname: lname,
+            contact: contact,
+            houseNo: houseNo,
+            street: street,
+            barangayAddr: barangayAddr,
+            cityAddr: cityAddr,
+            provinceAddr: provinceAddr,
+            regionAddr: regionAddr,
+            isDeleted:{$in: [0, 1]}
+        })
+        
+        if(skilledInfoCheck){
+            return res.status(400).json({error: "You have entered the same personal information, please try again."})
+        }
         //update info
         const skilledInfo = await SkilledInfo.findOneAndUpdate(
             {_id: req.skilledInfo._id},
@@ -234,9 +242,7 @@ const updateSkilledInfo = async(req, res) =>{
             barangayAddr,
             cityAddr,
             provinceAddr,
-            regionAddr,
-            brgyClearance,
-            nbiClearance
+            regionAddr
         })
 
         //success

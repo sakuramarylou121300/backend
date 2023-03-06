@@ -1,17 +1,31 @@
 const SkilledBClearance = require('../models/skilledBClearance') //for CRUD of skill (admin)
 const SkilledInfo = require('../models/skilledInfo')
 const mongoose = require('mongoose')
-
+ 
 const createSkilledBClearance = async(req, res)=>{
 
     try{
         const {bClearancePhoto,
                 bClearanceExp} = req.body
         const skilled_id = req.skilledInfo._id
+        //check empty fields
+    let emptyFields = []
+
+    if(!bClearancePhoto){
+        emptyFields.push('bClearancePhoto')
+    }
+    if(!bClearanceExp){
+        emptyFields.push('bClearanceExp')
+    }
+
+    //send message if there is an empty fields
+    if(emptyFields.length >0){
+        return res.status(400).json({error: 'Please fill in all the blank fields.', emptyFields})
+    }
         //search if existing
         const skilledBClearanceCheck = await SkilledBClearance.findOne({
-            bClearancePhoto:bClearancePhoto,
             bClearanceExp:bClearanceExp,
+            bClearanceIsVerified:{$in: [0, 1]},
             isDeleted: 0,
             skilled_id:skilled_id
         })
@@ -69,17 +83,30 @@ const updateSkilledBClearance  = async(req, res) =>{
     const {bClearancePhoto,
             bClearanceExp} = req.body
             const skilled_id = req.skilledInfo._id
-            //search if existing
-            const skilledBClearanceCheck = await SkilledBClearance.findOne({
-                bClearancePhoto:bClearancePhoto,
-                bClearanceExp:bClearanceExp,
-                isDeleted: 0,
-                skilled_id:skilled_id
-            })
-    
-            if(skilledBClearanceCheck){
-                return res.status(400).json({error: "Barangay Clearance already exists."})
-            }
+    let emptyFields = []
+
+    if(!bClearancePhoto){
+        emptyFields.push('bClearancePhoto')
+    }
+    if(!bClearanceExp){
+        emptyFields.push('bClearanceExp')
+    }
+
+    //send message if there is an empty fields
+    if(emptyFields.length >0){
+        return res.status(400).json({error: 'Please fill in all the blank fields.', emptyFields})
+    }
+    //search if existing
+    const skilledBClearanceCheck = await SkilledBClearance.findOne({
+        bClearanceExp:bClearanceExp,
+        bClearanceIsVerified:{$in: [0, 1]},
+        isDeleted: 0,
+        skilled_id:skilled_id
+    })
+
+    if(skilledBClearanceCheck){
+        return res.status(400).json({error: "Barangay Clearance already exists."})
+    }
     //check if id is not existing
     if(!mongoose.Types.ObjectId.isValid(id)){
         return res.status(404).json({error: 'Invalid id'})

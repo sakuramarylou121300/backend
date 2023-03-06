@@ -1,5 +1,5 @@
 const Skill = require('../models/skill')
-// const Info = require('../models/skilledInfo')
+const Info = require('../models/skilledInfo')
 const AdminInfo = require('../models/adminInfo')
 const mongoose = require('mongoose')
 
@@ -116,11 +116,22 @@ const updateSkill = async(req, res) =>{
     const {id} = req.params    
     const {skillName} = req.body
     const skilled_id = req.skilledInfo._id
-    //check if id is not existing
+
+      //check if id is not existing
     if(!mongoose.Types.ObjectId.isValid(id)){
         return res.status(404).json({error: 'Invalid id'})
     }
+    // check empty fields
+    let emptyFields = []
+    
+    if(!skillName){
+        emptyFields.push('skillName')
+    }
 
+    //send message if there is an empty fields
+    if(emptyFields.length >0){
+        return res.status(400).json({error: 'Please fill in all the blank fields.', emptyFields})
+    }
     const skillCheck = await Skill.findOne({
         skillName:skillName,
         skilled_id:skilled_id,

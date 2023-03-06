@@ -8,16 +8,29 @@ const createSkilledNClearance = async(req, res)=>{
         const {nClearancePhoto,
                 nClearanceExp} = req.body
         const skilled_id = req.skilledInfo._id
+        let emptyFields = []
+
+        if(!nClearancePhoto){
+            emptyFields.push('nClearancePhoto')
+        }
+        if(!nClearanceExp){
+            emptyFields.push('nClearanceExp')
+        }
+
+        //send message if there is an empty fields
+        if(emptyFields.length >0){
+            return res.status(400).json({error: 'Please fill in all the blank fields.', emptyFields})
+        }
         //search if existing
         const skilledNClearanceCheck = await SkilledNClearance.findOne({
-            nClearancePhoto:nClearancePhoto,
             nClearanceExp:nClearanceExp,
+            nClearanceIsVerified:{$in: [0, 1]},
             isDeleted: 0,
             skilled_id:skilled_id
         })
 
         if(skilledNClearanceCheck){
-            return res.status(400).json({error: "Barangay Clearance already exists."})
+            return res.status(400).json({error: "NBI Clearance already exists."})
         }
         //create new skill
         const newSkilledNClearance = new SkilledNClearance({
@@ -69,17 +82,30 @@ const updateSkilledNClearance  = async(req, res) =>{
     const {nClearancePhoto,
             nClearanceExp} = req.body
             const skilled_id = req.skilledInfo._id
-            //search if existing
-            const skilledNClearanceCheck = await SkilledNClearance.findOne({
-                nClearancePhoto:nClearancePhoto,
-                nClearanceExp:nClearanceExp,
-                isDeleted: 0,
-                skilled_id:skilled_id
-            })
-    
-            if(skilledNClearanceCheck){
-                return res.status(400).json({error: "Barangay Clearance already exists."})
-            }
+    let emptyFields = []
+
+    if(!nClearancePhoto){
+        emptyFields.push('nClearancePhoto')
+    }
+    if(!nClearanceExp){
+        emptyFields.push('nClearanceExp')
+    }
+
+    //send message if there is an empty fields
+    if(emptyFields.length >0){
+        return res.status(400).json({error: 'Please fill in all the blank fields.', emptyFields})
+    }
+    //search if existing
+    const skilledNClearanceCheck = await SkilledNClearance.findOne({
+        nClearanceExp:nClearanceExp,
+        nClearanceIsVerified:{$in: [0, 1]},
+        isDeleted: 0,
+        skilled_id:skilled_id
+    })
+
+    if(skilledNClearanceCheck){
+        return res.status(400).json({error: "NBI Clearance already exists."})
+    }
     //check if id is not existing
     if(!mongoose.Types.ObjectId.isValid(id)){
         return res.status(404).json({error: 'Invalid id'})

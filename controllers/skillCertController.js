@@ -8,7 +8,6 @@ const createCertificate = async(req, res)=>{
             title,
             issuedOn,
             validUntil,
-            desc,
             photo} = req.body
     
     //check empty fields
@@ -24,9 +23,6 @@ const createCertificate = async(req, res)=>{
     }
     if(!validUntil){
         emptyFields.push('validUntil')
-    }
-    if(!desc){
-        emptyFields.push('desc')
     }
     if(!photo){
         emptyFields.push('photo')
@@ -46,9 +42,9 @@ const createCertificate = async(req, res)=>{
             title:title,
             issuedOn:issuedOn,
             validUntil:validUntil,
-            desc:desc,
             photo:photo,
             skilled_id:skilled_id,
+            skillIsVerified:{$in: [0, 1]},
             isDeleted: 0
         })
         
@@ -61,7 +57,6 @@ const createCertificate = async(req, res)=>{
             title,
             issuedOn,
             validUntil,
-            desc,
             photo,
             skilled_id
         })
@@ -115,7 +110,6 @@ const updateCertificate = async(req, res) =>{
         title,
         issuedOn,
         validUntil,
-        desc,
         photo} = req.body 
         const skilled_id = req.skilledInfo._id
 
@@ -124,14 +118,37 @@ const updateCertificate = async(req, res) =>{
         return res.status(404).json({error: 'Invalid id'})
     }
 
+     //check empty fields
+     let emptyFields = []
+     if(!categorySkill){
+         emptyFields.push('categorySkill')
+     }
+     if(!title){
+         emptyFields.push('title')
+     }
+     if(!issuedOn){
+         emptyFields.push('issuedOn')
+     }
+     if(!validUntil){
+         emptyFields.push('validUntil')
+     }
+     if(!photo){
+         emptyFields.push('photo')
+     }
+ 
+     //send message if there is an empty fields
+     if(emptyFields.length >0){
+         return res.status(400).json({error: 'Please fill in all the blank fields.', emptyFields})
+     }
+
     const certCheck = await Certificate.findOne({
         categorySkill:categorySkill,
         title:title,
         issuedOn:issuedOn,
         validUntil:validUntil,
-        desc:desc,
         photo:photo,
         skilled_id:skilled_id,
+        skillIsVerified:{$in: [0, 1]},
         isDeleted: 0
     })
     

@@ -1,4 +1,4 @@
-const mongoose = require('mongoose')   
+const mongoose = require('mongoose')    
 const bcrypt = require('bcrypt')
 const validator = require('validator') 
 
@@ -41,27 +41,33 @@ const skilledInfoSchema = new Schema({
     },
     lname:{
         type: String,
-        required: true
+        required: true,
+        trim: true
     },
     fname:{
         type: String,
-        required: true
+        required: true,
+        trim: true
     },
     mname:{
         type: String,
+        trim: true,
         default: ''
     }, 
     contact:{
-        type: Number,
-        required: true
+        type: String,
+        required: true,
+        trim: true
     },
     houseNo:{
         type:Number,
-        required: true
+        required: true,
+        trim: true
     },
     street:{
         type:String,
-        required: true
+        required: true,
+        trim: true
     },
     barangayAddr:{
         type:String,
@@ -83,23 +89,6 @@ const skilledInfoSchema = new Schema({
         type: Number,
         default: 0
     },
-    bill:{
-        billPhoto:{
-            type:String},
-        billIssuedOn:{
-            type: String
-        },
-        // billIsVerified:{
-        //     type: Number,
-        //     default: 0
-        // }
-    },
-    brgyClearance:{
-        type: String
-    },
-    nbiClearance:{
-        type: String
-    },
     idIsVerified:{
         type: Number,
         default: 0
@@ -108,10 +97,6 @@ const skilledInfoSchema = new Schema({
         type: Number,
         default: 0
     },
-    // skilledMessage:{
-    //     type: String,
-    //     default: ''
-    // }, 
     isDeleted:{
         type: Number,
         default: 0
@@ -185,9 +170,7 @@ skilledInfoSchema.statics.signup = async function (
     barangayAddr,
     cityAddr,
     provinceAddr,
-    regionAddr,
-    brgyClearance,
-    nbiClearance
+    regionAddr
 ){
     // await userExists(username);
     //validation
@@ -204,6 +187,12 @@ skilledInfoSchema.statics.signup = async function (
     if(password.length <8){
         throw Error('Please enter atleast 8 characters in password.')
     }
+    const mobileNumberRegex = /^09\d{9}$|^639\d{9}$/;
+        
+        if (!mobileNumberRegex.test(contact)) {
+            throw new Error('Please check your contact number.');
+        }
+
     //check if  is existing admin, client and skilled
     const adminExists = await AdminInfo.findOne({username})
     if (adminExists){
@@ -229,7 +218,7 @@ skilledInfoSchema.statics.signup = async function (
         cityAddr: cityAddr,
         provinceAddr: provinceAddr,
         regionAddr: regionAddr,
-        isDeleted:0
+        isDeleted:{$in: [0, 1]}
     });
 
     if (skilledInfoWithSameDetails) {
@@ -252,9 +241,7 @@ skilledInfoSchema.statics.signup = async function (
         barangayAddr,
         cityAddr,
         provinceAddr,
-        regionAddr,
-        brgyClearance,
-        nbiClearance
+        regionAddr
     })
     return skilledInfo
 }

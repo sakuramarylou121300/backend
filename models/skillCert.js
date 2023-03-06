@@ -1,5 +1,5 @@
-const mongoose = require('mongoose')
-
+const mongoose = require('mongoose')   
+ 
 const Schema = mongoose.Schema
 
 const skillCertSchema = new Schema({
@@ -9,7 +9,8 @@ const skillCertSchema = new Schema({
     },
     title:{
         type: String,
-        required: true
+        required: true,
+        trim: true
     },
     issuedOn:{
         type: String,
@@ -19,9 +20,6 @@ const skillCertSchema = new Schema({
         type: String,
         required: true
     },
-    desc:{
-        type: String
-    },
     photo:{
         type: String,
         required: true
@@ -30,10 +28,6 @@ const skillCertSchema = new Schema({
         type: Number,
         default: 0
     },
-    // certMessage:{
-    //     type: String,
-    //     default: ''
-    // }, 
     skilled_id:{
         type: String,
         required: true,
