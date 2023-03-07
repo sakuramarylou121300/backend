@@ -5,14 +5,14 @@ const mongoose = require('mongoose')
 
 //CREATE skill
 const createRoleCapability = async(req, res)=>{
-    const {role_id, capability_id, adminInfo_id} = req.body
+    const {capability_id, adminInfo_id} = req.body
     
     //check empty fields
     let emptyFields = []
     
-    if(!role_id){
-        emptyFields.push('role_id')
-    }
+    // if(!role_id){
+    //     emptyFields.push('role_id')
+    // }
     if(!capability_id){
         emptyFields.push('capability_id')
     }
@@ -27,7 +27,7 @@ const createRoleCapability = async(req, res)=>{
     
     try{
         const roleCapabilityCheck = await RoleCapability.findOne({
-            role_id: role_id,
+            // role_id: role_id,
             capability_id: capability_id,
             adminInfo_id: adminInfo_id,
             isDeleted: 0
@@ -38,7 +38,7 @@ const createRoleCapability = async(req, res)=>{
         }
         //create query
         const roleCapability = await RoleCapability.create({
-            role_id,
+            // role_id,
             capability_id,
             adminInfo_id
         })
@@ -55,7 +55,7 @@ const getAllRoleCapability = async(req, res)=>{
     try{
         //get all query
         const roleCapability = await RoleCapability.find({isDeleted: 0}).sort({adminInfo_id: -1})
-        .populate('role_id')
+        // .populate('role_id')
         .populate('capability_id')
         .populate('adminInfo_id')
         res.status(200).json(roleCapability)
@@ -89,15 +89,15 @@ const getOneRoleCapability = async(req, res)=>{
 //UPDATE skill
 const updateRoleCapability = async(req, res) =>{
     const {id} = req.params    
-    const {role_id, capability_id, adminInfo_id} = req.body
+    const {capability_id, adminInfo_id} = req.body
     
-    // //check if id is not existing
-    // if(!mongoose.Types.ObjectId.isValid(id)){
-    //     return res.status(404).json({error: 'Invalid id'})
-    // }
+    //check if id is not existing
+    if(!mongoose.Types.ObjectId.isValid(id)){
+        return res.status(404).json({error: 'Invalid id'})
+    }
     try{
         const roleCapabilityCheck = await RoleCapability.findOne({
-        role_id,
+        // role_id,
         capability_id,
         adminInfo_id
     })
@@ -107,7 +107,7 @@ const updateRoleCapability = async(req, res) =>{
     }
 
      const roleCapability = await RoleCapability.findOneAndUpdate({_id: id},{
-        role_id,
+        // role_id,
         capability_id,
         adminInfo_id
         //  ...req.body //get new value

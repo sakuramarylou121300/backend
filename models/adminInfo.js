@@ -74,6 +74,12 @@ adminInfoSchema.statics.signup = async function (
     if(password.length <6){
         throw Error('Please enter atleast 8 characters in password.')
     }
+    const mobileNumberRegex = /^09\d{9}$|^639\d{9}$/;
+        
+    if (!mobileNumberRegex.test(contact)) {
+        throw new Error('Please check your contact number.');
+    }
+    
     //check if  is existing skilled, client and admin
       const skilledExists = await SkilledInfo.findOne({username})
       if (skilledExists){

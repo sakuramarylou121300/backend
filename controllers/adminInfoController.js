@@ -74,7 +74,7 @@ const adminGetAllAdmin = async(req, res)=>{
         //get all query
         const adminInfo = await AdminInfo.find({isDeleted: 0}).sort({username: -1})
         .select("-password")
-        .populate({path: 'roleCapabality', populate: [{path: 'role_id'}, {path: 'capability_id'}, {path: 'adminInfo_id'}]})
+        .populate({path: 'roleCapabality', populate: [{path: 'capability_id'}, {path: 'adminInfo_id'}]})
         // .populate('roleCapabality')
         // .populate('adminRoleCapabality')
         // .populate({path: 'adminRoleCapabality',populate: {path:'roleCapability_id',populate:{path:'capability_id'}}})
@@ -125,11 +125,15 @@ const adminUpdateUserName = async(req, res) =>{
         }
 
          //check if email is existing
+        const skilledExists = await SkilledInfo.findOne({username})
+        if (skilledExists){
+            throw Error('Username already in use. Please enter a new unique username.')
+        }
+
         const exists = await AdminInfo.findOne({username})
         if (exists){
             throw Error('Username already in use. Please enter a new unique username.')
         }
-
         //update info
         const adminInfo = await AdminInfo.findOneAndUpdate(
             {_id:id},
@@ -189,12 +193,17 @@ const adminUpdateInfo = async(req, res) =>{
         const {lname,
                 fname,
                 mname,
-                contact,
-                roleCapability} = req.body
+                contact} = req.body
 
         //validation
         if (!lname || !fname || !mname || !contact){
             throw Error('Please fill in all the blank fields.')
+        }
+
+        const mobileNumberRegex = /^09\d{9}$|^639\d{9}$/;
+        
+        if (!mobileNumberRegex.test(contact)) {
+            throw new Error('Please check your contact number.');
         }
 
         //update info
@@ -203,8 +212,7 @@ const adminUpdateInfo = async(req, res) =>{
             {lname,
             fname,
             mname,
-            contact,
-            roleCapability
+            contact
         })
 
         //success
@@ -268,6 +276,12 @@ const updateAdminUserName = async(req, res) =>{
         if(username.length <8){
             throw Error('Please enter atleast 8 characters in email.')
         }
+
+         //check if email is existing
+         const skilledExists = await SkilledInfo.findOne({username})
+         if (skilledExists){
+             throw Error('Username already in use. Please enter a new unique username.')
+         }
 
          //check if email is existing
         const exists = await AdminInfo.findOne({username})
@@ -352,6 +366,12 @@ const updateAdminInfo = async(req, res) =>{
         //validation
         if (!lname || !fname || !contact ){
             throw Error('Please fill in all the blank fields.')
+        }
+
+        const mobileNumberRegex = /^09\d{9}$|^639\d{9}$/;
+        
+        if (!mobileNumberRegex.test(contact)) {
+            throw new Error('Please check your contact number.');
         }
 
         //update info

@@ -4,11 +4,11 @@ const Schema = mongoose.Schema
 
 const roleCapabilitySchema = new Schema({
 
-    role_id:{
-        type: mongoose.Schema.Types.ObjectId,
-        required: true,
-        ref: 'Role'
-    },
+    // role_id:{
+    //     type: mongoose.Schema.Types.ObjectId,
+    //     required: true,
+    //     ref: 'Role'
+    // },
     capability_id:{
         type: mongoose.Schema.Types.ObjectId,
         required: true,

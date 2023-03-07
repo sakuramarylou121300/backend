@@ -189,9 +189,9 @@ skilledInfoSchema.statics.signup = async function (
     }
     const mobileNumberRegex = /^09\d{9}$|^639\d{9}$/;
         
-        if (!mobileNumberRegex.test(contact)) {
-            throw new Error('Please check your contact number.');
-        }
+    if (!mobileNumberRegex.test(contact)) {
+        throw new Error('Please check your contact number.');
+    }
 
     //check if  is existing admin, client and skilled
     const adminExists = await AdminInfo.findOne({username})

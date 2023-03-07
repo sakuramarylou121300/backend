@@ -1,4 +1,5 @@
-const SkilledInfo = require('../models/skilledInfo')   
+const SkilledInfo = require('../models/skilledInfo')    
+const AdminInfo = require('../models/adminInfo')    
 const SkilledBill = require('../models/skilledBill')
 const jwt = require('jsonwebtoken') 
 const bcrypt = require('bcrypt')
@@ -120,6 +121,11 @@ const updateSkilledUserName = async(req, res) =>{
         }
 
          //check if email is existing
+        const adminExists = await AdminInfo.findOne({username})
+        if (adminExists){
+            throw Error('Email already in use. Please enter a new unique email.')
+        }
+
         const exists = await SkilledInfo.findOne({username})
         if (exists){
             throw Error('Email already in use. Please enter a new unique email.')
@@ -230,6 +236,13 @@ const updateSkilledInfo = async(req, res) =>{
         if(skilledInfoCheck){
             return res.status(400).json({error: "You have entered the same personal information, please try again."})
         }
+        //check if valid contact no
+        const mobileNumberRegex = /^09\d{9}$|^639\d{9}$/;
+        
+        if (!mobileNumberRegex.test(contact)) {
+            throw new Error('Please check your contact number.');
+        }
+
         //update info
         const skilledInfo = await SkilledInfo.findOneAndUpdate(
             {_id: req.skilledInfo._id},
