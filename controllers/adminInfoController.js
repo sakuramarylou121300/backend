@@ -521,8 +521,8 @@ const adminGetAllExperience = async(req, res)=>{
 
 //GET all skill cert
 const adminGetAllCertificate = async(req, res)=>{
-
     try{
+        
         //get all query
         const certificate = await Certificate.find({isDeleted: 0}).sort({createdAt: -1}).populate('skilled_id')
         res.status(200).json(certificate)
@@ -620,10 +620,20 @@ const adminGetAllSkilledExpDetail = async(req, res)=>{
 
 //GET all skill cert
 const adminGetAllSkilledCertDetail = async(req, res)=>{
-
+    const username = req.params.username;
     try{
+        // Find skilled_id document based on username
+        const skilledIdDoc = await SkilledInfo.findOne({ username: username });
+
+        // Check if skilled_id exists for the given username
+        if (!skilledIdDoc) {
+        return res.status(404).json({ error: 'Skilled Worker not found' });
+        }
         //get all query
-        const certificate = await Certificate.find({skillIsVerified: 0, isDeleted: 0}).sort({updatedAt: 1})
+        const certificate = await Certificate.find({
+            skilled_id: skilledIdDoc._id,
+            skillIsVerified: 0, 
+            isDeleted: 0}).sort({updatedAt: 1})
         .populate('skilled_id')
         res.status(200).json(certificate)
     }

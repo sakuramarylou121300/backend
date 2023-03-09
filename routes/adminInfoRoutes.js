@@ -132,7 +132,7 @@ router.delete('/delete/SkilledExp/:id', adminAuth, adminControlSkilled, deleteEx
 
 //SKILLED CERT
 router.get('/getAll/Cert', adminAuth, adminControlSkilled, adminGetAllCertificate)
-router.get('/getAll/Cert/detail', adminAuth, adminControlSkilled, adminGetAllSkilledCertDetail)
+router.get('/getAll/Cert/detail/:username', adminAuth, adminControlSkilled, adminGetAllSkilledCertDetail)
 router.get('/getOne/Cert/:id', adminAuth, adminControlSkilled, getOneCertificate)
 router.patch('/update/Cert/:id', adminAuth, adminControlSkilled, adminUpdateCertificate)
 router.delete('/delete/Cert/:id', adminAuth, adminControlSkilled, deleteCertificate)
