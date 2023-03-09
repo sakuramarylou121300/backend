@@ -44,7 +44,7 @@ const createCertificate = async(req, res)=>{
             validUntil:validUntil,
             photo:photo,
             skilled_id:skilled_id,
-            skillIsVerified:{$in: [0, 1]},
+            skillIsVerified:{$in: ["false", "true"]},
             isDeleted: 0
         })
         
@@ -148,7 +148,7 @@ const updateCertificate = async(req, res) =>{
         validUntil:validUntil,
         photo:photo,
         skilled_id:skilled_id,
-        skillIsVerified:{$in: [0, 1]},
+        skillIsVerified:{$in: ["false", "true"]},
         isDeleted: 0
     })
     
