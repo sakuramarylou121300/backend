@@ -633,7 +633,7 @@ const adminGetAllSkilledCertDetail = async(req, res)=>{
         //get all query
         const certificate = await Certificate.find({
             skilled_id: skilledIdDoc._id,
-            skillIsVerified: 0, 
+            skillIsVerified: "false", 
             isDeleted: 0}).sort({updatedAt: 1})
         .populate('skilled_id')
         res.status(200).json(certificate)
