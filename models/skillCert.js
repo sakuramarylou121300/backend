@@ -25,7 +25,7 @@ const skillCertSchema = new Schema({
         required: true
     },
     skillIsVerified:{
-        type: Number,
+        type: String,
         default: "false"
     },
     skilled_id:{
