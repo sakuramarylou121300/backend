@@ -564,31 +564,125 @@ const adminGetAllSkilledDetail = async(req, res)=>{
 
     try{
         //get all query
-        const skilledInfo = await SkilledInfo.find({idIsVerified: 0, isDeleted: 0}).sort({updatedAt: 1})
+        const skilledInfo = await SkilledInfo
+        .find({idIsVerified: 0, isDeleted: 0, 
+            // "skillCert": { "$exists": true }
+        })
+        // .sort({"skillCert.createdAt": 1})
+        // .sort({ "skillCert.createdAt":-1 })
         .select("-password")
-        .populate({
-            path: 'skills',
-            match: { isDeleted: 0} 
-        })
-        .populate({
-            path: 'experience',
-            match: { isDeleted: 0} 
-        })
+        // .populate({
+        //     path: 'skills',
+        //     match: { isDeleted: 0} 
+        // })
+        // .populate({
+        //     path: 'experience',
+        //     match: { isDeleted: 0} 
+        // })
         .populate({
             path: 'skillCert',
             match: { isDeleted: 0} 
         })
-        .populate({
-            path: 'skilledBill',
-            match: { isDeleted: 0} 
-        })
-        res.status(200).json(skilledInfo)
+        // .count({'skillCert.isRead':0})
+        .lean() // Convert Mongoose Document to JS object
+        // .sort({'skillCert.createdAt': -1});
+        //count each skilled info skillCert unread
+        const skilledInfoWithCounts = skilledInfo.map(info => {
+            const count = info.skillCert.filter(cert => cert.isRead === 0).length;
+            return {...info, count};
+        });
+        // console.log(skilledInfoWithCounts)
+        // skilledInfoWithCounts.sort((a, b) => b.count - a.count);
+        // Sort the skilledInfo array in descending order based on the latest skillCert's createdAt date
+        // skilledInfoWithCounts.sort((a, b) => {
+        //     const latestACert = a.skillCert.sort(
+        //     (x, y) => y.createdAt.getTime() - x.createdAt.getTime()
+        //     )[0];
+        //     const latestBCert = b.skillCert.sort(
+        //     (x, y) => y.createdAt.getTime() - x.createdAt.getTime()
+        //     )[0];
+        //     return latestBCert.createdAt.getTime() - latestACert.createdAt.getTime();
+        // });
+        // const skilledInfoSorted = skilledInfo.sort((a, b) => {
+        //     const aDate = a.skillCert.length > 0 ? a.skillCert[0].createdAt : new Date(0);
+        //     const bDate = b.skillCert.length > 0 ? b.skillCert[0].createdAt : new Date(0);
+        //     return bDate - aDate;
+        // });
+
+        // const skilledInfoSorted = skilledInfo.sort((a, b) => {
+        //     const aLatestCertDate = a.skillCert.length > 0 ? a.skillCert[0].createdAt : new Date(0);
+        //     const bLatestCertDate = b.skillCert.length > 0 ? b.skillCert[0].createdAt : new Date(0);
+            
+        //     if (bLatestCertDate.getTime() - aLatestCertDate.getTime() !== 0) {
+        //       // sort by the most recent skillCert createdAt
+        //       return bLatestCertDate - aLatestCertDate;
+        //     } else {
+        //       // if the most recent skillCert createdAt is the same,
+        //       // sort by the overall updatedAt of the skilledInfo
+        //       return b.updatedAt - a.updatedAt;
+        //     }
+        //   });
+        const skilledInfoSorted = skilledInfo.sort((a, b) => {
+            const aHasCert = a.skillCert.length > 0;
+            const bHasCert = b.skillCert.length > 0;
+          
+            if (aHasCert && !bHasCert) {
+                // a has skillCert, b does not
+                return -1;
+            } else if (!aHasCert && bHasCert) {
+                // b has skillCert, a does not
+                return 1;
+            } else {
+                // both have skillCert or neither do, sort by certification date and updatedAt
+                const aLatestCertDate = aHasCert ? a.skillCert[0].createdAt : new Date(0);
+                const bLatestCertDate = bHasCert ? b.skillCert[0].createdAt : new Date(0);
+          
+            if (bLatestCertDate.getTime() - aLatestCertDate.getTime() !== 0) {
+            // sort by the most recent skillCert createdAt
+            return bLatestCertDate - aLatestCertDate;
+            } else {
+                // if the most recent skillCert createdAt is the same,
+                // sort by the overall updatedAt of the skilledInfo
+                return b.updatedAt - a.updatedAt;
+              }
+            }
+        });
+   
+        console.log(skilledInfoSorted)
+
+        res.status(200).json({
+            success: true,
+            skilledInfoSorted,
+        });
+        
     }
     catch(error){
         res.status(404).json({error: error.message})
     }  
 }
+const adminGetAllSkilledDetailCert = async(req, res)=>{
 
+    try{
+        //get all query
+        const skilledInfo = await SkilledInfo
+        .find({idIsVerified: 0, isDeleted: 0, 
+        })
+        .select("-password")
+        .populate({
+            path: 'skillCert',
+            match: { isDeleted: 0} 
+        })
+        .lean() // Convert Mongoose Document to JS object
+        .sort({'skillCert.createdAt':-1});
+        res.status(200).json({
+          success: true,
+          skilledInfo,
+        });
+    }
+    catch(error){
+        res.status(404).json({error: error.message})
+    }  
+}
 //GET all skill cert
 const adminGetAllSkilledExpDetail = async(req, res)=>{
     // const skilled_id = req.params.skilled_id;
@@ -811,6 +905,7 @@ module.exports = {
     adminGetAllSkill,
     adminGetAllSkilledBill,
     adminGetAllSkilledDetail,
+    adminGetAllSkilledDetailCert,
     adminGetAllSkilledExpDetail,
     adminGetAllSkilledCertDetail,
     adminGetAllSkilledBillDetail,

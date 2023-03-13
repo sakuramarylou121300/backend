@@ -24,6 +24,7 @@ const{
     adminGetAllSkill,
     adminGetAllSkilledBill,
     adminGetAllSkilledDetail,
+    adminGetAllSkilledDetailCert,
     adminGetAllSkilledExpDetail,
     adminGetAllSkilledCertDetail,
     adminGetAllSkilledBillDetail,
@@ -101,6 +102,7 @@ router.patch('/delete/oneAdminInfo', adminAuth, deleteAdminInfo)
 //SKILLED WORKER
 router.get('/getAll/Skilled', adminAuth, adminControlSkilled, adminGetAllSkilled)
 router.get('/getAll/Skilled/detail', adminAuth, adminControlSkilled, adminGetAllSkilledDetail)
+router.get('/getAll/Skilled/detail/cert', adminAuth, adminControlSkilled, adminGetAllSkilledDetailCert)
 router.get('/getOne/Skilled/:id', adminAuth, adminControlSkilled, adminGetOneSkilled)
 router.patch('/update/Skilled/:id', adminAuth, adminControlSkilled, adminUpdateSkilled)
 router.patch('/delete/Skilled/:id', adminAuth, adminControlSkilled, adminDeleteSkilled)

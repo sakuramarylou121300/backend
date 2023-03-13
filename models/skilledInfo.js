@@ -117,7 +117,8 @@ const skilledInfoSchema = new Schema({
     // }
 },{
     toJSON: { virtuals: true }, // So `res.json()` and other `JSON.stringify()` functions include virtuals
-    toObject: { virtuals: true } // So `console.log()` and other functions that use `toObject()` include virtuals
+    toObject: { virtuals: true },
+    timestamps: true// So `console.log()` and other functions that use `toObject()` include virtuals
 },
 {timestamps: true})
 
@@ -148,8 +149,17 @@ skilledInfoSchema.virtual('experience', {
 skilledInfoSchema.virtual('skillCert', {
     ref: 'SkillCert',
     localField: '_id',
-    foreignField: 'skilled_id'
+    foreignField: 'skilled_id',
+    // justOne: false,
+    // options: { sort: { createdAt: 1 }}
 });
+
+// skilledInfoSchema.virtual('latestSkillCert').get(function() {
+//   if (this.skillCert.length > 0) {
+//     return this.skillCert.sort((a, b) => b.createdAt - a.createdAt)[0];
+//   }
+//   return null;
+// });
 
 skilledInfoSchema.virtual('skilledBill', {
     ref: 'SkilledBill',
