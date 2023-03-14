@@ -669,10 +669,10 @@ const adminGetAllSkilledDetail = async(req, res)=>{
    
         console.log(skilledInfoSorted)
 
-        res.status(200).json({
-            success: true,
+        res.status(200).json(
+            // success: true,
             skilledInfoSorted,
-        });
+        );
         
     }
     catch(error){
