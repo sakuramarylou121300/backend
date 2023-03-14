@@ -24,11 +24,6 @@ const createSkills = async(req, res)=>{
                 res.status(400).send({ message: "Please enter your skill" });
                 return;
             }
-            //if the value in the drop down empty
-            if (!skill.skillName) {
-                res.status(400).send({ error: "Please enter your skill" });
-                return;
-            }
             if (existingSkillNames.includes(skill.skillName)) {
                 res.status(400).send({ error: `${skill.skillName} already exist. ` });
                 return;
@@ -141,6 +136,10 @@ const updateSkill = async(req, res) =>{
     //send message if there is an empty fields
     if(emptyFields.length >0){
         return res.status(400).json({error: 'Please fill in all the blank fields.', emptyFields})
+    }
+    if(skillName==="Select"){
+        res.status(400).send({ message: "Please enter your skill" });
+        return
     }
     const skillCheck = await Skill.findOne({
         skillName:skillName,
