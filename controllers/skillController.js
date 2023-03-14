@@ -13,6 +13,11 @@ const createSkills = async(req, res)=>{
         const existingSkillNames = existingSkills.map(skill => skill.skillName);
         const newSkills = [];
 
+        if (skillsToAdd.length === 0) {
+            res.status(400).send({ error: "Please enter your skill" });
+            return;
+        }
+
         for (const skill of skillsToAdd) {
             if (!skill.skillName) {
                 res.status(400).send({ error: "Please enter your skill" });
