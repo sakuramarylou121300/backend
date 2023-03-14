@@ -15,11 +15,11 @@ const createSkills = async(req, res)=>{
 
         for (const skill of skillsToAdd) {
             if (!skill.skillName) {
-                res.status(400).send({ message: "Please enter your skill" });
+                res.status(400).send({ error: "Please enter your skill" });
                 return;
             }
             if (existingSkillNames.includes(skill.skillName)) {
-                res.status(400).send({ message: `${skill.skillName} already exist. ` });
+                res.status(400).send({ error: `${skill.skillName} already exist. ` });
                 return;
             }
             existingSkillNames.push(skill.skillName);
