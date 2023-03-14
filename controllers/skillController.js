@@ -19,6 +19,12 @@ const createSkills = async(req, res)=>{
         }
 
         for (const skill of skillsToAdd) {
+            //if the value in the drop down is Select
+            if (!skill.skillName || skill.skillName === "Select") {
+                res.status(400).send({ message: "Please enter your skill" });
+                return;
+            }
+            //if the value in the drop down empty
             if (!skill.skillName) {
                 res.status(400).send({ error: "Please enter your skill" });
                 return;
