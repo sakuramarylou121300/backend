@@ -47,7 +47,8 @@ const createSkilledNClearance = async(req, res)=>{
 
 const getAllSkilledNClearance = async(req, res)=>{
     try{
-        const skilledNClearance = await SkilledNClearance.find({isDeleted: 0}).sort({createdAt:-1})
+        const skilled_id = req.skilledInfo._id
+        const skilledNClearance = await SkilledNClearance.find({skilled_id,isDeleted: 0}).sort({createdAt:-1})
         res.status(200).json(skilledNClearance)
     }
     catch(err){
@@ -98,6 +99,7 @@ const updateSkilledNClearance  = async(req, res) =>{
     //search if existing
     const skilledNClearanceCheck = await SkilledNClearance.findOne({
         nClearanceExp:nClearanceExp,
+        nClearancePhoto:nClearancePhoto,
         nClearanceIsVerified:{$in: [0, 1]},
         isDeleted: 0,
         skilled_id:skilled_id

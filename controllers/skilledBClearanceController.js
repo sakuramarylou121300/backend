@@ -48,7 +48,8 @@ const createSkilledBClearance = async(req, res)=>{
 
 const getAllSkilledBClearance = async(req, res)=>{
     try{
-        const skilledBClearance = await SkilledBClearance.find({isDeleted: 0}).sort({createdAt:-1})
+        const skilled_id = req.skilledInfo._id
+        const skilledBClearance = await SkilledBClearance.find({skilled_id,isDeleted: 0}).sort({createdAt:-1})
         res.status(200).json(skilledBClearance)
     }
     catch(err){
@@ -99,6 +100,7 @@ const updateSkilledBClearance  = async(req, res) =>{
     //search if existing
     const skilledBClearanceCheck = await SkilledBClearance.findOne({
         bClearanceExp:bClearanceExp,
+        bClearancePhoto:bClearancePhoto,
         bClearanceIsVerified:{$in: [0, 1]},
         isDeleted: 0,
         skilled_id:skilled_id
