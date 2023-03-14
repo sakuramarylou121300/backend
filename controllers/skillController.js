@@ -8,26 +8,25 @@ const createSkills = async(req, res)=>{
         const skilled_id = req.skilledInfo._id;
         const skillsToAdd = req.body.map(skillName => ({ ...skillName, skilled_id }));
 
-        // Check for empty skill names
-        const emptySkills = skillsToAdd.filter(skill => !skill.skillName);
-        if (emptySkills.length > 0) {
-            res.status(400).send({ message: "Please enter your skill" });
-            return;
-        }
-
+        // Check for empty skill names and duplicate skill names
         const existingSkills = await Skill.find({ skilled_id });
-        const newSkills = [];
         const existingSkillNames = existingSkills.map(skill => skill.skillName);
+        const newSkills = [];
 
         for (const skill of skillsToAdd) {
-            if (existingSkillNames.includes(skill.skillName)) {
-            res.status(400).send({ message: `${skill.skillName} already exists` });
-            return;
+            if (!skill.skillName) {
+                res.status(400).send({ message: "Please enter your skill" });
+                return;
             }
+            if (existingSkillNames.includes(skill.skillName)) {
+                res.status(400).send({ message: `${skill.skillName} already exist. ` });
+                return;
+            }
+            existingSkillNames.push(skill.skillName);
             newSkills.push(skill);
         }
-  
-        const skills = await Skill.insertMany(skillsToAdd);
+
+        const skills = await Skill.insertMany(newSkills);
         res.status(201).send(skills);
     } catch (error) {
       res.status(400).send(error);
