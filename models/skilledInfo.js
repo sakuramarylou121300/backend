@@ -206,15 +206,15 @@ skilledInfoSchema.statics.signup = async function (
     //check if  is existing admin, client and skilled
     const adminExists = await AdminInfo.findOne({username})
     if (adminExists){
-        throw Error('Email already in use. Please enter a new unique .')
+        throw Error('Username already in use.')
     }
     const clientExists = await ClientInfo.findOne({username})
     if (clientExists){
-        throw Error('Email already in use. Please enter a new unique .')
+        throw Error('Username already in use.')
     }
     const exists = await this.findOne({username})
     if (exists){
-        throw Error('Email already in use. Please enter a new unique .')
+        throw Error('Username already in use.')
     }
 
     const skilledInfoWithSameDetails = await this.findOne({

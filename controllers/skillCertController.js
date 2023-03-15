@@ -51,6 +51,15 @@ const createCertificate = async(req, res)=>{
         if(certCheck){
             return res.status(400).json({error: "Skill certificate already exists in this user."})
         }
+
+        if (categorySkill === "Select") {
+            res.status(400).send({ error: "Please enter your skill" });
+            return;
+        }
+        if (issuedOn >= validUntil) {
+            res.status(400).send({ error: "Please check your certificate issued on and valid until" });
+            return;
+        }
         //create query
         const certificate = await Certificate.create({
             categorySkill,
@@ -154,6 +163,11 @@ const updateCertificate = async(req, res) =>{
     
     if(certCheck){
         return res.status(400).json({error: "Skill certificate already exists in this user."})
+    }
+
+    if (issuedOn >= validUntil) {
+        res.status(400).send({ error: "Please check your certificate issued on and valid until" });
+        return;
     }
 
      //delete query

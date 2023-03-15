@@ -112,23 +112,23 @@ const updateSkilledUserName = async(req, res) =>{
 
         //validation
         if (!username){
-            throw Error('Please enter your new email.')
+            throw Error('Please enter your username.')
         }
 
         //check if strong password
         if(username.length <8){
-            throw Error('Please enter atleast 8 characters in email.')
+            throw Error('Please enter atleast 8 characters in username.')
         }
 
          //check if email is existing
         const adminExists = await AdminInfo.findOne({username})
         if (adminExists){
-            throw Error('Email already in use. Please enter a new unique email.')
+            throw Error('Username already in use.')
         }
 
         const exists = await SkilledInfo.findOne({username})
         if (exists){
-            throw Error('Email already in use. Please enter a new unique email.')
+            throw Error('Username already in use.')
         }
 
         //update info
