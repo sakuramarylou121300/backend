@@ -28,10 +28,10 @@ const experienceSchema = new Schema({
         type: String,
         default: ''
     },
-    // photo:{
-    //     type: String,
-    //     required: true
-    // },
+    photo:[{
+        type: String,
+        required: true
+    }],
     refLname:{
         type: String,
         required: true

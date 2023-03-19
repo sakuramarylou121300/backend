@@ -1,4 +1,4 @@
-const express = require('express')
+const express = require('express') 
 const {
     createExperience, 
     getAllExperience,
@@ -9,27 +9,48 @@ const {
 } = require('../controllers/experienceController')
 const requireAuth = require('../middleware/requireAuth')
 
+//this is for the multiple uploads
+const multer = require('multer')
+const path = require('path')
+const fs = require('fs')
+
+const storage = multer.diskStorage({
+    destination: function(req, file, cb){
+        if(!fs.existsSync('public')){
+            fs.mkdirSync('public')
+        }
+        if(!fs.existsSync('public/media')){
+            fs.mkdirSync('public/media')
+        }
+        cb(null, "public/media")
+    },
+    filename: function(req, file, cb){
+        cb(null, Date.now() + file.originalname + path.extname(file.originalname))
+        }
+    
+})
+
+const upload = multer({
+    storage: storage,
+    fileFilter: function(req, file, cb){
+        var ext = path.extname(file.originalname)
+        
+        if(ext !== '.png' && ext !== '.jpg' && ext !== '.jpeg' && ext !== '.gif'){
+            return cb(new Error('Only Images are allowed!'))
+        }
+        cb(null, true)
+    }
+})
 //instance of router
 router = express.Router()
 
 router.use(requireAuth)
 
-//POST skill cert
-router.post('/post/', createExperience)
-
-//GET all skill cert
+router.post('/post/', upload.fields([{name:'photo', maxCount: 5}]), createExperience)
 router.get('/getAll/', getAllExperience)
-
-//GET single skill cert
 router.get('/getOne/:id', getOneExperience)
-
-//UPDATE skill cert
 router.patch('/update/:id', updateExperience)
-
-//UPDATE ref name 
 router.put('/edit/refName/:id', editRefName)
-
-//delete skill cert
 router.patch('/delete/:id', deleteExperience)
 
 //export

@@ -4,6 +4,7 @@ const mongoose = require('mongoose')
 mongoose.set('strictQuery', true);
 const cors = require('cors')
 const bodyParser = require('body-parser');
+const path = require('path')
 
 // const multer = require('multer')
 
@@ -96,6 +97,8 @@ app.use('/api/skilledAddress', skilledAddressRoutes)
 app.use('/api/skill', skillRoutes)
 app.use('/api/skillCert', skillCertRoutes)
 app.use('/api/experience', experienceRoutes)
+//this is for photos
+app.use('public', express.static(path.join(__dirname, 'public')))
 app.use('/api/experience', experienceRoutes)
 app.use('/api/skilledBill', skilledBillRoutes)
 

@@ -42,6 +42,13 @@ const createExperience = async(req, res)=>{
     if(emptyFields.length >0){
         return res.status(400).json({error: 'Please fill in all the blank fields.', emptyFields})
     }
+
+    console.log(req.file)
+    // console.log(req.files)
+    let filePath = ''
+    if(req.file){
+        filePath = '/' + req.file.path
+    }
     
     try{
         //this is to assign the job to a specific client user, get id from clientInfo
