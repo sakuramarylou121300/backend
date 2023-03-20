@@ -17,7 +17,7 @@ const createExperience = async(req, res)=>{
             refPosition,
             refOrg,
             refContactNo} = req.body
-    
+    // console.log(req.decoded)
     //check empty fields
     let emptyFields = []
     if(!categorySkill){
@@ -43,11 +43,20 @@ const createExperience = async(req, res)=>{
         return res.status(400).json({error: 'Please fill in all the blank fields.', emptyFields})
     }
 
-    console.log(req.file)
-    // console.log(req.files)
-    let filePath = ''
-    if(req.file){
-        filePath = '/' + req.file.path
+    // console.log(req.file)
+    console.log(req.files)
+    // let filePath = ''
+    // if(req.file){
+    //     filePath = '/' + req.file.path
+    // }
+    // if(Array.isArray(req.files.image) && req.files.image.length>0){
+    //     filePath = "/" + req.files.image[0].path
+    // }
+    let photoPath = []
+    if(Array.isArray(req.files.photo) && req.files.photo.length>0){
+        for(let photos of req.files.photo){
+            photoPath.push('/' +  photos.path)
+        }
     }
     
     try{
@@ -84,7 +93,7 @@ const createExperience = async(req, res)=>{
             isWorking,
             workStart,
             workEnd,
-            // photo,
+            photo: photoPath,
             refLname, 
             refFname,
             refMname,
@@ -205,16 +214,26 @@ const updateExperience = async(req, res) =>{
     if(expCheck){
         return res.status(400).json({error: "Work experience already exists in this user."})
     }
-     //delete query
-     const experience = await Experience.findOneAndUpdate({_id: id},{
-         ...req.body //get new value
-     })
-    
-     //check if not existing
-     if (!experience){
+     //update query
+    //  const experience = await Experience.findOneAndUpdate({_id: id},{
+    //      ...req.body //get new value
+    //  })
+     const experience = await Experience.findById(id)
+    //check if not existing
+    if(!experience){
         return res.status(404).json({error: 'Skill Experience not found'})
     }
-
+    let photoPath = []
+    if(experience.photo.length>0){
+        for(let photos of experience.photo){
+            fs.unlink('.' + photo, function(err){
+                if(err){
+                    console.log(err)
+                }
+            })
+        }
+        photoPath = []
+    }
     res.status(200).json(experience)
 }
 

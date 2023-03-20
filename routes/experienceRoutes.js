@@ -16,18 +16,25 @@ const fs = require('fs')
 
 const storage = multer.diskStorage({
     destination: function(req, file, cb){
-        if(!fs.existsSync('public')){
-            fs.mkdirSync('public')
-        }
-        if(!fs.existsSync('public/media')){
-            fs.mkdirSync('public/media')
-        }
-        cb(null, "public/media")
-    },
+    //     if(!fs.existsSync('public')){
+    //         fs.mkdirSync('public')
+    //     }
+    //     if(!fs.existsSync('public/media')){
+    //         fs.mkdirSync('public/media')
+    //     }
+    //     cb(null, "public/media")
+    // },
+    // filename: function(req, file, cb){
+    //     cb(null, Date.now() + file.originalname + path.extname(file.originalname))
+    //     }
+    if(!fs.existsSync("public/resources")){
+        fs.mkdirSync("public/resources")
+    }
+    cb(null, "public/resources")
+},
     filename: function(req, file, cb){
         cb(null, Date.now() + file.originalname + path.extname(file.originalname))
-        }
-    
+    }
 })
 
 const upload = multer({
@@ -49,7 +56,7 @@ router.use(requireAuth)
 router.post('/post/', upload.fields([{name:'photo', maxCount: 5}]), createExperience)
 router.get('/getAll/', getAllExperience)
 router.get('/getOne/:id', getOneExperience)
-router.patch('/update/:id', updateExperience)
+router.patch('/update/:id', upload.fields([{name:'photo', maxCount: 5}]), updateExperience)
 router.put('/edit/refName/:id', editRefName)
 router.patch('/delete/:id', deleteExperience)
 

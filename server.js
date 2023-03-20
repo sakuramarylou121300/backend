@@ -98,7 +98,8 @@ app.use('/api/skill', skillRoutes)
 app.use('/api/skillCert', skillCertRoutes)
 app.use('/api/experience', experienceRoutes)
 //this is for photos
-app.use('public', express.static(path.join(__dirname, 'public')))
+app.use('/public', express.static(path.join(__dirname, 'public')))
+// app.use("/public", express.static(path.join(__dirname, "public")))
 app.use('/api/experience', experienceRoutes)
 app.use('/api/skilledBill', skilledBillRoutes)
 
