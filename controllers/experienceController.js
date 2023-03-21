@@ -1,6 +1,7 @@
 const Experience = require('../models/experience') 
 const Info = require('../models/skilledInfo')
 const mongoose = require('mongoose')
+const fs = require('fs')
 
 //CREATE skill exp
 const createExperience = async(req, res)=>{
@@ -218,23 +219,49 @@ const updateExperience = async(req, res) =>{
     //  const experience = await Experience.findOneAndUpdate({_id: id},{
     //      ...req.body //get new value
     //  })
-     const experience = await Experience.findById(id)
-    //check if not existing
-    if(!experience){
-        return res.status(404).json({error: 'Skill Experience not found'})
-    }
-    let photoPath = []
-    if(experience.photo.length>0){
-        for(let photos of experience.photo){
-            fs.unlink('.' + photo, function(err){
-                if(err){
-                    console.log(err)
-                }
-            })
+    try{
+        const experience = await Experience.findById(id)
+        //check if not existing
+        if(!experience){
+            return res.status(404).json({error: 'Skill Experience not found'})
         }
-        photoPath = []
+        let photoPath = []
+        if(experience.photo.length>0){
+            for(let photos of experience.photo){
+                fs.unlink('.' + photos, function(err){
+                    if(err){
+                        console.log(err)
+                    }
+                })
+            }
+            photoPath = []
+        }
+        if(Array.isArray(req.files.photo) && req.files.photo.length>0){
+            for(let photos of req.files.photo){
+                photoPath.push('/' + photos.path)
+            }
+        }
+        const updateExperience = await Experience.findByIdAndUpdate(id, {
+            categorySkill,
+            isHousehold,
+            company,
+            isWorking,
+            workStart,
+            workEnd,
+            photo: photoPath,
+            refLname, 
+            refFname,
+            refMname,
+            refPosition,
+            refOrg,
+            refContactNo,
+            skilled_id
+        }, {new: true})
+        res.status(200).json(updateExperience)
+    }catch(error){
+        res.status(404).json(error)
     }
-    res.status(200).json(experience)
+    // res.status(200).json(experience)
 }
 
 //DELETE skill exp
