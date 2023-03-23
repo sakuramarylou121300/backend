@@ -69,36 +69,75 @@ const getAllBarangay = async(req, res)=>{
     catch(error){
         res.status(404).json({error: error.message})
     }  
-}
+} 
 
-const updateBarangay = async(req,res)=>{
-    // const {id} = req.params  
-
-    try{
-        // const skilled_id = req.skilledInfo._id
-        let skilledBarangay = await SkilledBarangay.findById(req.params.id)
-        
-        //remove the recent image
-        await cloudinary.uploader.destroy(skilledBarangay.cloudinary_id)
-        //upload the new image
-        let result
-        if(req.file){
-            result = await cloudinary.uploader.upload(req.file.path)
-        }
-        const data = {
-            barangayExp: req.body.barangayExp || skilledBarangay.barangayExp,
-            barangayPhoto: result?.secure_url || skilledBarangay.barangayPhoto,
-            cloudinary_id: result?.public_id || skilledBarangay.cloudinary_id
-        }
-
-        skilledBarangay = await SkilledBarangay.findByIdAndUpdate(req.params.id, 
-            data, {new: true})
-            res.json(skilledBarangay)
-   }
-   catch(error){
-        res.status(404).json({error: error.message})
+const updateBarangay = async (req, res) => {
+    try {
+      const skilledBarangay = await SkilledBarangay.findById(req.params.id);
+  
+      // remove the recent images
+      await Promise.all(
+        skilledBarangay.barangayPhoto.map(async (photo) => {
+          await cloudinary.uploader.destroy(photo.public_id);
+        })
+      );
+  
+      // upload the new images
+      const uploadedPhotos = await Promise.all(
+        req.files.map(async (file) => {
+          const result = await cloudinary.uploader.upload(file.path);
+          return { url: result.secure_url, public_id: result.public_id };
+        })
+      );
+  
+      const data = {
+        barangayExp: req.body.barangayExp || skilledBarangay.barangayExp,
+        barangayPhoto: uploadedPhotos.length > 0 ? uploadedPhotos : skilledBarangay.barangayPhoto,
+        cloudinary_id: uploadedPhotos.length > 0 ? uploadedPhotos[0].public_id : skilledBarangay.cloudinary_id,
+      };
+  
+      const updatedSkilledBarangay = await SkilledBarangay.findByIdAndUpdate(
+        req.params.id,
+        data,
+        { new: true }
+      );
+  
+      res.json(updatedSkilledBarangay);
+    } catch (error) {
+      res.status(404).json({ error: error.message });
     }
-}
+  };
+  
+
+
+// const updateBarangay = async(req,res)=>{
+//     // const {id} = req.params  
+
+//     try{
+//         // const skilled_id = req.skilledInfo._id
+//         let skilledBarangay = await SkilledBarangay.findById(req.params.id)
+        
+//         //remove the recent image
+//         await cloudinary.uploader.destroy(skilledBarangay.cloudinary_id)
+//         //upload the new image
+//         let result
+//         if(req.file){
+//             result = await cloudinary.uploader.upload(req.file.path)
+//         }
+//         const data = {
+//             barangayExp: req.body.barangayExp || skilledBarangay.barangayExp,
+//             barangayPhoto: result?.secure_url || skilledBarangay.barangayPhoto,
+//             cloudinary_id: result?.public_id || skilledBarangay.cloudinary_id
+//         }
+
+//         skilledBarangay = await SkilledBarangay.findByIdAndUpdate(req.params.id, 
+//             data, {new: true})
+//             res.json(skilledBarangay)
+//    }
+//    catch(error){
+//         res.status(404).json({error: error.message})
+//     }
+// }
 
 //DELETE skill cert
 const deleteBarangay = async(req, res)=>{

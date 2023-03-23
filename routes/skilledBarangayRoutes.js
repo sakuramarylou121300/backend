@@ -16,7 +16,7 @@ router.use(requireAuth)
 
 router.post('/post/', upload.array("barangayPhoto"), createBarangay)
 router.get('/get/', getAllBarangay)
-router.patch('/update/:id', upload.single('barangayPhoto'), updateBarangay)
+router.put('/update/:id', upload.array("barangayPhoto"), updateBarangay)
 router.patch('/delete/:id', deleteBarangay)
 
 //export
