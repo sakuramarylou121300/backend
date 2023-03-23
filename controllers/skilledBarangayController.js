@@ -3,26 +3,56 @@ const SkilledBarangay = require('../models/skilledBarangay')
 const cloudinary = require("../utils/cloudinary")
 const upload = require("../utils/multer")
 
-const createBarangay = async(req,res)=>{
-    const {barangayExp} = req.body
+const createBarangay = async(req, res) => {
+  const { barangayExp } = req.body;
 
-    try{
-        const skilled_id = req.skilledInfo._id
-        result = await cloudinary.uploader.upload(req.file.path)
+  try {
+    const skilled_id = req.skilledInfo._id;
+    const uploadedPhotos = [];
 
-        let skilledBarangay = new SkilledBarangay({
-            skilled_id,
-            barangayExp,
-            barangayPhoto: result.secure_url,
-            cloudinary_id: result.public_id,   
-        })
-        await skilledBarangay.save()
-        res.status(200).json(skilledBarangay)
-   }
-   catch(error){
-        res.status(404).json({error: error.message})
+    // Loop through uploaded files and upload to cloudinary
+    for (const file of req.files) {
+      const result = await cloudinary.uploader.upload(file.path);
+      uploadedPhotos.push({ url: result.secure_url, public_id: result.public_id });
     }
+
+    // Create new SkilledBarangay object
+    let skilledBarangay = new SkilledBarangay({
+        skilled_id,
+        barangayExp,
+        barangayPhoto: uploadedPhotos,
+        cloudinary_id: uploadedPhotos[0].public_id // Use the public ID of the first photo in the array
+    });
+  
+
+    await skilledBarangay.save();
+    res.status(200).json(skilledBarangay);
+  } catch(error) {
+    res.status(404).json({error: error.message});
+  }
 }
+
+// const createBarangay = async(req,res)=>{
+//     const {barangayExp} = req.body
+
+//     try{
+//         const skilled_id = req.skilledInfo._id
+//         result = await cloudinary.uploader.upload(req.file.path)
+
+//         let skilledBarangay = new SkilledBarangay({
+//             skilled_id,
+//             barangayExp,
+//             barangayPhoto: result.secure_url,
+//             cloudinary_id: result.public_id,   
+//         })
+//         await skilledBarangay.save()
+//         console.log(skilledBarangay)
+//         res.status(200).json(skilledBarangay)
+//    }
+//    catch(error){
+//         res.status(404).json({error: error.message})
+//     }
+// }
 //GET all address
 const getAllBarangay = async(req, res)=>{
 

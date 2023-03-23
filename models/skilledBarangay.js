@@ -3,10 +3,14 @@ const mongoose = require('mongoose')
 const Schema = mongoose.Schema 
 
 const skilledBarangay = new Schema({
-    barangayPhoto:{
-        type: String,
-        required: true,
-    },
+    // barangayPhoto:{
+    //     type: String,
+    //     required: true,
+    // },
+    barangayPhoto: [{
+        url: { type: String, required: true },MU
+        public_id: { type: String, required: true },
+      }],
     barangayExp:{
         type: Date,
         required: true,
