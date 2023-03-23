@@ -8,7 +8,7 @@ const skilledBarangay = new Schema({
     //     required: true,
     // },
     barangayPhoto: [{
-        url: { type: String, required: true },MU
+        url: { type: String, required: true },
         public_id: { type: String, required: true },
       }],
     barangayExp:{
