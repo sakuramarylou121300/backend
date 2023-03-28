@@ -1,5 +1,5 @@
 const mongoose = require('mongoose')
-const SkilledBarangay = require('../models/skilledBarangay') 
+const SkilledBarangay = require('../models/skilledBarangay')  
 const cloudinary = require("../utils/cloudinary")
 const upload = require("../utils/multer")
 
