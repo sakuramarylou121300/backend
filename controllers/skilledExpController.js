@@ -45,11 +45,11 @@ const createExp = async(req, res) => {
         photo: uploadedPhotos,
         cloudinary_id: uploadedPhotos[0].public_id // Use the public ID of the first photo in the array
     });
-  
-
+    console.log(skilledExp)
     await skilledExp.save();
     res.status(200).json(skilledExp);
   } catch(error) {
+    console.log(error)
     res.status(404).json({error: error.message});
   }
 }
