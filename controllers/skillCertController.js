@@ -87,6 +87,7 @@ const createCertificate = async(req, res)=>{
         res.status(200).json(certificate)
     }
     catch(error){
+        console.log(error)
         res.status(404).json({error: error.message})
     }
 }
