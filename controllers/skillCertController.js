@@ -1,3 +1,5 @@
+const cloudinary = require("../utils/cloudinary");
+const upload = require("../utils/multer");
 const Certificate = require('../models/skillCert')
 const Info = require('../models/skilledInfo')
 const mongoose = require('mongoose')
@@ -8,7 +10,8 @@ const createCertificate = async(req, res)=>{
             title,
             issuedOn,
             validUntil,
-            photo} = req.body
+            // photo
+        } = req.body
     
     //check empty fields
     let emptyFields = []
@@ -24,9 +27,9 @@ const createCertificate = async(req, res)=>{
     if(!validUntil){
         emptyFields.push('validUntil')
     }
-    if(!photo){
-        emptyFields.push('photo')
-    }
+    // if(!photo){
+    //     emptyFields.push('photo')
+    // }
 
     //send message if there is an empty fields
     if(emptyFields.length >0){
@@ -42,7 +45,7 @@ const createCertificate = async(req, res)=>{
             title:title,
             issuedOn:issuedOn,
             validUntil:validUntil,
-            photo:photo,
+            // photo:photo,
             skilled_id:skilled_id,
             skillIsVerified:{$in: ["false", "true"]},
             isDeleted: 0
@@ -61,14 +64,26 @@ const createCertificate = async(req, res)=>{
             return;
         }
         //create query
-        const certificate = await Certificate.create({
-            categorySkill,
-            title,
-            issuedOn,
-            validUntil,
-            photo,
-            skilled_id
-        })
+        // const certificate = await Certificate.create({
+        //     categorySkill,
+        //     title,
+        //     issuedOn,
+        //     validUntil,
+        //     photo,
+        //     skilled_id
+        // })
+        result = await cloudinary.uploader.upload(req.file.path)
+        let certificate = new Certificate({
+                        categorySkill,
+                        title,
+                        issuedOn,
+                        validUntil,
+                        photo: result.secure_url,     
+                        cloudinary_id: result.public_id,
+                        skilled_id
+                    })
+                    await certificate.save()
+                    console.log(certificate)
         res.status(200).json(certificate)
     }
     catch(error){
@@ -112,76 +127,108 @@ const getOneCertificate = async(req, res)=>{
 
 }
 
-//UPDATE skill cert
-const updateCertificate = async(req, res) =>{
-    const {id} = req.params   
-    const {categorySkill,
-        title,
-        issuedOn,
-        validUntil,
-        photo} = req.body 
-        const skilled_id = req.skilledInfo._id
+const updateCertificate = async(req,res)=>{
+    // const {id} = req.params  
 
-    //check if id is not existing
-    if(!mongoose.Types.ObjectId.isValid(id)){
-        return res.status(404).json({error: 'Invalid id'})
+    try{
+        // const skilled_id = req.skilledInfo._id
+        let certificate = await Certificate.findById(req.params.id)
+        
+        //remove the recent image
+        await cloudinary.uploader.destroy(certificate.cloudinary_id)
+        //upload the new image
+        let result
+        if(req.file){
+            result = await cloudinary.uploader.upload(req.file.path)
+        }
+        const data = {
+            categorySkill: req.body.categorySkill || certificate.categorySkill,
+            title: req.body.title || certificate.title,
+            issuedOn: req.body.issuedOn || certificate.issuedOn,
+            validUntil: req.body.validUntil || certificate.validUntil,
+            photo: result?.secure_url || certificate.photo,
+            cloudinary_id: result?.public_id || certificate.cloudinary_id
+        }
+
+        certificate = await Certificate.findByIdAndUpdate(req.params.id, 
+            data, {new: true})
+            res.json(certificate)
+   }
+   catch(error){
+        res.status(404).json({error: error.message})
     }
-
-     //check empty fields
-     let emptyFields = []
-     if(!categorySkill){
-         emptyFields.push('categorySkill')
-     }
-     if(!title){
-         emptyFields.push('title')
-     }
-     if(!issuedOn){
-         emptyFields.push('issuedOn')
-     }
-     if(!validUntil){
-         emptyFields.push('validUntil')
-     }
-     if(!photo){
-         emptyFields.push('photo')
-     }
- 
-     //send message if there is an empty fields
-     if(emptyFields.length >0){
-         return res.status(400).json({error: 'Please fill in all the blank fields.', emptyFields})
-     }
-
-    const certCheck = await Certificate.findOne({
-        categorySkill:categorySkill,
-        title:title,
-        issuedOn:issuedOn,
-        validUntil:validUntil,
-        photo:photo,
-        skilled_id:skilled_id,
-        skillIsVerified:{$in: ["false", "true"]},
-        isDeleted: 0
-    })
-    
-    if(certCheck){
-        return res.status(400).json({error: "Skill certificate already exists in this user."})
-    }
-
-    if (issuedOn >= validUntil) {
-        res.status(400).send({ error: "Please check your certificate issued on and valid until" });
-        return;
-    }
-
-     //delete query
-     const certificate = await Certificate.findOneAndUpdate({_id: id},{
-         ...req.body //get new value
-     })
-    
-     //check if not existing
-     if (!certificate){
-        return res.status(404).json({error: 'Skill Certificate not found'})
-    }
-
-    res.status(200).json(certificate)
 }
+
+//UPDATE skill cert
+// const updateCertificate = async(req, res) =>{
+//     const {id} = req.params   
+//     const {categorySkill,
+//         title,
+//         issuedOn,
+//         validUntil,
+//         photo} = req.body 
+//         const skilled_id = req.skilledInfo._id
+
+//     //check if id is not existing
+//     if(!mongoose.Types.ObjectId.isValid(id)){
+//         return res.status(404).json({error: 'Invalid id'})
+//     }
+
+//      //check empty fields
+//      let emptyFields = []
+//      if(!categorySkill){
+//          emptyFields.push('categorySkill')
+//      }
+//      if(!title){
+//          emptyFields.push('title')
+//      }
+//      if(!issuedOn){
+//          emptyFields.push('issuedOn')
+//      }
+//      if(!validUntil){
+//          emptyFields.push('validUntil')
+//      }
+//      if(!photo){
+//          emptyFields.push('photo')
+//      }
+ 
+//      //send message if there is an empty fields
+//      if(emptyFields.length >0){
+//          return res.status(400).json({error: 'Please fill in all the blank fields.', emptyFields})
+//      }
+
+//     const certCheck = await Certificate.findOne({
+//         categorySkill:categorySkill,
+//         title:title,
+//         issuedOn:issuedOn,
+//         validUntil:validUntil,
+//         photo:photo,
+//         skilled_id:skilled_id,
+//         skillIsVerified:{$in: ["false", "true"]},
+//         isDeleted: 0
+//     })
+    
+//     if(certCheck){
+//         return res.status(400).json({error: "Skill certificate already exists in this user."})
+//     }
+
+//     if (issuedOn >= validUntil) {
+//         res.status(400).send({ error: "Please check your certificate issued on and valid until" });
+//         return;
+//     }
+
+//      //delete query
+//      const certificate = await Certificate.findOneAndUpdate({_id: id},{
+//          ...req.body //get new value
+//      })
+    
+//      //check if not existing
+//      if (!certificate){
+//         return res.status(404).json({error: 'Skill Certificate not found'})
+//     }
+
+//     res.status(200).json(certificate)
+// }
 
 //DELETE skill cert
 const deleteCertificate = async(req, res)=>{

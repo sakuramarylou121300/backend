@@ -24,6 +24,9 @@ const skillCertSchema = new Schema({
         type: String,
         required: true
     },
+    cloudinary_id:{
+        type: String
+    },
     skillIsVerified:{
         type: String,
         default: "false"

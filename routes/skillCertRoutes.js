@@ -1,4 +1,7 @@
 const express = require('express')
+const cloudinary = require("../utils/cloudinary")
+const upload = require("../utils/multer")
+
 const {
     createCertificate, 
     getAllCertificate,
@@ -13,10 +16,10 @@ router = express.Router()
 
 router.use(requireAuth)
 
-router.post('/post/', createCertificate)
+router.post('/post/',  upload.single("photo"), createCertificate)
 router.get('/getAll/', getAllCertificate)
 router.get('/getOne/:id', getOneCertificate)
-router.patch('/update/:id', updateCertificate)
+router.patch('/update/:id', upload.single("photo"), updateCertificate)
 router.patch('/delete/:id', deleteCertificate)
 
 //export
