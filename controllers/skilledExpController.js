@@ -19,13 +19,20 @@ const createExp = async(req, res) => {
 
   try {
     const skilled_id = req.skilledInfo._id;
-    const uploadedPhotos = [];
+    // const uploadedPhotos = [];
 
-    // Loop through uploaded files and upload to cloudinary
-    for (const file of req.files) {
-      const result = await cloudinary.uploader.upload(file.path);
-      uploadedPhotos.push({ url: result.secure_url, public_id: result.public_id });
-    }
+    // // Loop through uploaded files and upload to cloudinary
+    // for (const file of req.files) {
+    //   const result = await cloudinary.uploader.upload(file.path);
+    //   uploadedPhotos.push({ url: result.secure_url, public_id: result.public_id });
+    // }
+
+    const uploadedPhotos = await Promise.all(
+      req.files.map(async (file) => {
+        const result = await cloudinary.uploader.upload(file.path);
+        return { url: result.secure_url, public_id: result.public_id };
+      })
+    );
 
     // Create new SkilledExp object
     let skilledExp = new SkilledExp({
