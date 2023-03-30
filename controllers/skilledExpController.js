@@ -113,14 +113,14 @@ const updateExp = async (req, res) => {
       );
   
       // upload the new images
-      const uploadedPhotos = await Promise.all(
+      let uploadedPhotos = await Promise.all(
         req.files.map(async (file) => {
-          const result = await cloudinary.uploader.upload(file.path);
+          let result = await cloudinary.uploader.upload(file.path);
           return { url: result.secure_url, public_id: result.public_id };
         })
       );
   
-      const data = {
+      let data = {
         categorySkill: req.body.categorySkill || skilledExp.categorySkill,
         isHousehold: req.body.isHousehold || skilledExp.isHousehold,
         company: req.body.company || skilledExp.company,
