@@ -72,6 +72,7 @@ const createCertificate = async(req, res)=>{
         //     photo,
         //     skilled_id
         // })
+        
         result = await cloudinary.uploader.upload(req.file.path)
         let certificate = new Certificate({
                         categorySkill,
@@ -84,6 +85,7 @@ const createCertificate = async(req, res)=>{
                     })
                     await certificate.save()
                     console.log(certificate)
+
         res.status(200).json(certificate)
     }
     catch(error){
