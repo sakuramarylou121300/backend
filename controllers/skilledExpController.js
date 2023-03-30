@@ -19,13 +19,15 @@ const createExp = async(req, res) => {
 
   try {
     const skilled_id = req.skilledInfo._id;
-    const uploadedPhotos = [];
+    let uploadedPhotos = [];
 
     // Loop through uploaded files and upload to cloudinary
-    for (const file of req.files) {
-      const result = await cloudinary.uploader.upload(file.path);
+    for (let file of req.files) {
+      let result = await cloudinary.uploader.upload(file.path);
       uploadedPhotos.push({ url: result.secure_url, public_id: result.public_id });
     }
+    // console.log(result)
+    console.log(req.files)
 
     // const uploadedPhotos = await Promise.all(
     //   req.files.map(async (file) => {
