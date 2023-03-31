@@ -14,7 +14,7 @@ router = express.Router()
 
 router.use(requireAuth)
 
-router.post('/post/', upload.single("barangayPhoto"), createBarangay)
+router.post('/post/', upload.array("barangayPhoto"), createBarangay)
 router.get('/get/', getAllBarangay)
 router.put('/update/:id', upload.array("barangayPhoto"), updateBarangay)
 router.patch('/delete/:id', deleteBarangay)

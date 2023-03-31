@@ -5,17 +5,18 @@ const upload = require("../utils/multer")
 
 const createExp = async(req, res) => {
   const { categorySkill,
-    isHousehold,
-    company,
-    isWorking,
-    workStart,
-    workEnd,
-    refLname,
-    refFname,
-    refMname,
-    refPosition,
-    refOrg,
-    refContactNo} = req.body;
+    // isHousehold,
+    // company,
+    // isWorking,
+    // workStart,
+    // workEnd,
+    // refLname,
+    // refFname,
+    // refMname,
+    // refPosition,
+    // refOrg,
+    // refContactNo
+  } = req.body;
 
   try {
     const skilled_id = req.skilledInfo._id;
@@ -39,17 +40,17 @@ const createExp = async(req, res) => {
     // Create new SkilledExp object
     let skilledExp = new SkilledExp({
         categorySkill,
-        isHousehold,
-        company,
-        isWorking,
-        workStart,
-        workEnd,
-        refLname,
-        refFname,
-        refMname,
-        refPosition,
-        refOrg,
-        refContactNo,
+        // isHousehold,
+        // company,
+        // isWorking,
+        // workStart,
+        // workEnd,
+        // refLname,
+        // refFname,
+        // refMname,
+        // refPosition,
+        // refOrg,
+        // refContactNo,
         skilled_id,
         photo: uploadedPhotos,
         cloudinary_id: uploadedPhotos[0].public_id // Use the public ID of the first photo in the array
@@ -122,17 +123,17 @@ const updateExp = async (req, res) => {
   
       let data = {
         categorySkill: req.body.categorySkill || skilledExp.categorySkill,
-        isHousehold: req.body.isHousehold || skilledExp.isHousehold,
-        company: req.body.company || skilledExp.company,
-        isWorking: req.body.isWorking || skilledExp.isWorking,
-        workStart: req.body.workStart || skilledExp.workStart,
-        workEnd: req.body.workEnd || skilledExp.workEnd,
-        refLname: req.body.refLname || skilledExp.refLname,
-        refFname: req.body.refFname || skilledExp.refFname,
-        refMname: req.body.refMname || skilledExp.refMname,
-        refPosition: req.body.refPosition || skilledExp.refPosition,
-        refOrg: req.body.refOrg || skilledExp.refOrg,
-        refContactNo: req.body.refContactNo || skilledExp.refContactNo,
+        // isHousehold: req.body.isHousehold || skilledExp.isHousehold,
+        // company: req.body.company || skilledExp.company,
+        // isWorking: req.body.isWorking || skilledExp.isWorking,
+        // workStart: req.body.workStart || skilledExp.workStart,
+        // workEnd: req.body.workEnd || skilledExp.workEnd,
+        // refLname: req.body.refLname || skilledExp.refLname,
+        // refFname: req.body.refFname || skilledExp.refFname,
+        // refMname: req.body.refMname || skilledExp.refMname,
+        // refPosition: req.body.refPosition || skilledExp.refPosition,
+        // refOrg: req.body.refOrg || skilledExp.refOrg,
+        // refContactNo: req.body.refContactNo || skilledExp.refContactNo,
         photo: uploadedPhotos.length > 0 ? uploadedPhotos : skilledExp.photo,
         cloudinary_id: uploadedPhotos.length > 0 ? uploadedPhotos[0].public_id : skilledExp.cloudinary_id,
       };

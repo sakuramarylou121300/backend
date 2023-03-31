@@ -5,8 +5,7 @@ mongoose.set('strictQuery', true);
 const cors = require('cors')
 const bodyParser = require('body-parser');
 const path = require('path')
-
-// const multer = require('multer')
+const multer = require('multer')
 
 //ADMIN
 const adminInfoRoutes = require('./routes/adminInfoRoutes')
