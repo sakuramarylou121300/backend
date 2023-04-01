@@ -7,11 +7,10 @@ const mongoose = require('mongoose')
 //CREATE skill cert
 const createCertificate = async(req, res)=>{
     const {categorySkill,
-            title,
-            issuedOn,
-            validUntil,
-            // photo
-        } = req.body
+        title,
+        issuedOn,
+        validUntil,
+    } = req.body
     
     //check empty fields
     let emptyFields = []
@@ -27,9 +26,6 @@ const createCertificate = async(req, res)=>{
     if(!validUntil){
         emptyFields.push('validUntil')
     }
-    // if(!photo){
-    //     emptyFields.push('photo')
-    // }
 
     //send message if there is an empty fields
     if(emptyFields.length >0){
@@ -63,28 +59,19 @@ const createCertificate = async(req, res)=>{
             res.status(400).send({ error: "Please check your certificate issued on and valid until" });
             return;
         }
-        //create query
-        // const certificate = await Certificate.create({
-        //     categorySkill,
-        //     title,
-        //     issuedOn,
-        //     validUntil,
-        //     photo,
-        //     skilled_id
-        // })
-        
+  
         result = await cloudinary.uploader.upload(req.file.path)
         let certificate = new Certificate({
-                        categorySkill,
-                        title,
-                        issuedOn,
-                        validUntil,
-                        photo: result.secure_url,     
-                        cloudinary_id: result.public_id,
-                        skilled_id
-                    })
-                    await certificate.save()
-                    console.log(certificate)
+            categorySkill,
+            title,
+            issuedOn,
+            validUntil,
+            photo: result.secure_url,     
+            cloudinary_id: result.public_id,
+            skilled_id
+        })
+        await certificate.save()
+        console.log(certificate)
 
         res.status(200).json(certificate)
     }
@@ -101,7 +88,10 @@ const getAllCertificate = async(req, res)=>{
         //this is to find skill for specific user
         const skilled_id = req.skilledInfo._id
         //get all query
-        const certificate = await Certificate.find({skilled_id,  isDeleted: 0}).sort({createdAt: -1}).populate('skilled_id')
+        const certificate = await Certificate
+        .find({skilled_id,  isDeleted: 0})
+        .sort({createdAt: -1})
+        .populate('skilled_id')
         res.status(200).json(certificate)
     }
     catch(error){
@@ -131,7 +121,6 @@ const getOneCertificate = async(req, res)=>{
 }
 
 const updateCertificate = async(req,res)=>{
-    // const {id} = req.params  
 
     try{
         // const skilled_id = req.skilledInfo._id

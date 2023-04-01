@@ -51,7 +51,9 @@ const createSkilledNClearance = async(req, res)=>{
 const getAllSkilledNClearance = async(req, res)=>{
     try{
         const skilled_id = req.skilledInfo._id
-        const skilledNClearance = await SkilledNClearance.find({skilled_id,isDeleted: 0}).sort({createdAt:-1})
+        const skilledNClearance = await SkilledNClearance
+        .find({skilled_id,isDeleted: 0})
+        .sort({createdAt:-1})
         res.status(200).json(skilledNClearance)
     }
     catch(err){
@@ -82,68 +84,30 @@ const getOneSkilledNClearance = async(req, res)=>{
 
 //UPDATE skill
 const updateSkilledNClearance  = async(req, res) =>{
-    const {id} = req.params    
-    const {nClearanceExp} = req.body
-            const skilled_id = req.skilledInfo._id
+
+    try{ 
+        let skilledNClearance = await SkilledNClearance.findById(req.params.id)  
     
-    let skilledNClearance = await SkilledNClearance.findById(id)  
-   
-    let emptyFields = []
+        //remove the recent image
+        await cloudinary.uploader.destroy(skilledNClearance.cloudinary_id)
+        //upload the new image
+        let result
+        if(req.file){
+            result = await cloudinary.uploader.upload(req.file.path)
+        }
+        const data = {
+            nClearanceExp: req.body.nClearanceExp || skilledNClearance.nClearanceExp,
+            photo: result?.secure_url || skilledNClearance.photo,
+            cloudinary_id: result?.public_id || skilledNClearance.cloudinary_id
+        }
 
-    if(!nClearanceExp){
-        emptyFields.push('nClearanceExp')
+        skilledNClearance = await SkilledNClearance.findByIdAndUpdate(req.params.id, 
+            data, {new: true})
+            res.json(skilledNClearance)
     }
-
-    //send message if there is an empty fields
-    if(emptyFields.length >0){
-        return res.status(400).json({error: 'Please fill in all the blank fields.', emptyFields})
+    catch(error){
+        res.status(404).json({error:error.message})
     }
-    //search if existing
-    const skilledNClearanceCheck = await SkilledNClearance.findOne({
-        nClearanceExp:nClearanceExp,
-        nClearanceIsVerified:{$in: [0, 1]},
-        isDeleted: 0,
-        skilled_id:skilled_id
-    })
-
-    if(skilledNClearanceCheck){
-        return res.status(400).json({error: "NBI Clearance already exists."})
-    }
-    //check if id is not existing
-    if(!mongoose.Types.ObjectId.isValid(id)){
-        return res.status(404).json({error: 'Invalid id'})
-    }
-    
-    //remove the recent image
-    await cloudinary.uploader.destroy(skilledNClearance.cloudinary_id)
-    //upload the new image
-    let result
-    if(req.file){
-        result = await cloudinary.uploader.upload(req.file.path)
-    }
-    const data = {
-        nClearanceExp,
-        photo: result?.secure_url || certificate.photo,
-        cloudinary_id: result?.public_id || certificate.cloudinary_id
-    }
-
-    skilledNClearance = await SkilledNClearance.findByIdAndUpdate(id, 
-        data, {new: true})
-        res.json(skilledNClearance)
-    
-     //check if not existing
-     if (!skilledNClearance){
-        return res.status(404).json({error: 'Barangay Clearance not found'})
-    }
-
-    res.status(200).json(skilledNClearance)
-    
-     //check if not existing
-     if (!skilledNClearance){
-        return res.status(404).json({error: 'Barangay Clearance not found'})
-    }
-
-    res.status(200).json(skilledNClearance)
 }
 
 //DELETE skill

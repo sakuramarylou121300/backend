@@ -26,7 +26,7 @@ const skilledBClearance = new Schema({
         type: mongoose.Schema.Types.ObjectId,
         required: true,
         ref: 'SkilledInfo'
-    },
+    }, 
 },{timestamps: true})
 
 module.exports = mongoose.model('SkilledBClearance',skilledBClearance)
