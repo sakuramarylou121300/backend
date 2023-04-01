@@ -3,9 +3,12 @@ const mongoose = require('mongoose')
 const Schema = mongoose.Schema 
 
 const skilledNClearance = new Schema({
-    nClearancePhoto:{
+    photo:{
         type: String,
         required: true,
+    },
+    cloudinary_id:{
+        type: String
     },
     nClearanceExp:{
         type: Date,

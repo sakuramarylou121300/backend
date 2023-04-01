@@ -1,4 +1,6 @@
 const express = require('express')
+const upload = require("../utils/multer")
+
 const {
     createSkilledNClearance,
     getAllSkilledNClearance,
@@ -11,10 +13,10 @@ const requireAuth = require('../middleware/requireAuth')
 //instance of router
 router = express.Router()
 
-router.post('/post', requireAuth, createSkilledNClearance)
+router.post('/post', requireAuth, upload.single("photo"), createSkilledNClearance)
 router.get('/getAll/', requireAuth, getAllSkilledNClearance)
 router.get('/getOne/:id', requireAuth, getOneSkilledNClearance)
-router.patch('/update/:id', requireAuth, updateSkilledNClearance)
+router.patch('/update/:id', requireAuth, upload.single("photo"), updateSkilledNClearance)
 router.patch('/delete/:id', requireAuth, deleteSkilledNClearance)
 
 //export

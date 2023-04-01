@@ -1,19 +1,22 @@
 const SkilledBClearance = require('../models/skilledBClearance') //for CRUD of skill (admin)
 const SkilledInfo = require('../models/skilledInfo')
+const cloudinary = require("../utils/cloudinary")
 const mongoose = require('mongoose')
  
 const createSkilledBClearance = async(req, res)=>{
 
     try{
-        const {bClearancePhoto,
-                bClearanceExp} = req.body
+        const {
+                // bClearancePhoto,
+                bClearanceExp
+            } = req.body
         const skilled_id = req.skilledInfo._id
         //check empty fields
     let emptyFields = []
 
-    if(!bClearancePhoto){
-        emptyFields.push('bClearancePhoto')
-    }
+    // if(!bClearancePhoto){
+    //     emptyFields.push('bClearancePhoto')
+    // }
     if(!bClearanceExp){
         emptyFields.push('bClearanceExp')
     }
@@ -22,26 +25,31 @@ const createSkilledBClearance = async(req, res)=>{
     if(emptyFields.length >0){
         return res.status(400).json({error: 'Please fill in all the blank fields.', emptyFields})
     }
-        //search if existing
-        const skilledBClearanceCheck = await SkilledBClearance.findOne({
-            bClearanceExp:bClearanceExp,
-            bClearanceIsVerified:{$in: [0, 1]},
-            isDeleted: 0,
-            skilled_id:skilled_id
-        })
+    //search if existing
+    const skilledBClearanceCheck = await SkilledBClearance.findOne({
+        bClearanceExp:bClearanceExp,
+        bClearanceIsVerified:{$in: [0, 1]},
+        isDeleted: 0,
+        skilled_id:skilled_id
+    })
 
-        if(skilledBClearanceCheck){
-            return res.status(400).json({error: "Barangay Clearance already exists."})
-        }
-        //create new skill
-        const newSkilledBClearance = new SkilledBClearance({
-            bClearancePhoto,
-            bClearanceExp,
-            skilled_id})
-        await newSkilledBClearance.save()
-        res.status(200).json(newSkilledBClearance)
+    if(skilledBClearanceCheck){
+        return res.status(400).json({error: "Barangay Clearance already exists."})
+    }
+    result = await cloudinary.uploader.upload(req.file.path)
+    let skilledBClearance = new SkilledBClearance({
+        bClearanceExp,          
+        photo: result.secure_url,     
+        cloudinary_id: result.public_id,
+        skilled_id
+    })
+    await skilledBClearance.save()
+    console.log(skilledBClearance)
+    res.status(200).json(skilledBClearance)
+    
     }
     catch(error){
+        console.log(error)
         res.status(404).json({error: error.message})
     }
 }
@@ -80,15 +88,14 @@ const getOneSkilledBClearance = async(req, res)=>{
 
 //UPDATE skill
 const updateSkilledBClearance  = async(req, res) =>{
-    const {id} = req.params    
-    const {bClearancePhoto,
-            bClearanceExp} = req.body
-            const skilled_id = req.skilledInfo._id
+    const {id} = req.params  
+    const {bClearanceExp} = req.body
+    const skilled_id = req.skilledInfo._id
+
+    let skilledBClearance = await SkilledBClearance.findById(id)  
+   
     let emptyFields = []
 
-    if(!bClearancePhoto){
-        emptyFields.push('bClearancePhoto')
-    }
     if(!bClearanceExp){
         emptyFields.push('bClearanceExp')
     }
@@ -100,7 +107,6 @@ const updateSkilledBClearance  = async(req, res) =>{
     //search if existing
     const skilledBClearanceCheck = await SkilledBClearance.findOne({
         bClearanceExp:bClearanceExp,
-        bClearancePhoto:bClearancePhoto,
         bClearanceIsVerified:{$in: [0, 1]},
         isDeleted: 0,
         skilled_id:skilled_id
@@ -113,10 +119,23 @@ const updateSkilledBClearance  = async(req, res) =>{
     if(!mongoose.Types.ObjectId.isValid(id)){
         return res.status(404).json({error: 'Invalid id'})
     }
-     //delete query
-     const skilledBClearance = await SkilledBClearance.findOneAndUpdate({_id: id},{
-         ...req.body //get new value
-     })
+
+    //remove the recent image
+    await cloudinary.uploader.destroy(skilledBClearance.cloudinary_id)
+    //upload the new image
+    let result
+    if(req.file){
+        result = await cloudinary.uploader.upload(req.file.path)
+    }
+    const data = {
+        bClearanceExp,
+        photo: result?.secure_url || certificate.photo,
+        cloudinary_id: result?.public_id || certificate.cloudinary_id
+    }
+
+    skilledBClearance = await SkilledBClearance.findByIdAndUpdate(id, 
+        data, {new: true})
+        res.json(skilledBClearance)
     
      //check if not existing
      if (!skilledBClearance){
