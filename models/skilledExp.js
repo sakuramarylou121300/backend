@@ -8,58 +8,58 @@ const skilledExp = new Schema({
         type: String,
         required: true
     },
-    // isHousehold:{
-    //     type: String,
-    //     default: 'false'
-    // },
-    // company:{
-    //     type: String,
-    //     default: ''
-    // },
-    // isWorking:{
-    //     type: String,
-    //     default: 'false'
-    // },
-    // workStart:{
-    //     type: String,
-    //     required: true
-    // },
-    // workEnd:{
-    //     type: String,
-    //     default: ''
-    // },
+    isHousehold:{
+        type: String,
+        default: 'false'
+    },
+    company:{
+        type: String,
+        default: ''
+    },
+    isWorking:{
+        type: String,
+        default: 'false'
+    },
+    workStart:{
+        type: String,
+        required: true
+    },
+    workEnd:{
+        type: String,
+        default: ''
+    },
     photo: [{
         url: { type: String, required: true },
         public_id: { type: String, required: true },
     }],
-    // refLname:{
-    //     type: String,
-    //     required: true
-    // },
-    // refFname:{
-    //     type: String,
-    //     required: true
-    // },
-    // refMname:{
-    //     type: String,
-    //     default: ''
-    // },
-    // refPosition:{
-    //     type: String,
-    //     default: ''
-    // },
-    // refOrg:{
-    //     type: String,
-    //     default: ''
-    // },
-    // refContactNo:{
-    //     type: Number,
-    //     required: true
-    // },
-    // expIsVerified:{
-    //     type: Number,
-    //     default: 0
-    // },
+    refLname:{
+        type: String,
+        required: true
+    },
+    refFname:{
+        type: String,
+        required: true
+    },
+    refMname:{
+        type: String,
+        default: ''
+    },
+    refPosition:{
+        type: String,
+        default: ''
+    },
+    refOrg:{
+        type: String,
+        default: ''
+    },
+    refContactNo:{
+        type: Number,
+        required: true
+    },
+    expIsVerified:{
+        type: Number,
+        default: 0
+    },
     cloudinary_id:{
         type: String,
         required: true,
