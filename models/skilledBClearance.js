@@ -11,7 +11,7 @@ const skilledBClearance = new Schema({
         type: String
     },
     bClearanceExp:{
-        type: String,
+        type: Date,
         required: true,
     },
     bClearanceIsVerified:{

@@ -59,6 +59,9 @@ const createCertificate = async(req, res)=>{
             res.status(400).send({ error: "Please check your certificate issued on and valid until" });
             return;
         }
+
+        // let issuedOnDate = new Date(issuedOn)
+        // console.log(issuedOnDate)
   
         result = await cloudinary.uploader.upload(req.file.path)
         let certificate = new Certificate({

@@ -14,7 +14,7 @@ const skillCertSchema = new Schema({
     },
     issuedOn:{
         type: String,
-        required: true
+        required: true 
     },
     validUntil:{
         type: String,
