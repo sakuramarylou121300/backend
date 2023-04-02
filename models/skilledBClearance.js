@@ -1,6 +1,6 @@
 const mongoose = require('mongoose')
 
-const Schema = mongoose.Schema 
+const Schema = mongoose.Schema  
 
 const skilledBClearance = new Schema({
     photo:{
@@ -11,7 +11,7 @@ const skilledBClearance = new Schema({
         type: String
     },
     bClearanceExp:{
-        type: Date,
+        type: String,
         required: true,
     },
     bClearanceIsVerified:{
