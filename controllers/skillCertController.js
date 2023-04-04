@@ -128,6 +128,21 @@ const updateCertificate = async(req,res)=>{
     try{
         // const skilled_id = req.skilledInfo._id
         let certificate = await Certificate.findById(req.params.id)
+
+        // check if certificate already exists with the same categorySkill, title, issuedOn, and validUntil
+        const existingCertificate = await Certificate.findOne({
+            categorySkill: req.body.categorySkill || certificate.categorySkill,
+            title: req.body.title || certificate.title,
+            issuedOn: req.body.issuedOn || certificate.issuedOn,
+            validUntil: req.body.validUntil || certificate.validUntil,
+            isDeleted:0
+        });
+
+        if (existingCertificate) {
+            return res.status(400).json({
+                message: "This certificate already exists."
+            });
+        }
         
         //remove the recent image
         await cloudinary.uploader.destroy(certificate.cloudinary_id)
