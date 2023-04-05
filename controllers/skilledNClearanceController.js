@@ -87,7 +87,19 @@ const updateSkilledNClearance  = async(req, res) =>{
 
     try{ 
         let skilledNClearance = await SkilledNClearance.findById(req.params.id)  
-    
+        
+        // check if certificate already exists with the same categorySkill, title, issuedOn, and validUntil
+        const existingNClearance = await SkilledNClearance.findOne({
+            nClearanceExp: req.body.nClearanceExp || skilledNClearance.nClearanceExp,
+            isDeleted:0
+        });
+
+        if (existingNClearance) {
+            return res.status(400).json({
+                message: "This nbi clearance already exists."
+            });
+        }
+
         //remove the recent image
         await cloudinary.uploader.destroy(skilledNClearance.cloudinary_id)
         //upload the new image

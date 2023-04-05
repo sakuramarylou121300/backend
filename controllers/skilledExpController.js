@@ -18,8 +18,54 @@ const createExp = async(req, res) => {
     refContactNo
   } = req.body;
 
+  let emptyFields = []
+
+    if(!categorySkill){
+        emptyFields.push('categorySkill')
+    }
+    if(!workStart){
+        emptyFields.push('workStart')
+    }
+    if(!refLname){
+        emptyFields.push('refLname')
+    }
+    if(!refFname){
+        emptyFields.push('refFname')
+    }
+    if(!refContactNo){
+        emptyFields.push('refContactNo')
+    }
+    //send message if there is an empty fields
+    if(emptyFields.length >0){
+        return res.status(400).json({error: 'Please fill in all the blank fields.', emptyFields})
+    }
+
+
   try {
     const skilled_id = req.skilledInfo._id;
+
+    const existingExp = await SkilledExp.findOne({
+        categorySkill: req.body.categorySkill || skilledExp.categorySkill,
+        isHousehold: req.body.isHousehold || skilledExp.isHousehold,
+        company: req.body.company || skilledExp.company,
+        isWorking: req.body.isWorking || skilledExp.isWorking,
+        workStart: req.body.workStart || skilledExp.workStart,
+        workEnd: req.body.workEnd || skilledExp.workEnd,
+        refLname: req.body.refLname || skilledExp.refLname,
+        refFname: req.body.refFname || skilledExp.refFname,
+        refMname: req.body.refMname || skilledExp.refMname,
+        refPosition: req.body.refPosition || skilledExp.refPosition,
+        refOrg: req.body.refOrg || skilledExp.refOrg,
+        refContactNo: req.body.refContactNo || skilledExp.refContactNo,
+        isDeleted:0
+    });
+
+    if (existingExp) {
+        return res.status(400).json({
+            message: "This experience already exists."
+        });
+    }
+
     let uploadedPhotos = [];
 
     // Loop through uploaded files and upload to cloudinary
@@ -104,8 +150,29 @@ const getOneExp = async(req, res)=>{
 
 const updateExp = async (req, res) => {
     try {
-      const skilledExp = await SkilledExp.findById(req.params.id);
-  
+        let skilledExp = await SkilledExp.findById(req.params.id);
+        // check if certificate already exists with the same categorySkill, title, issuedOn, and validUntil
+        const existingExp = await SkilledExp.findOne({
+            categorySkill: req.body.categorySkill || skilledExp.categorySkill,
+            isHousehold: req.body.isHousehold || skilledExp.isHousehold,
+            company: req.body.company || skilledExp.company,
+            isWorking: req.body.isWorking || skilledExp.isWorking,
+            workStart: req.body.workStart || skilledExp.workStart,
+            workEnd: req.body.workEnd || skilledExp.workEnd,
+            refLname: req.body.refLname || skilledExp.refLname,
+            refFname: req.body.refFname || skilledExp.refFname,
+            refMname: req.body.refMname || skilledExp.refMname,
+            refPosition: req.body.refPosition || skilledExp.refPosition,
+            refOrg: req.body.refOrg || skilledExp.refOrg,
+            refContactNo: req.body.refContactNo || skilledExp.refContactNo,
+            isDeleted:0
+        });
+
+      if (existingExp) {
+          return res.status(400).json({
+              message: "This experience already exists."
+          });
+      }
       // remove the recent images
       await Promise.all(
         skilledExp.photo.map(async (expPhoto) => {
