@@ -88,6 +88,18 @@ const updateSkilledBClearance  = async(req, res) =>{
    try{ 
         let skilledBClearance = await SkilledBClearance.findById(req.params.id)  
 
+        // check if certificate already exists with the same categorySkill, title, issuedOn, and validUntil
+        const existingBClearance = await SkilledBClearance.findOne({
+            bClearanceExp: req.body.bClearanceExp || skilledBClearance.bClearanceExp,
+            isDeleted:0
+        });
+
+        if (existingBClearance) {
+            return res.status(400).json({
+                message: "This barangay clearance already exists."
+            });
+        }
+
         //remove the recent image
         await cloudinary.uploader.destroy(skilledBClearance.cloudinary_id)
         //upload the new image
