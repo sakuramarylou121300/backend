@@ -43,28 +43,28 @@ const createExp = async(req, res) => {
 
   try {
     const skilled_id = req.skilledInfo._id;
-
-    const existingExp = await SkilledExp.findOne({
-        categorySkill: req.body.categorySkill || skilledExp.categorySkill,
-        isHousehold: req.body.isHousehold || skilledExp.isHousehold,
-        company: req.body.company || skilledExp.company,
-        isWorking: req.body.isWorking || skilledExp.isWorking,
-        workStart: req.body.workStart || skilledExp.workStart,
-        workEnd: req.body.workEnd || skilledExp.workEnd,
-        refLname: req.body.refLname || skilledExp.refLname,
-        refFname: req.body.refFname || skilledExp.refFname,
-        refMname: req.body.refMname || skilledExp.refMname,
-        refPosition: req.body.refPosition || skilledExp.refPosition,
-        refOrg: req.body.refOrg || skilledExp.refOrg,
-        refContactNo: req.body.refContactNo || skilledExp.refContactNo,
-        isDeleted:0
-    });
-
-    if (existingExp) {
-        return res.status(400).json({
-            message: "This experience already exists."
-        });
-    }
+    const expCheck = await SkilledExp.findOne({
+      categorySkill:categorySkill,
+      isHousehold:isHousehold,
+      company:company,
+      isWorking:isWorking,
+      workStart:workStart,
+      workEnd:workEnd,
+      // photo:photo,
+      refLname:refLname, 
+      refFname:refFname,
+      refMname:refMname,
+      refPosition:refPosition,
+      refOrg:refOrg,
+      refContactNo:refContactNo,
+      expIsVerified:{$in: ["false", "true"]},
+      skilled_id:skilled_id,
+      isDeleted: 0
+  })
+  
+  if(expCheck){
+      return res.status(400).json({error: "Work experience already exists in this user."})
+  }
 
     let uploadedPhotos = [];
 
@@ -150,6 +150,7 @@ const getOneExp = async(req, res)=>{
 
 const updateExp = async (req, res) => {
     try {
+        const skilled_id = req.skilledInfo._id
         let skilledExp = await SkilledExp.findById(req.params.id);
         // check if certificate already exists with the same categorySkill, title, issuedOn, and validUntil
         const existingExp = await SkilledExp.findOne({
@@ -165,6 +166,8 @@ const updateExp = async (req, res) => {
             refPosition: req.body.refPosition || skilledExp.refPosition,
             refOrg: req.body.refOrg || skilledExp.refOrg,
             refContactNo: req.body.refContactNo || skilledExp.refContactNo,
+            expIsVerified:{$in: ["false", "true"]},
+            skilled_id:skilled_id,
             isDeleted:0
         });
 

@@ -21,7 +21,7 @@ const createSkilledNClearance = async(req, res)=>{
         //search if existing
         const skilledNClearanceCheck = await SkilledNClearance.findOne({
             nClearanceExp:nClearanceExp,
-            nClearanceIsVerified:{$in: [0, 1]},
+            nClearanceIsVerified:{$in: ["false", "true"]},
             isDeleted: 0,
             skilled_id:skilled_id
         })
@@ -86,12 +86,15 @@ const getOneSkilledNClearance = async(req, res)=>{
 const updateSkilledNClearance  = async(req, res) =>{
 
     try{ 
+        const skilled_id = req.skilledInfo._id
         let skilledNClearance = await SkilledNClearance.findById(req.params.id)  
         
         // check if certificate already exists with the same categorySkill, title, issuedOn, and validUntil
         const existingNClearance = await SkilledNClearance.findOne({
             nClearanceExp: req.body.nClearanceExp || skilledNClearance.nClearanceExp,
-            isDeleted:0
+            nClearanceIsVerified:{$in: ["false", "true"]},
+            isDeleted:0,
+            skilled_id:skilled_id
         });
 
         if (existingNClearance) {

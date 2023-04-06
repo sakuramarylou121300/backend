@@ -57,8 +57,8 @@ const skilledExp = new Schema({
         required: true
     },
     expIsVerified:{
-        type: Number,
-        default: 0
+        type: String,
+        default: "false"
     },
     cloudinary_id:{
         type: String,

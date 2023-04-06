@@ -15,8 +15,8 @@ const skilledBClearance = new Schema({
         required: true,
     },
     bClearanceIsVerified:{
-        type: Number,
-        default: 0,
+        type: String,
+        default: "false",
     },
     isDeleted:{
         type: Number,

@@ -15,8 +15,8 @@ const skilledNClearance = new Schema({
         required: true,
     },
     nClearanceIsVerified:{
-        type: Number,
-        default: 0,
+        type: String,
+        default: "false",
     },
     isDeleted:{
         type: Number,

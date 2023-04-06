@@ -126,7 +126,7 @@ const getOneCertificate = async(req, res)=>{
 const updateCertificate = async(req,res)=>{
 
     try{
-        // const skilled_id = req.skilledInfo._id
+        const skilled_id = req.skilledInfo._id
         let certificate = await Certificate.findById(req.params.id)
 
         // check if certificate already exists with the same categorySkill, title, issuedOn, and validUntil
@@ -135,7 +135,9 @@ const updateCertificate = async(req,res)=>{
             title: req.body.title || certificate.title,
             issuedOn: req.body.issuedOn || certificate.issuedOn,
             validUntil: req.body.validUntil || certificate.validUntil,
-            isDeleted:0
+            skillIsVerified:{$in: ["false", "true"]},
+            isDeleted:0,
+            skilled_id:skilled_id
         });
 
         if (existingCertificate) {

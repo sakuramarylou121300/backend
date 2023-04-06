@@ -22,7 +22,7 @@ const createSkilledBClearance = async(req, res)=>{
         //search if existing
         const skilledBClearanceCheck = await SkilledBClearance.findOne({
             bClearanceExp:bClearanceExp,
-            bClearanceIsVerified:{$in: [0, 1]},
+            bClearanceIsVerified:{$in: ["false", "true"]},
             isDeleted: 0,
             skilled_id:skilled_id
         })
@@ -85,13 +85,16 @@ const getOneSkilledBClearance = async(req, res)=>{
 //UPDATE skill
 const updateSkilledBClearance  = async(req, res) =>{
 
-   try{ 
+    try{  
+        const skilled_id = req.skilledInfo._id
         let skilledBClearance = await SkilledBClearance.findById(req.params.id)  
 
         // check if certificate already exists with the same categorySkill, title, issuedOn, and validUntil
         const existingBClearance = await SkilledBClearance.findOne({
             bClearanceExp: req.body.bClearanceExp || skilledBClearance.bClearanceExp,
-            isDeleted:0
+            bClearanceIsVerified:{$in: ["false", "true"]},
+            isDeleted:0,
+            skilled_id:skilled_id
         });
 
         if (existingBClearance) {
