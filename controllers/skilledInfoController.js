@@ -83,7 +83,7 @@ const getSkilledInfo = async(req, res) =>{
             match: { isDeleted: 0} 
         })
         .populate({
-            path: 'experience',
+            path: 'skillExp',
             match: { isDeleted: 0} 
         })
         .populate({
@@ -91,7 +91,11 @@ const getSkilledInfo = async(req, res) =>{
             match: { isDeleted: 0} 
         })
         .populate({
-            path: 'skilledBill',
+            path: 'skillBarangay',
+            match: { isDeleted: 0} 
+        })
+        .populate({
+            path: 'skillNbi',
             match: { isDeleted: 0} 
         })
 

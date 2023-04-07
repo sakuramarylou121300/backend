@@ -422,7 +422,7 @@ const adminGetAllSkilled = async(req, res)=>{
             match: { isDeleted: 0} 
         })
         .populate({
-            path: 'experience',
+            path: 'skillExp',
             match: { isDeleted: 0} 
         })
         .populate({
@@ -430,7 +430,7 @@ const adminGetAllSkilled = async(req, res)=>{
             match: { isDeleted: 0} 
         })
         .populate({
-            path: 'skilledBill',
+            path: 'skillBarangay',
             match: { isDeleted: 0} 
         })
         res.status(200).json(skilledInfo)
@@ -505,7 +505,7 @@ const adminDeleteSkilled = async(req, res)=>{
 
 }
 
-//GET all skill exp
+//GET all skill exp, this should be deleted
 const adminGetAllExperience = async(req, res)=>{
 
     try{
@@ -519,7 +519,7 @@ const adminGetAllExperience = async(req, res)=>{
     }  
 }
 
-//GET all skill cert
+//GET all skill cert, this should be deleted
 const adminGetAllCertificate = async(req, res)=>{
     try{
         
@@ -545,7 +545,7 @@ const adminGetAllSkill = async(req, res)=>{
         res.status(404).json({error: error.message})
     }  
 }
-//GET all skill cert
+//GET all skill cert, should be deleted
 const adminGetAllSkilledBill = async(req, res)=>{
 
     try{
@@ -559,8 +559,47 @@ const adminGetAllSkilledBill = async(req, res)=>{
     }  
 }
 
-//GET all skilled
-const adminGetAllSkilledDetail = async(req, res)=>{
+const adminGetAllExpSkilledDetail = async(req, res)=>{
+
+    try{
+        //get all query
+        const skilledInfo = await SkilledInfo
+        .find({idIsVerified: 0, isDeleted: 0, 
+        })
+        .select("-password")
+        .populate({
+            path: 'skillExp',
+            match: { isDeleted: 0},
+            options: { sort: { createdAt: -1 } } 
+        })
+        .lean() // Convert Mongoose Document to JS object
+        //count each skilled info skillCert unread
+        const skilledInfoWithCountsAndLatestExpTimes  = skilledInfo.map(info => {
+            const count = info.skillExp.filter(exp => exp.isRead === 0).length;
+            const latestExpTime = info.skillExp.length > 0 ? info.skillExp[0].createdAt : new Date(0);
+            return {...info, count, latestExpTime};
+        });
+      
+          const skilledInfoSorted = skilledInfoWithCountsAndLatestExpTimes.sort((a, b) => {
+            if (b.latestExpTime.getTime() - a.latestExpTime.getTime() !== 0) {
+              // sort by the latest skillCert createdAt time    
+              return b.latestExpTime - a.latestExpTime;
+            } else {
+              // if the latest skillCert createdAt time is the same,
+              // sort by the overall updatedAt time of the skilledInfo
+              return b.updatedAt - a.updatedAt;
+            }
+          });
+          
+        res.status(200).json(skilledInfoSorted);     
+    }
+    catch(error){
+        res.status(404).json({error: error.message})
+    }  
+}
+
+//GET all skilled, cert
+const adminGetAllCertSkilledDetail = async(req, res)=>{
 
     try{
         //get all query
@@ -598,6 +637,85 @@ const adminGetAllSkilledDetail = async(req, res)=>{
         res.status(404).json({error: error.message})
     }  
 }
+
+const adminGetAllBClearanceSkilledDetail = async(req, res)=>{
+
+    try{
+        //get all query
+        const skilledInfo = await SkilledInfo
+        .find({idIsVerified: 0, isDeleted: 0, 
+        })
+        .select("-password")
+        .populate({
+            path: 'skillBarangay',
+            match: { isDeleted: 0},
+            options: { sort: { createdAt: -1 } } 
+        })
+        .lean() // Convert Mongoose Document to JS object
+        //count each skilled info skillCert unread
+        const skilledInfoWithCountsAndLatestBarangayTimes  = skilledInfo.map(info => {
+            const count = info.skillBarangay.filter(barangay => barangay.isRead === 0).length;
+            const latestBarangayTime = info.skillBarangay.length > 0 ? info.skillBarangay[0].createdAt : new Date(0);
+            return {...info, count, latestBarangayTime};
+        });
+      
+          const skilledInfoSorted = skilledInfoWithCountsAndLatestBarangayTimes.sort((a, b) => {
+            if (b.latestBarangayTime.getTime() - a.latestBarangayTime.getTime() !== 0) {
+              // sort by the latest skillCert createdAt time    
+              return b.latestBarangayTime - a.latestBarangayTime;
+            } else {
+              // if the latest skillCert createdAt time is the same,
+              // sort by the overall updatedAt time of the skilledInfo
+              return b.updatedAt - a.updatedAt;
+            }
+          });
+          
+        res.status(200).json(skilledInfoSorted);     
+    }
+    catch(error){
+        res.status(404).json({error: error.message})
+    }  
+}
+
+const adminGetAllNClearanceSkilledDetail = async(req, res)=>{
+
+    try{
+        //get all query
+        const skilledInfo = await SkilledInfo
+        .find({idIsVerified: 0, isDeleted: 0, 
+        })
+        .select("-password")
+        .populate({
+            path: 'skillNbi',
+            match: { isDeleted: 0},
+            options: { sort: { createdAt: -1 } } 
+        })
+        .lean() // Convert Mongoose Document to JS object
+        //count each skilled info skillCert unread
+        const skilledInfoWithCountsAndLatestNbiTimes  = skilledInfo.map(info => {
+            const count = info.skillNbi.filter(nbi => nbi.isRead === 0).length;
+            const latestNbiTime = info.skillNbi.length > 0 ? info.skillNbi[0].createdAt : new Date(0);
+            return {...info, count, latestNbiTime};
+        });
+      
+          const skilledInfoSorted = skilledInfoWithCountsAndLatestNbiTimes.sort((a, b) => {
+            if (b.latestNbiTime.getTime() - a.latestNbiTime.getTime() !== 0) {
+              // sort by the latest skillCert createdAt time    
+              return b.latestNbiTime - a.latestNbiTime;
+            } else {
+              // if the latest skillCert createdAt time is the same,
+              // sort by the overall updatedAt time of the skilledInfo
+              return b.updatedAt - a.updatedAt;
+            }
+          });
+          
+        res.status(200).json(skilledInfoSorted);     
+    }
+    catch(error){
+        res.status(404).json({error: error.message})
+    }  
+}
+//should be deleted
 const adminGetAllSkilledDetailCert = async(req, res)=>{
 
     try{
@@ -675,7 +793,7 @@ const adminGetAllSkilledCertDetail = async(req, res)=>{
     }  
 }
 
-//GET all skill cert
+//GET all skill cert, should be deleted
 const adminGetAllSkilledBillDetail = async(req, res)=>{
 
     try{
@@ -842,7 +960,10 @@ module.exports = {
     adminGetAllCertificate,
     adminGetAllSkill,
     adminGetAllSkilledBill,
-    adminGetAllSkilledDetail,
+    adminGetAllExpSkilledDetail,
+    adminGetAllCertSkilledDetail,
+    adminGetAllBClearanceSkilledDetail,
+    adminGetAllNClearanceSkilledDetail,
     adminGetAllSkilledDetailCert,
     adminGetAllSkilledExpDetail,
     adminGetAllSkilledCertDetail,

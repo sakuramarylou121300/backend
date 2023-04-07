@@ -18,6 +18,10 @@ const skilledBClearance = new Schema({
         type: String,
         default: "false",
     },
+    isRead:{
+        type: Number,
+        default: 0,
+    },
     isDeleted:{
         type: Number,
         default: 0,

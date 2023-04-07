@@ -69,6 +69,10 @@ const skilledExp = new Schema({
         required: true,
         ref: 'SkilledInfo'
     },
+    isRead:{
+        type: Number,
+        default: 0,
+    },
     isDeleted:{
         type: Number,
         default: 0,

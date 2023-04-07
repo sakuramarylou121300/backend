@@ -139,30 +139,28 @@ skilledInfoSchema.virtual('skills', {
     localField: '_id',
     foreignField: 'skilled_id'
 });
-
-skilledInfoSchema.virtual('experience', {
-    ref: 'Experience',
+skilledInfoSchema.virtual('skillExp', {
+    ref: 'SkilledExp',
     localField: '_id',
     foreignField: 'skilled_id'
 });
-
 skilledInfoSchema.virtual('skillCert', {
     ref: 'SkillCert',
     localField: '_id',
-    foreignField: 'skilled_id',
-    // justOne: false,
-    // options: { sort: { createdAt: 1 }}
+    foreignField: 'skilled_id'
 });
-
-// skilledInfoSchema.virtual('latestSkillCert').get(function() {
-//   if (this.skillCert.length > 0) {
-//     return this.skillCert.sort((a, b) => b.createdAt - a.createdAt)[0];
-//   }
-//   return null;
-// });
-
-skilledInfoSchema.virtual('skilledBill', {
-    ref: 'SkilledBill',
+skilledInfoSchema.virtual('skillBarangay', {
+    ref: 'SkilledBClearance',
+    localField: '_id',
+    foreignField: 'skilled_id'
+});
+skilledInfoSchema.virtual('skillBarangay', {
+    ref: 'SkilledBClearance',
+    localField: '_id',
+    foreignField: 'skilled_id'
+});
+skilledInfoSchema.virtual('skillNbi', {
+    ref: 'SkilledNClearance',
     localField: '_id',
     foreignField: 'skilled_id'
 });

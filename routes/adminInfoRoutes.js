@@ -23,7 +23,10 @@ const{
     adminGetAllCertificate,
     adminGetAllSkill,
     adminGetAllSkilledBill,
-    adminGetAllSkilledDetail,
+    adminGetAllExpSkilledDetail,
+    adminGetAllCertSkilledDetail,
+    adminGetAllBClearanceSkilledDetail,
+    adminGetAllNClearanceSkilledDetail,
     adminGetAllSkilledDetailCert,
     adminGetAllSkilledExpDetail,
     adminGetAllSkilledCertDetail,
@@ -101,8 +104,11 @@ router.patch('/delete/oneAdminInfo', adminAuth, deleteAdminInfo)
 //DEPENDING ON THE ROLES
 //SKILLED WORKER
 router.get('/getAll/Skilled', adminAuth, adminControlSkilled, adminGetAllSkilled)
-router.get('/getAll/Skilled/detail', adminAuth, adminControlSkilled, adminGetAllSkilledDetail)
+router.get('/getAll/Skilled/detail', adminAuth, adminControlSkilled, adminGetAllCertSkilledDetail)
+router.get('/getAll/Skilled/detail/exp', adminAuth, adminControlSkilled, adminGetAllExpSkilledDetail)
 router.get('/getAll/Skilled/detail/cert', adminAuth, adminControlSkilled, adminGetAllSkilledDetailCert)
+router.get('/getAll/Skilled/detail/bclearance', adminAuth, adminControlSkilled, adminGetAllBClearanceSkilledDetail)
+router.get('/getAll/Skilled/detail/nclearance', adminAuth, adminControlSkilled, adminGetAllNClearanceSkilledDetail)
 router.get('/getOne/Skilled/:id', adminAuth, adminControlSkilled, adminGetOneSkilled)
 router.patch('/update/Skilled/:id', adminAuth, adminControlSkilled, adminUpdateSkilled)
 router.patch('/delete/Skilled/:id', adminAuth, adminControlSkilled, adminDeleteSkilled)

@@ -22,6 +22,10 @@ const skilledNClearance = new Schema({
         type: Number,
         default: 0,
     },
+    isRead:{
+        type: Number,
+        default: 0,
+    },
     skilled_id:{
         type: mongoose.Schema.Types.ObjectId,
         required: true,
