@@ -433,6 +433,10 @@ const adminGetAllSkilled = async(req, res)=>{
             path: 'skillBarangay',
             match: { isDeleted: 0} 
         })
+        .populate({
+            path: 'skillNbi',
+            match: { isDeleted: 0} 
+        })
         res.status(200).json(skilledInfo)
     }
     catch(error){
