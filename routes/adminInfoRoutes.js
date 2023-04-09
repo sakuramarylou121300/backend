@@ -30,6 +30,7 @@ const{
     adminGetAllSkilledDetailCert,
     adminGetAllSkilledExpDetail,
     adminGetAllSkilledCertDetail,
+    adminGetAllSkilledBarangayDetail,
     adminGetAllSkilledBillDetail,
     adminUpdateExperience,
     adminUpdateCertificate,
@@ -144,5 +145,8 @@ router.get('/getAll/Cert/detail/:username', adminAuth, adminControlSkilled, admi
 router.get('/getOne/Cert/:id', adminAuth, adminControlSkilled, getOneCertificate)
 router.patch('/update/Cert/:id', adminAuth, adminControlSkilled, adminUpdateCertificate)
 router.delete('/delete/Cert/:id', adminAuth, adminControlSkilled, deleteCertificate)
+
+//SKILLED BARANGAY CLEARANCE
+router.get('/getAll/Barangay/detail/:username', adminAuth, adminControlSkilled, adminGetAllSkilledBarangayDetail)
 
 module.exports = router

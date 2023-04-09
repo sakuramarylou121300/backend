@@ -1,7 +1,9 @@
 const AdminInfo = require('../models/adminInfo')  
 const SkilledInfo = require('../models/skilledInfo')
-const Experience = require('../models/experience')
+const Experience = require('../models/skilledExp')
 const Certificate = require('../models/skillCert')
+const Barangay = require('../models/skilledBClearance')
+const Nbi = require('../models/skilledNClearance')
 const Skill = require('../models/skill')
 const SkilledBill = require('../models/skilledBill')
 const mongoose = require('mongoose')
@@ -797,6 +799,29 @@ const adminGetAllSkilledCertDetail = async(req, res)=>{
     }  
 }
 
+const adminGetAllSkilledBarangayDetail = async(req, res)=>{
+    const username = req.params.username;
+    try{
+        // Find skilled_id document based on username
+        const skilledIdDoc = await SkilledInfo.findOne({ username: username });
+
+        // Check if skilled_id exists for the given username
+        if (!skilledIdDoc) {
+        return res.status(404).json({ error: 'Skilled Worker not found' });
+        }
+        //get all query
+        const barangay = await Barangay.find({
+            skilled_id: skilledIdDoc._id,
+            bClearanceIsVerified: "false", 
+            isDeleted: 0}).sort({updatedAt: 1})
+        .populate('skilled_id')
+        res.status(200).json(barangay)
+    }
+    catch(error){
+        res.status(404).json({error: error.message})
+    }  
+}
+
 //GET all skill cert, should be deleted
 const adminGetAllSkilledBillDetail = async(req, res)=>{
 
@@ -971,6 +996,7 @@ module.exports = {
     adminGetAllSkilledDetailCert,
     adminGetAllSkilledExpDetail,
     adminGetAllSkilledCertDetail,
+    adminGetAllSkilledBarangayDetail,
     adminGetAllSkilledBillDetail,
     adminUpdateExperience,
     adminUpdateCertificate,
