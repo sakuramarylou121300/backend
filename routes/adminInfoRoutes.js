@@ -19,21 +19,21 @@ const{
     adminGetOneSkilled,
     adminUpdateSkilled,
     adminDeleteSkilled,
-    adminGetAllExperience,
-    adminGetAllCertificate,
     adminGetAllSkill,
-    adminGetAllSkilledBill,
     adminGetAllExpSkilledDetail,
     adminGetAllCertSkilledDetail,
     adminGetAllBClearanceSkilledDetail,
     adminGetAllNClearanceSkilledDetail,
-    adminGetAllSkilledDetailCert,
     adminGetAllSkilledExpDetail,
     adminGetAllSkilledCertDetail,
     adminGetAllSkilledBarangayDetail,
-    adminGetAllSkilledBillDetail,
+    adminGetAllSkilledNbiDetail,
     adminUpdateExperience,
     adminUpdateCertificate,
+    adminUpdateBarangay,
+    adminUpdateNbi,
+    adminGetAllSkilledBill,
+    adminGetAllSkilledBillDetail,
     adminEditSkilledBill,
     adminUpdateSkilledBill,
     adminUpdateSkilledAccount,
@@ -56,14 +56,24 @@ const{
 } = require('../controllers/skillController')
 
 const{
-    getOneExperience,
-    deleteExperience
-} = require('../controllers/experienceController')
+    getOneExp,
+    deleteExp
+} = require('../controllers/skilledExpController')
 
 const{
     getOneCertificate,
     deleteCertificate
 } = require('../controllers/skillCertController')
+
+const{
+    getOneSkilledBClearance,
+    deleteSkilledBClearance
+} = require('../controllers/skilledBClearanceController')
+
+const{
+    getOneSkilledNClearance,
+    deleteSkilledNClearance
+} = require('../controllers/skilledNClearanceController')
 
 const{
     getOneSkilledBill,
@@ -88,7 +98,6 @@ router.patch('/update/adminPass/:id', adminAuth, adminControlAdmin, adminUpdateP
 router.patch('/update/adminInfo/:id', adminAuth, adminControlAdmin, adminUpdateInfo)
 router.patch('/delete/adminInfo/:id', adminAuth, adminControlAdmin, adminDeleteInfo)
 
-
 router.post('/post/adminRoleCap', adminAuth, adminControlAdmin, createAdminRoleCapability)
 router.get('/getAll/adminRoleCap', adminAuth, adminControlAdmin, getAllAdminRoleCapability) 
 router.get('/getOne/adminRoleCap/:id', adminAuth, adminControlAdmin, getOneAdminRoleCapability)
@@ -107,12 +116,41 @@ router.patch('/delete/oneAdminInfo', adminAuth, deleteAdminInfo)
 router.get('/getAll/Skilled', adminAuth, adminControlSkilled, adminGetAllSkilled)
 router.get('/getAll/Skilled/detail', adminAuth, adminControlSkilled, adminGetAllCertSkilledDetail)
 router.get('/getAll/Skilled/detail/exp', adminAuth, adminControlSkilled, adminGetAllExpSkilledDetail)
-router.get('/getAll/Skilled/detail/cert', adminAuth, adminControlSkilled, adminGetAllSkilledDetailCert)
 router.get('/getAll/Skilled/detail/bclearance', adminAuth, adminControlSkilled, adminGetAllBClearanceSkilledDetail)
 router.get('/getAll/Skilled/detail/nclearance', adminAuth, adminControlSkilled, adminGetAllNClearanceSkilledDetail)
 router.get('/getOne/Skilled/:id', adminAuth, adminControlSkilled, adminGetOneSkilled)
 router.patch('/update/Skilled/:id', adminAuth, adminControlSkilled, adminUpdateSkilled)
 router.patch('/delete/Skilled/:id', adminAuth, adminControlSkilled, adminDeleteSkilled)
+
+//SKILLED WORKER SKILL
+router.get('/getAll/skill', adminAuth, adminControlSkilled, adminGetAllSkill)
+router.get('/getOne/skill/:id', adminAuth, adminControlSkilled, getOneSkill)
+router.patch('/update/skill/:id', adminAuth, adminControlSkilled, updateSkill)
+router.delete('/delete/skill/:id', adminAuth, adminControlSkilled, deleteSkill)
+
+//SKILLED EXP   
+router.get('/getAll/SkilledExp/detail/:username', adminAuth, adminControlSkilled, adminGetAllSkilledExpDetail)
+router.get('/getOne/SkilledExp/:id', adminAuth, adminControlSkilled, getOneExp)
+router.patch('/update/SkilledExp/:id', adminAuth, adminControlSkilled, adminUpdateExperience)
+router.patch('/delete/SkilledExp/:id', adminAuth, adminControlSkilled, deleteExp)
+
+//SKILLED CERT
+router.get('/getAll/Cert/detail/:username', adminAuth, adminControlSkilled, adminGetAllSkilledCertDetail)
+router.get('/getOne/Cert/:id', adminAuth, adminControlSkilled, getOneCertificate)
+router.patch('/update/Cert/:id', adminAuth, adminControlSkilled, adminUpdateCertificate)
+router.patch('/delete/Cert/:id', adminAuth, adminControlSkilled, deleteCertificate)
+
+//SKILLED BARANGAY CLEARANCE
+router.get('/getAll/Barangay/detail/:username', adminAuth, adminControlSkilled, adminGetAllSkilledBarangayDetail)
+router.get('/getOne/Barangay/:id', adminAuth, adminControlSkilled, getOneSkilledBClearance)
+router.patch('/update/Barangay/:id', adminAuth, adminControlSkilled, adminUpdateBarangay)
+router.patch('/delete/Barangay/:id', adminAuth, adminControlSkilled, deleteSkilledBClearance)
+
+//SKILLED NBI CLEARANCE
+router.get('/getAll/Nbi/detail/:username', adminAuth, adminControlSkilled, adminGetAllSkilledNbiDetail)
+router.get('/getOne/Nbi/:id', adminAuth, adminControlSkilled, getOneSkilledNClearance)
+router.patch('/update/Nbi/:id', adminAuth, adminControlSkilled, adminUpdateNbi)
+router.patch('/delete/Nbi/:id', adminAuth, adminControlSkilled, deleteSkilledNClearance)
 
 router.get('/getAll/skilledBill', adminAuth, adminControlSkilled, adminGetAllSkilledBill)
 router.get('/getAll/skilledBill/detail', adminAuth, adminControlSkilled, adminGetAllSkilledBillDetail)
@@ -125,28 +163,5 @@ router.put('/update/skilled/account', adminAuth, adminControlAdmin, adminUpdateS
 router.put('/update/skilled/account/not', adminAuth, adminControlAdmin, adminUpdateSkilledAccountNot)
 
 router.patch('/update/skilled/address/:id', adminAuth, adminControlAdmin, adminEditSkilledAddress)
-
-//SKILLED WORKER SKILL
-router.get('/getAll/skill', adminAuth, adminControlSkilled, adminGetAllSkill)
-router.get('/getOne/skill/:id', adminAuth, adminControlSkilled, getOneSkill)
-router.patch('/update/skill/:id', adminAuth, adminControlSkilled, updateSkill)
-router.delete('/delete/skill/:id', adminAuth, adminControlSkilled, deleteSkill)
-
-//SKILLED WORKER WORK EXP   
-router.get('/getAll/SkilledExp', adminAuth, adminControlSkilled, adminGetAllExperience)
-router.get('/getAll/SkilledExp/detail/:username', adminAuth, adminControlSkilled, adminGetAllSkilledExpDetail)
-router.get('/getOne/SkilledExp/:id', adminAuth, adminControlSkilled, getOneExperience)
-router.patch('/update/SkilledExp/:id', adminAuth, adminControlSkilled, adminUpdateExperience)
-router.delete('/delete/SkilledExp/:id', adminAuth, adminControlSkilled, deleteExperience)
-
-//SKILLED CERT
-router.get('/getAll/Cert', adminAuth, adminControlSkilled, adminGetAllCertificate)
-router.get('/getAll/Cert/detail/:username', adminAuth, adminControlSkilled, adminGetAllSkilledCertDetail)
-router.get('/getOne/Cert/:id', adminAuth, adminControlSkilled, getOneCertificate)
-router.patch('/update/Cert/:id', adminAuth, adminControlSkilled, adminUpdateCertificate)
-router.delete('/delete/Cert/:id', adminAuth, adminControlSkilled, deleteCertificate)
-
-//SKILLED BARANGAY CLEARANCE
-router.get('/getAll/Barangay/detail/:username', adminAuth, adminControlSkilled, adminGetAllSkilledBarangayDetail)
 
 module.exports = router

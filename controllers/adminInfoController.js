@@ -1,4 +1,4 @@
-const AdminInfo = require('../models/adminInfo')  
+const AdminInfo = require('../models/adminInfo')   
 const SkilledInfo = require('../models/skilledInfo')
 const Experience = require('../models/skilledExp')
 const Certificate = require('../models/skillCert')
@@ -17,7 +17,6 @@ const adminCreateToken = (_id)=>{
 }
 
 //ONLY ADMIN CAN ACCESS
-//log in user
 const adminLogIn = async(req, res) =>{
     const {username, password} = req.body
     try{
@@ -36,7 +35,6 @@ const adminLogIn = async(req, res) =>{
     }
 }
 
-//sign up user/create new admin
 const adminSignUp = async(req, res) =>{
     const {
         username, 
@@ -69,7 +67,6 @@ const adminSignUp = async(req, res) =>{
     }
 }
 
-//get all admin
 const adminGetAllAdmin = async(req, res)=>{
 
     try{
@@ -87,7 +84,6 @@ const adminGetAllAdmin = async(req, res)=>{
     }  
 }
 
-//GET one skilled
 const adminGetOneAdmin = async(req, res)=>{
     const {id} = req.params  
 
@@ -108,7 +104,6 @@ const adminGetOneAdmin = async(req, res)=>{
 
 }
 
-//update admin info username
 const adminUpdateUserName = async(req, res) =>{
     const {id} = req.params 
     try{
@@ -150,7 +145,6 @@ const adminUpdateUserName = async(req, res) =>{
     }
 }
 
-//update skilled info pass
 const adminUpdatePass = async(req, res) =>{
     const {id} = req.params 
     try{
@@ -186,7 +180,6 @@ const adminUpdatePass = async(req, res) =>{
     }
 }
 
-//update skilled info
 const adminUpdateInfo = async(req, res) =>{
     const {id} = req.params 
     try{
@@ -226,7 +219,6 @@ const adminUpdateInfo = async(req, res) =>{
     }
 }
 
-//delete skilled info
 const adminDeleteInfo = async(req, res) =>{
     const {id} = req.params 
 
@@ -393,7 +385,6 @@ const updateAdminInfo = async(req, res) =>{
         res.status(400).json({error:error.message})
     }
 }
-
 //delete skilled info
 const deleteAdminInfo = async(req, res) =>{
 
@@ -411,8 +402,6 @@ const deleteAdminInfo = async(req, res) =>{
     }
 }
 //DEPENDING ON THE ROLE OF THE ADMIN
-
-//GET all skilled
 const adminGetAllSkilled = async(req, res)=>{
 
     try{
@@ -446,7 +435,6 @@ const adminGetAllSkilled = async(req, res)=>{
     }  
 }
 
-//GET one skilled
 const adminGetOneSkilled = async(req, res)=>{
     const {id} = req.params  
 
@@ -467,7 +455,6 @@ const adminGetOneSkilled = async(req, res)=>{
 
 }
 
-//UPDATE skilled
 const adminUpdateSkilled = async(req, res) =>{
     const {id} = req.params    
 
@@ -489,7 +476,6 @@ const adminUpdateSkilled = async(req, res) =>{
     res.status(200).json(skilledInfo)
 }
 
-//DELETE skilled
 const adminDeleteSkilled = async(req, res)=>{
     const {id} = req.params
     
@@ -511,34 +497,7 @@ const adminDeleteSkilled = async(req, res)=>{
 
 }
 
-//GET all skill exp, this should be deleted
-const adminGetAllExperience = async(req, res)=>{
-
-    try{
-        //get all query
-        const experience = await Experience.find({isDeleted: 0}).sort({createdAt: -1})
-        .populate('skilled_id')
-        res.status(200).json(experience)
-    }
-    catch(error){
-        res.status(404).json({error: error.message})
-    }  
-}
-
-//GET all skill cert, this should be deleted
-const adminGetAllCertificate = async(req, res)=>{
-    try{
-        
-        //get all query
-        const certificate = await Certificate.find({isDeleted: 0}).sort({createdAt: -1}).populate('skilled_id')
-        res.status(200).json(certificate)
-    }
-    catch(error){
-        res.status(404).json({error: error.message})
-    }  
-}
-
-//GET all skill
+//SORT BY RECENTLY ADDED
 const adminGetAllSkill = async(req, res)=>{
 
     try{
@@ -546,19 +505,6 @@ const adminGetAllSkill = async(req, res)=>{
         //get all query
         const skill = await Skill.find({isDeleted: 0}).sort({createdAt: -1}).populate('skilled_id')
         res.status(200).json(skill)
-    }
-    catch(error){
-        res.status(404).json({error: error.message})
-    }  
-}
-//GET all skill cert, should be deleted
-const adminGetAllSkilledBill = async(req, res)=>{
-
-    try{
-        //get all query
-        const skilledBill = await SkilledBill.find({isDeleted: 0}).sort({createdAt: -1})
-        .populate('skilled_id')
-        res.status(200).json(skilledBill)
     }
     catch(error){
         res.status(404).json({error: error.message})
@@ -604,7 +550,6 @@ const adminGetAllExpSkilledDetail = async(req, res)=>{
     }  
 }
 
-//GET all skilled, cert
 const adminGetAllCertSkilledDetail = async(req, res)=>{
 
     try{
@@ -721,31 +666,8 @@ const adminGetAllNClearanceSkilledDetail = async(req, res)=>{
         res.status(404).json({error: error.message})
     }  
 }
-//should be deleted
-const adminGetAllSkilledDetailCert = async(req, res)=>{
 
-    try{
-        //get all query
-        const skilledInfo = await SkilledInfo
-        .find({idIsVerified: 0, isDeleted: 0, 
-        })
-        .select("-password")
-        .populate({
-            path: 'skillCert',
-            match: { isDeleted: 0} 
-        })
-        .lean() // Convert Mongoose Document to JS object
-        .sort({'skillCert.createdAt':-1});
-        res.status(200).json({
-          success: true,
-          skilledInfo,
-        });
-    }
-    catch(error){
-        res.status(404).json({error: error.message})
-    }  
-}
-//GET all skill cert
+//USERNAME GET ALL
 const adminGetAllSkilledExpDetail = async(req, res)=>{
     // const skilled_id = req.params.skilled_id;
     const username = req.params.username;
@@ -763,7 +685,7 @@ const adminGetAllSkilledExpDetail = async(req, res)=>{
         const skilledExp = await Experience.find({
             skilled_id: skilledIdDoc._id,
             // skilled_id:skilled_id,
-            expIsVerified: 0, 
+            expIsVerified: "false", 
             isDeleted: 0
         })
         .sort({updatedAt: 1})
@@ -775,7 +697,6 @@ const adminGetAllSkilledExpDetail = async(req, res)=>{
     }  
 }
 
-//GET all skill cert
 const adminGetAllSkilledCertDetail = async(req, res)=>{
     const username = req.params.username;
     try{
@@ -822,20 +743,29 @@ const adminGetAllSkilledBarangayDetail = async(req, res)=>{
     }  
 }
 
-//GET all skill cert, should be deleted
-const adminGetAllSkilledBillDetail = async(req, res)=>{
-
+const adminGetAllSkilledNbiDetail = async(req, res)=>{
+    const username = req.params.username;
     try{
+        // Find skilled_id document based on username
+        const skilledIdDoc = await SkilledInfo.findOne({ username: username });
+
+        // Check if skilled_id exists for the given username
+        if (!skilledIdDoc) {
+        return res.status(404).json({ error: 'Skilled Worker not found' });
+        }
         //get all query
-        const skilledBill = await SkilledBill.find({billIsVerified: 0, isDeleted: 0}).sort({updatedAt: 1})
+        const nbi = await Nbi.find({
+            skilled_id: skilledIdDoc._id,
+            nClearanceIsVerified: "false", 
+            isDeleted: 0}).sort({updatedAt: 1})
         .populate('skilled_id')
-        res.status(200).json(skilledBill)
+        res.status(200).json(nbi)
     }
     catch(error){
         res.status(404).json({error: error.message})
     }  
 }
-
+//UPDATE INFO
 const adminUpdateExperience = async(req, res) =>{
     const {id} = req.params 
 
@@ -857,7 +787,6 @@ const adminUpdateExperience = async(req, res) =>{
     res.status(200).json(experience)
 }
 
-//UPDATE skill cert
 const adminUpdateCertificate = async(req, res) =>{
     const {id} = req.params   
 
@@ -879,6 +808,72 @@ const adminUpdateCertificate = async(req, res) =>{
     res.status(200).json(certificate)
 }
 
+const adminUpdateBarangay = async(req, res) =>{
+    const {id} = req.params   
+
+    //check if id is not existing
+    if(!mongoose.Types.ObjectId.isValid(id)){
+        return res.status(404).json({error: 'Invalid id'})
+    }
+
+     //delete query
+     const barangay = await Barangay.findOneAndUpdate({_id: id},{
+         ...req.body //get new value
+     })
+    
+     //check if not existing
+     if (!barangay){
+        return res.status(404).json({error: 'Barangay Clearance not found'})
+    }
+
+    res.status(200).json(barangay)
+}
+
+const adminUpdateNbi = async(req, res) =>{
+    const {id} = req.params   
+
+    //check if id is not existing
+    if(!mongoose.Types.ObjectId.isValid(id)){
+        return res.status(404).json({error: 'Invalid id'})
+    }
+
+     //delete query
+     const nbi = await Nbi.findOneAndUpdate({_id: id},{
+         ...req.body //get new value
+     })
+    
+     //check if not existing
+     if (!nbi){
+        return res.status(404).json({error: 'Nbi Clearance not found'})
+    }
+
+    res.status(200).json(nbi)
+}
+//THIS IS NOT OFFICIAL
+const adminGetAllSkilledBill = async(req, res)=>{
+
+    try{
+        //get all query
+        const skilledBill = await SkilledBill.find({isDeleted: 0}).sort({createdAt: -1})
+        .populate('skilled_id')
+        res.status(200).json(skilledBill)
+    }
+    catch(error){
+        res.status(404).json({error: error.message})
+    }  
+}
+const adminGetAllSkilledBillDetail = async(req, res)=>{
+
+    try{
+        //get all query
+        const skilledBill = await SkilledBill.find({billIsVerified: 0, isDeleted: 0}).sort({updatedAt: 1})
+        .populate('skilled_id')
+        res.status(200).json(skilledBill)
+    }
+    catch(error){
+        res.status(404).json({error: error.message})
+    }  
+}
 const adminEditSkilledBill = async(req, res) =>{
     const {id} = req.params   
 
@@ -899,8 +894,6 @@ const adminEditSkilledBill = async(req, res) =>{
 
     res.status(200).json(skilledBill)
 }
-
-//THIS IS NOT OFFICIAL
 //update or edit address
 const adminEditSkilledAddress = async(req,res) =>{
     // const arrayId = req.params.arrayId;
@@ -920,7 +913,6 @@ const adminEditSkilledAddress = async(req,res) =>{
         res.status(404).json({error: error.message})
     }
 }
-
 //UPDATE UPDATE BILL VERIFICATION
 const adminUpdateSkilledBill = async(req, res) =>{
     try {
@@ -935,7 +927,6 @@ const adminUpdateSkilledBill = async(req, res) =>{
       res.status(500).json({ message: 'Error updating documents', error });
     }
 }
-
 //UDPATE SKILLED WORKER USER IS VERIFIED
 const adminUpdateSkilledAccount = async(req, res) =>{
     try {
@@ -985,21 +976,21 @@ module.exports = {
     adminGetOneSkilled,
     adminUpdateSkilled,
     adminDeleteSkilled,
-    adminGetAllExperience,
-    adminGetAllCertificate,
     adminGetAllSkill,
     adminGetAllSkilledBill,
     adminGetAllExpSkilledDetail,
     adminGetAllCertSkilledDetail,
     adminGetAllBClearanceSkilledDetail,
     adminGetAllNClearanceSkilledDetail,
-    adminGetAllSkilledDetailCert,
     adminGetAllSkilledExpDetail,
     adminGetAllSkilledCertDetail,
     adminGetAllSkilledBarangayDetail,
+    adminGetAllSkilledNbiDetail,
     adminGetAllSkilledBillDetail,
     adminUpdateExperience,
     adminUpdateCertificate,
+    adminUpdateBarangay,
+    adminUpdateNbi,
     adminEditSkilledBill,
     adminUpdateSkilledBill,
     adminUpdateSkilledAccount,
