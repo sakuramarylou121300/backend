@@ -61,7 +61,6 @@ const getAllSkilledNClearance = async(req, res)=>{
     }
 }
 
-//GET one skill
 const getOneSkilledNClearance = async(req, res)=>{
     const {id} = req.params  
 
@@ -82,7 +81,6 @@ const getOneSkilledNClearance = async(req, res)=>{
 
 }
 
-//UPDATE skill
 const updateSkilledNClearance  = async(req, res) =>{
 
     try{ 
@@ -125,7 +123,6 @@ const updateSkilledNClearance  = async(req, res) =>{
     }
 }
 
-//DELETE skill
 const deleteSkilledNClearance = async(req, res)=>{
     const {id} = req.params
     

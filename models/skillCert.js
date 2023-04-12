@@ -13,11 +13,11 @@ const skillCertSchema = new Schema({
         trim: true
     },
     issuedOn:{
-        type: String,
+        type: Date,
         required: true 
     },
     validUntil:{
-        type: String,
+        type: Date,
         required: true
     },
     photo:{

@@ -42,12 +42,12 @@ const skilledInfoSchema = new Schema({
     lname:{
         type: String,
         required: true,
-        trim: true
+        // trim: true
     },
     fname:{
         type: String,
         required: true,
-        trim: true
+        // trim: true
     },
     mname:{
         type: String,
@@ -188,12 +188,12 @@ skilledInfoSchema.statics.signup = async function (
     }
 
     //check  length
-    if(username.length <8){
-        throw Error('Please enter atleast 8 characters in user name.')
+    if(username.length <7){
+        throw Error('Please enter atleast 6 characters in user name.')
     }
     //check if strong password
-    if(password.length <8){
-        throw Error('Please enter atleast 8 characters in password.')
+    if(password.length <7){
+        throw Error('Please enter atleast 6 characters in password.')
     }
     const mobileNumberRegex = /^09\d{9}$|^639\d{9}$/;
         

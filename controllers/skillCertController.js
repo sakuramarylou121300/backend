@@ -4,12 +4,11 @@ const Certificate = require('../models/skillCert')
 const Info = require('../models/skilledInfo')
 const mongoose = require('mongoose')
 
-//CREATE skill cert
 const createCertificate = async(req, res)=>{
     const {categorySkill,
         title,
         issuedOn,
-        validUntil,
+        validUntil
     } = req.body
     
     //check empty fields
@@ -32,6 +31,10 @@ const createCertificate = async(req, res)=>{
         return res.status(400).json({error: 'Please fill in all the blank fields.', emptyFields})
     }
     
+    if (!req.file) {
+        return res.status(400).json({error: 'Please upload your certificate photo.'})
+    }
+    
     try{
         //this is to assign the job to a specific client user, get id from clientInfo
         const skilled_id = req.skilledInfo._id
@@ -41,7 +44,6 @@ const createCertificate = async(req, res)=>{
             title:title,
             issuedOn:issuedOn,
             validUntil:validUntil,
-            // photo:photo,
             skilled_id:skilled_id,
             skillIsVerified:{$in: ["false", "true"]},
             isDeleted: 0
@@ -50,11 +52,19 @@ const createCertificate = async(req, res)=>{
         if(certCheck){
             return res.status(400).json({error: "Skill certificate already exists in this user."})
         }
-
+        
         if (categorySkill === "Select") {
             res.status(400).send({ error: "Please enter your skill" });
             return;
         }
+        // Convert the validUntil date string to a Date object
+        const validUntilDate = new Date(validUntil);
+
+        // Check if the validUntil date is less than today's date
+        if (validUntilDate < new Date()) {
+        return res.status(400).json({ error: 'Your certificate is outdated. Please submit a valid one.' });
+        }
+
         if (issuedOn >= validUntil) {
             res.status(400).send({ error: "Please check your certificate issued on and valid until" });
             return;
@@ -84,7 +94,6 @@ const createCertificate = async(req, res)=>{
     }
 }
 
-//GET all skill cert
 const getAllCertificate = async(req, res)=>{
 
     try{
@@ -102,7 +111,6 @@ const getAllCertificate = async(req, res)=>{
     }  
 }
 
-//GET one skill cert
 const getOneCertificate = async(req, res)=>{
     const {id} = req.params  
 
@@ -129,22 +137,22 @@ const updateCertificate = async(req,res)=>{
         const skilled_id = req.skilledInfo._id
         let certificate = await Certificate.findById(req.params.id)
 
-        // check if certificate already exists with the same categorySkill, title, issuedOn, and validUntil
-        const existingCertificate = await Certificate.findOne({
-            categorySkill: req.body.categorySkill || certificate.categorySkill,
-            title: req.body.title || certificate.title,
-            issuedOn: req.body.issuedOn || certificate.issuedOn,
-            validUntil: req.body.validUntil || certificate.validUntil,
-            skillIsVerified:{$in: ["false", "true"]},
-            isDeleted:0,
-            skilled_id:skilled_id
-        });
+        // // check if certificate already exists with the same categorySkill, title, issuedOn, and validUntil
+        // const existingCertificate = await Certificate.findOne({
+        //     categorySkill: req.body.categorySkill || certificate.categorySkill,
+        //     title: req.body.title || certificate.title,
+        //     issuedOn: req.body.issuedOn || certificate.issuedOn,
+        //     validUntil: req.body.validUntil || certificate.validUntil,
+        //     skillIsVerified:{$in: ["false", "true"]},
+        //     isDeleted:0,
+        //     skilled_id:skilled_id
+        // });
 
-        if (existingCertificate) {
-            return res.status(400).json({
-                message: "This certificate already exists."
-            });
-        }
+        // if (existingCertificate) {
+        //     return res.status(400).json({
+        //         message: "This certificate already exists."
+        //     });
+        // }
         
         //remove the recent image
         await cloudinary.uploader.destroy(certificate.cloudinary_id)
@@ -242,7 +250,6 @@ const updateCertificate = async(req,res)=>{
 //     res.status(200).json(certificate)
 // }
 
-//DELETE skill cert
 const deleteCertificate = async(req, res)=>{
     const {id} = req.params
     

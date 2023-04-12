@@ -46,11 +46,11 @@ const skilledExp = new Schema({
     },
     refPosition:{
         type: String,
-        default: ''
+        required: true
     },
     refOrg:{
         type: String,
-        default: ''
+        required: true
     },
     refContactNo:{
         type: Number,

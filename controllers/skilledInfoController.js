@@ -1,4 +1,4 @@
-const SkilledInfo = require('../models/skilledInfo')    
+const SkilledInfo = require('../models/skilledInfo')     
 const AdminInfo = require('../models/adminInfo')    
 const SkilledBill = require('../models/skilledBill')
 const jwt = require('jsonwebtoken') 
