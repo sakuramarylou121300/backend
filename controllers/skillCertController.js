@@ -1,8 +1,10 @@
-const cloudinary = require("../utils/cloudinary");
-const upload = require("../utils/multer");
 const Certificate = require('../models/skillCert')
 const Info = require('../models/skilledInfo')
 const mongoose = require('mongoose')
+const cloudinary = require("../utils/cloudinary"); 
+const upload = require("../utils/multer");
+const multer = require('multer')
+const path = require('path')
 
 const createCertificate = async(req, res)=>{
     const {categorySkill,
@@ -34,6 +36,12 @@ const createCertificate = async(req, res)=>{
     if (!req.file) {
         return res.status(400).json({error: 'Please upload your certificate photo.'})
     }
+
+    // // Check if file type is supported
+    const supportedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+    if (!supportedTypes.includes(req.file.mimetype)) {
+        return res.status(400).json({error: 'File type not supported. Please upload an image in PNG, JPEG, or JPG format.'})
+    }
     
     try{
         //this is to assign the job to a specific client user, get id from clientInfo
@@ -62,7 +70,7 @@ const createCertificate = async(req, res)=>{
 
         // Check if the validUntil date is less than today's date
         if (validUntilDate < new Date()) {
-        return res.status(400).json({ error: 'Your certificate is outdated. Please submit a valid one.' });
+            return res.status(400).json({ error: 'Your certificate is outdated. Please submit a valid one.' });
         }
 
         if (issuedOn >= validUntil) {
@@ -72,7 +80,7 @@ const createCertificate = async(req, res)=>{
 
         // let issuedOnDate = new Date(issuedOn)
         // console.log(issuedOnDate)
-  
+
         result = await cloudinary.uploader.upload(req.file.path)
         let certificate = new Certificate({
             categorySkill,
@@ -136,7 +144,25 @@ const updateCertificate = async(req,res)=>{
     try{
         const skilled_id = req.skilledInfo._id
         let certificate = await Certificate.findById(req.params.id)
+        if (!req.file) {
+            return res.status(400).json({error: 'Please upload your certificate photo.'})
+        }
+        const supportedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+        if (!supportedTypes.includes(req.file.mimetype)) {
+            return res.status(400).json({error: 'File type not supported. Please upload an image in PNG, JPEG, or JPG format.'})
+        }
 
+        if (req.body.categorySkill === "Select") {
+            res.status(400).send({ error: "Please enter your skill" });
+            return;
+        }
+        // Convert the validUntil date string to a Date object
+        const validUntilDate = new Date(req.body.validUntil);
+
+        // Check if the validUntil date is less than today's date
+        if (validUntilDate < new Date()) {
+            return res.status(400).json({ error: 'Your certificate is outdated. Please submit a valid one.' });
+        }
         // // check if certificate already exists with the same categorySkill, title, issuedOn, and validUntil
         // const existingCertificate = await Certificate.findOne({
         //     categorySkill: req.body.categorySkill || certificate.categorySkill,

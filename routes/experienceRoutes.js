@@ -42,7 +42,7 @@ const upload = multer({
     fileFilter: function(req, file, cb){
         var ext = path.extname(file.originalname)
         
-        if(ext !== '.png' && ext !== '.jpg' && ext !== '.jpeg' && ext !== '.gif'){
+        if(ext !== '.png' && ext !== '.jpeg' && ext !== '.gif'){
             return cb(new Error('Only Images are allowed!'))
         }
         cb(null, true)

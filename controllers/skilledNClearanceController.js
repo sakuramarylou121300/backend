@@ -18,6 +18,24 @@ const createSkilledNClearance = async(req, res)=>{
         if(emptyFields.length >0){
             return res.status(400).json({error: 'Please fill in all the blank fields.', emptyFields})
         }
+
+        if (!req.file) {
+            return res.status(400).json({error: 'Please upload your nbi clearance photo.'})
+        }
+
+        // Check if file type is supported
+        const supportedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+        if (!supportedTypes.includes(req.file.mimetype)) {
+            return res.status(400).json({error: 'File type not supported. Please upload an image in PNG, JPEG, or JPG format.'})
+        }
+
+        // Convert the validUntil date string to a Date object
+        const validUntilDate = new Date(nClearanceExp);
+        // Check if the validUntil date is less than today's date
+        if (validUntilDate < new Date()) {
+            return res.status(400).json({ error: 'Your nbi clearance is outdated. Please submit a valid one.' });
+        }
+
         //search if existing
         const skilledNClearanceCheck = await SkilledNClearance.findOne({
             nClearanceExp:nClearanceExp,
@@ -86,7 +104,22 @@ const updateSkilledNClearance  = async(req, res) =>{
     try{ 
         const skilled_id = req.skilledInfo._id
         let skilledNClearance = await SkilledNClearance.findById(req.params.id)  
-        
+        if (!req.file) {
+            return res.status(400).json({error: 'Please upload your nbi clearance photo.'})
+        }
+
+        // Check if file type is supported
+        const supportedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+        if (!supportedTypes.includes(req.file.mimetype)) {
+            return res.status(400).json({error: 'File type not supported. Please upload an image in PNG, JPEG, or JPG format.'})
+        }
+
+        // Convert the validUntil date string to a Date object
+        const validUntilDate = new Date(req.body.nClearanceExp);
+        // Check if the validUntil date is less than today's date
+        if (validUntilDate < new Date()) {
+            return res.status(400).json({ error: 'Your nbi clearance is outdated. Please submit a valid one.' });
+        }
         // check if certificate already exists with the same categorySkill, title, issuedOn, and validUntil
         const existingNClearance = await SkilledNClearance.findOne({
             nClearanceExp: req.body.nClearanceExp || skilledNClearance.nClearanceExp,

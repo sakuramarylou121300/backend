@@ -19,6 +19,24 @@ const createSkilledBClearance = async(req, res)=>{
         if(emptyFields.length >0){
             return res.status(400).json({error: 'Please fill in all the blank fields.', emptyFields})
         }
+
+        if (!req.file) {
+            return res.status(400).json({error: 'Please upload your barangay clearance photo.'})
+        }
+
+        // Check if file type is supported
+        const supportedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+        if (!supportedTypes.includes(req.file.mimetype)) {
+            return res.status(400).json({error: 'File type not supported. Please upload an image in PNG, JPEG, or JPG format.'})
+        }
+
+        // Convert the validUntil date string to a Date object
+        const validUntilDate = new Date(bClearanceExp);
+        // Check if the validUntil date is less than today's date
+        if (validUntilDate < new Date()) {
+            return res.status(400).json({ error: 'Your barangay clearance is outdated. Please submit a valid one.' });
+        }
+
         //search if existing
         const skilledBClearanceCheck = await SkilledBClearance.findOne({
             bClearanceExp:bClearanceExp,
@@ -26,7 +44,6 @@ const createSkilledBClearance = async(req, res)=>{
             isDeleted: 0,
             skilled_id:skilled_id
         })
-
         if(skilledBClearanceCheck){
             return res.status(400).json({error: "Barangay Clearance already exists."})
         }
@@ -86,7 +103,20 @@ const updateSkilledBClearance  = async(req, res) =>{
     try{  
         const skilled_id = req.skilledInfo._id
         let skilledBClearance = await SkilledBClearance.findById(req.params.id)  
+        if (!req.file) {
+            return res.status(400).json({error: 'Please upload your barangay clearance photo.'})
+        }
+        const supportedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+        if (!supportedTypes.includes(req.file.mimetype)) {
+            return res.status(400).json({error: 'File type not supported. Please upload an image in PNG, JPEG, or JPG format.'})
+        }
+        // Convert the validUntil date string to a Date object
+        const validUntilDate = new Date(req.body.bClearanceExp);
 
+        // Check if the validUntil date is less than today's date
+        if (validUntilDate < new Date()) {
+            return res.status(400).json({ error: 'Your barangay clearance is outdated. Please submit a valid one.' });
+        }
         // check if certificate already exists with the same categorySkill, title, issuedOn, and validUntil
         const existingBClearance = await SkilledBClearance.findOne({
             bClearanceExp: req.body.bClearanceExp || skilledBClearance.bClearanceExp,
