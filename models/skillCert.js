@@ -29,7 +29,11 @@ const skillCertSchema = new Schema({
     },
     skillIsVerified:{
         type: String,
-        default: "false"
+        default: "pending"
+    },
+    message:{
+        type: String,
+        default: ""
     },
     skilled_id:{
         type: String,

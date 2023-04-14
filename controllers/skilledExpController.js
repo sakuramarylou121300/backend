@@ -75,6 +75,17 @@ const createExp = async(req, res) => {
   
     if(expCheck){
         return res.status(400).json({error: "Work experience already exists in this user."})
+    } 
+    //check if the photo field is empty
+    if (!req.files || req.files.length === 0) {
+        return res.status(400).json({error: 'Please upload a photo.'});
+    }
+    //check if supported
+    const supportedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+    for (let i = 0; i < req.files.length; i++) {
+        if (!supportedTypes.includes(req.files[i].mimetype)) {
+            return res.status(400).json({ error: `File type not supported. Please upload an image in PNG, JPEG, or JPG format. File ${i + 1} is not supported.` });
+        }
     }
 
     let uploadedPhotos = [];
@@ -166,29 +177,40 @@ const updateExp = async (req, res) => {
         if (!mobileNumberRegex.test(req.body.refContactNo)) {
             return res.status(400).json({error: 'Please check the contact you have entered'});
         }
-        // check if certificate already exists with the same categorySkill, title, issuedOn, and validUntil
-        const existingExp = await SkilledExp.findOne({
-            categorySkill: req.body.categorySkill || skilledExp.categorySkill,
-            isHousehold: req.body.isHousehold || skilledExp.isHousehold,
-            company: req.body.company || skilledExp.company,
-            isWorking: req.body.isWorking || skilledExp.isWorking,
-            workStart: req.body.workStart || skilledExp.workStart,
-            workEnd: req.body.workEnd || skilledExp.workEnd,
-            refLname: req.body.refLname || skilledExp.refLname,
-            refFname: req.body.refFname || skilledExp.refFname,
-            refMname: req.body.refMname || skilledExp.refMname,
-            refPosition: req.body.refPosition || skilledExp.refPosition,
-            refOrg: req.body.refOrg || skilledExp.refOrg,
-            refContactNo: req.body.refContactNo || skilledExp.refContactNo,
-            expIsVerified:{$in: ["false", "true"]},
-            skilled_id:skilled_id,
-            isDeleted:0
-        });
+        // // check if certificate already exists with the same categorySkill, title, issuedOn, and validUntil
+        // const existingExp = await SkilledExp.findOne({
+        //     categorySkill: req.body.categorySkill || skilledExp.categorySkill,
+        //     isHousehold: req.body.isHousehold || skilledExp.isHousehold,
+        //     company: req.body.company || skilledExp.company,
+        //     isWorking: req.body.isWorking || skilledExp.isWorking,
+        //     workStart: req.body.workStart || skilledExp.workStart,
+        //     workEnd: req.body.workEnd || skilledExp.workEnd,
+        //     refLname: req.body.refLname || skilledExp.refLname,
+        //     refFname: req.body.refFname || skilledExp.refFname,
+        //     refMname: req.body.refMname || skilledExp.refMname,
+        //     refPosition: req.body.refPosition || skilledExp.refPosition,
+        //     refOrg: req.body.refOrg || skilledExp.refOrg,
+        //     refContactNo: req.body.refContactNo || skilledExp.refContactNo,
+        //     expIsVerified:{$in: ["false", "true"]},
+        //     skilled_id:skilled_id,
+        //     isDeleted:0
+        // });
 
-        if (existingExp) {
-            return res.status(400).json({
-            message: "This experience already exists."
-            });
+        // if (existingExp) {
+        //     return res.status(400).json({
+        //     message: "This experience already exists."
+        //     });
+        // }
+        //check if the photo field is empty
+        if (!req.files || req.files.length === 0) {
+            return res.status(400).json({error: 'Please upload a photo.'});
+        }
+        //check if supported
+        const supportedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+        for (let i = 0; i < req.files.length; i++) {
+            if (!supportedTypes.includes(req.files[i].mimetype)) {
+                return res.status(400).json({ error: `File type not supported. Please upload an image in PNG, JPEG, or JPG format. File ${i + 1} is not supported.` });
+            }
         }
         // remove the recent images
         await Promise.all(

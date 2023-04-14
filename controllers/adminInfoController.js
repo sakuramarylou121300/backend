@@ -710,7 +710,7 @@ const adminGetAllSkilledCertDetail = async(req, res)=>{
         //get all query
         const certificate = await Certificate.find({
             skilled_id: skilledIdDoc._id,
-            skillIsVerified: "false", 
+            skillIsVerified:{$in: ["pending", "false"]},
             isDeleted: 0}).sort({updatedAt: 1})
         .populate('skilled_id')
         res.status(200).json(certificate)
@@ -797,7 +797,8 @@ const adminUpdateCertificate = async(req, res) =>{
 
      //delete query
      const certificate = await Certificate.findOneAndUpdate({_id: id},{
-         ...req.body //get new value
+        ...req.body,
+        message: req.body.skillIsVerified === "false" ? "please reupload again" : ""
      })
     
      //check if not existing
