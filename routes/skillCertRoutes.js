@@ -5,6 +5,7 @@ const upload = require("../utils/multer")
 const {
     createCertificate, 
     getAllCertificate,
+    getAllExpiredCert,
     getOneCertificate,
     updateCertificate,
     deleteCertificate
@@ -16,11 +17,11 @@ router = express.Router()
 
 router.use(requireAuth)
 
-router.post('/post/',  upload.single("photo"), createCertificate)
-router.get('/getAll/', getAllCertificate)
-router.get('/getOne/:id', getOneCertificate)
-router.patch('/update/:id', upload.single("photo"), updateCertificate)
-router.patch('/delete/:id', deleteCertificate)
+router.post('/post/',  upload.single("photo"), requireAuth, createCertificate)
+router.get('/getAll/', requireAuth, getAllCertificate)
+router.get('/getOne/:id', requireAuth, getOneCertificate)
+router.patch('/update/:id', upload.single("photo"), requireAuth, updateCertificate)
+router.patch('/delete/:id', requireAuth, deleteCertificate)
 
 //export
 module.exports = router

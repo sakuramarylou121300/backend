@@ -119,6 +119,23 @@ const getAllCertificate = async(req, res)=>{
     }  
 }
 
+const getAllExpiredCert= async(req, res)=>{
+
+    try{
+        //this is to find skill for specific user
+        const skilled_id = req.skilledInfo._id
+        //get all query
+        const certificate = await Certificate
+        .find({skilled_id,  isExpired: 0})
+        .sort({createdAt: -1})
+        .populate('skilled_id')
+        res.status(200).json(certificate)
+    }
+    catch(error){
+        res.status(404).json({error: error.message})
+    }  
+}
+
 const getOneCertificate = async(req, res)=>{
     const {id} = req.params  
 
@@ -299,6 +316,7 @@ const deleteCertificate = async(req, res)=>{
 module.exports = {
     createCertificate,
     getAllCertificate,
+    getAllExpiredCert,
     getOneCertificate,
     updateCertificate,
     deleteCertificate

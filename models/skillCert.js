@@ -44,6 +44,10 @@ const skillCertSchema = new Schema({
         type: Number,
         default: 0
     },
+    isExpired:{
+        type: Number,
+        default: 0
+    },
     isDeleted:{
         type: Number,
         default: 0

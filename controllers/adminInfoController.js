@@ -850,6 +850,21 @@ const adminUpdateNbi = async(req, res) =>{
 
     res.status(200).json(nbi)
 }
+//TABLES
+//list of deleted account for admin]
+const adminGetAllSkilledDeact = async(req, res)=>{
+
+    try{
+        //this is to find skill for specific user
+        //get all query
+        const skilledInfo = await SkilledInfo.find({isDeleted: 1})
+        .sort({updatedAt: -1})
+        res.status(200).json(skilledInfo)
+    }
+    catch(error){
+        res.status(404).json({error: error.message})
+    }  
+}
 //THIS IS NOT OFFICIAL
 const adminGetAllSkilledBill = async(req, res)=>{
 
@@ -992,6 +1007,7 @@ module.exports = {
     adminUpdateCertificate,
     adminUpdateBarangay,
     adminUpdateNbi,
+    adminGetAllSkilledDeact,
     adminEditSkilledBill,
     adminUpdateSkilledBill,
     adminUpdateSkilledAccount,

@@ -32,6 +32,7 @@ const{
     adminUpdateCertificate,
     adminUpdateBarangay,
     adminUpdateNbi,
+    adminGetAllSkilledDeact, 
     adminGetAllSkilledBill,
     adminGetAllSkilledBillDetail,
     adminEditSkilledBill,
@@ -151,6 +152,9 @@ router.get('/getAll/Nbi/detail/:username', adminAuth, adminControlSkilled, admin
 router.get('/getOne/Nbi/:id', adminAuth, adminControlSkilled, getOneSkilledNClearance)
 router.patch('/update/Nbi/:id', adminAuth, adminControlSkilled, adminUpdateNbi)
 router.patch('/delete/Nbi/:id', adminAuth, adminControlSkilled, deleteSkilledNClearance)
+
+//TABLES
+router.get('/getAll/skilledDeact', adminAuth, adminControlSkilled, adminGetAllSkilledDeact)
 
 router.get('/getAll/skilledBill', adminAuth, adminControlSkilled, adminGetAllSkilledBill)
 router.get('/getAll/skilledBill/detail', adminAuth, adminControlSkilled, adminGetAllSkilledBillDetail)
