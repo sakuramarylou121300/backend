@@ -1,7 +1,7 @@
 const SkilledBClearance = require('../models/skilledBClearance') //for CRUD of skill (admin)
 const SkilledInfo = require('../models/skilledInfo')
 const cloudinary = require("../utils/cloudinary")
-const mongoose = require('mongoose')
+const mongoose = require('mongoose') 
  
 const createSkilledBClearance = async(req, res)=>{
 
@@ -40,7 +40,8 @@ const createSkilledBClearance = async(req, res)=>{
         //search if existing
         const skilledBClearanceCheck = await SkilledBClearance.findOne({
             bClearanceExp:bClearanceExp,
-            bClearanceIsVerified:{$in: ["false", "true"]},
+            bClearanceIsVerified:{$in: ["false", "true", "pending"]},
+            isExpired:{$in: [0, 1]},
             isDeleted: 0,
             skilled_id:skilled_id
         })
@@ -69,7 +70,26 @@ const getAllSkilledBClearance = async(req, res)=>{
     try{
         const skilled_id = req.skilledInfo._id
         const skilledBClearance = await SkilledBClearance
-        .find({skilled_id,isDeleted: 0})
+        .find({
+            skilled_id,
+            isDeleted: 0,
+            isExpired:{$ne: 1}})
+        .sort({createdAt:-1})
+        res.status(200).json(skilledBClearance)
+    }
+    catch(err){
+        return res.status(500).json({messg: err.message})
+    }
+}
+
+const getAllSkilledExpiredBClearance = async(req, res)=>{
+    try{
+        const skilled_id = req.skilledInfo._id
+        const skilledBClearance = await SkilledBClearance
+        .find({
+            skilled_id,
+            isDeleted: 0,
+            isExpired:1})
         .sort({createdAt:-1})
         res.status(200).json(skilledBClearance)
     }
@@ -141,7 +161,9 @@ const updateSkilledBClearance  = async(req, res) =>{
         const data = {
             bClearanceExp: req.body.bClearanceExp || skilledBClearance.bClearanceExp,
             photo: result?.secure_url || skilledBClearance.photo,
-            cloudinary_id: result?.public_id || skilledBClearance.cloudinary_id
+            cloudinary_id: result?.public_id || skilledBClearance.cloudinary_id,
+            bClearanceIsVerified: "pending",
+            message: ""
         }
 
         skilledBClearance = await SkilledBClearance.findByIdAndUpdate(req.params.id, 
@@ -177,6 +199,7 @@ const deleteSkilledBClearance = async(req, res)=>{
 module.exports = {
     createSkilledBClearance,
     getAllSkilledBClearance,
+    getAllSkilledExpiredBClearance,
     getOneSkilledBClearance,
     updateSkilledBClearance,
     deleteSkilledBClearance

@@ -68,7 +68,8 @@ const createExp = async(req, res) => {
         refPosition:refPosition,
         refOrg:refOrg,
         refContactNo:refContactNo,
-        expIsVerified:{$in: ["false", "true"]},
+        expIsVerified:{$in: ["pending","false", "true"]},
+        isExpired: {$in: [0, 1]},
         skilled_id:skilled_id,
         isDeleted: 0
     })
@@ -139,7 +140,30 @@ const getAllExp = async(req, res)=>{
         const skilled_id = req.skilledInfo._id
 
         //get all query
-        const skilledExp = await SkilledExp.find({skilled_id, isDeleted: 0})
+        const skilledExp = await SkilledExp
+        .find({skilled_id, 
+            isDeleted: 0,
+            isExpired:{$ne: 1},})
+        .sort({createdAt: -1})
+        .populate('skilled_id')
+        res.status(200).json(skilledExp)
+    }
+    catch(error){
+        res.status(404).json({error: error.message})
+    }  
+} 
+
+const getAllExpiredExp = async(req, res)=>{ 
+
+    try{
+        //this is to find contact for specific user
+        const skilled_id = req.skilledInfo._id
+
+        //get all query
+        const skilledExp = await SkilledExp
+        .find({skilled_id, 
+            isDeleted: 0,
+            isExpired: 1})
         .sort({createdAt: -1})
         .populate('skilled_id')
         res.status(200).json(skilledExp)
@@ -242,6 +266,8 @@ const updateExp = async (req, res) => {
             refContactNo: req.body.refContactNo || skilledExp.refContactNo,
             photo: uploadedPhotos.length > 0 ? uploadedPhotos : skilledExp.photo,
             cloudinary_id: uploadedPhotos.length > 0 ? uploadedPhotos[0].public_id : skilledExp.cloudinary_id,
+            expIsVerified: "pending",
+            message: ""
         };
   
         const updatedSkilledExp = await SkilledExp.findByIdAndUpdate(
@@ -279,6 +305,7 @@ const deleteExp = async(req, res)=>{
 module.exports = {
     createExp,
     getAllExp,
+    getAllExpiredExp,
     getOneExp, 
     updateExp,
     deleteExp

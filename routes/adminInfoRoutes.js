@@ -33,6 +33,13 @@ const{
     adminUpdateBarangay,
     adminUpdateNbi,
     adminGetAllSkilledDeact, 
+    adminGetAllSkilledCertDetailExpired,
+    adminGetAllSkilledBarangayDetailExpired,
+    adminGetAllSkilledNbiDetailExpired,
+    adminGetAllSkilledExpDeleted,
+    adminGetAllSkilledCertDeleted,
+    adminGetAllSkilledBarangayDeleted,
+    adminGetAllSkilledNbiDeleted,
     adminGetAllSkilledBill,
     adminGetAllSkilledBillDetail,
     adminEditSkilledBill,
@@ -155,6 +162,13 @@ router.patch('/delete/Nbi/:id', adminAuth, adminControlSkilled, deleteSkilledNCl
 
 //TABLES
 router.get('/getAll/skilledDeact', adminAuth, adminControlSkilled, adminGetAllSkilledDeact)
+router.get('/getAll/cert/expired/:username', adminAuth, adminControlSkilled, adminGetAllSkilledCertDetailExpired)
+router.get('/getAll/barangay/expired/:username', adminAuth, adminControlSkilled, adminGetAllSkilledBarangayDetailExpired)
+router.get('/getAll/nbi/expired/:username', adminAuth, adminControlSkilled, adminGetAllSkilledNbiDetailExpired)
+router.get('/getAll/exp/deleted/:username', adminAuth, adminControlSkilled, adminGetAllSkilledExpDeleted)
+router.get('/getAll/cert/deleted/:username', adminAuth, adminControlSkilled, adminGetAllSkilledCertDeleted)
+router.get('/getAll/barangay/deleted/:username', adminAuth, adminControlSkilled, adminGetAllSkilledBarangayDeleted)
+router.get('/getAll/nbi/deleted/:username', adminAuth, adminControlSkilled, adminGetAllSkilledNbiDeleted)
 
 router.get('/getAll/skilledBill', adminAuth, adminControlSkilled, adminGetAllSkilledBill)
 router.get('/getAll/skilledBill/detail', adminAuth, adminControlSkilled, adminGetAllSkilledBillDetail)

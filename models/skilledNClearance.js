@@ -1,4 +1,4 @@
-const mongoose = require('mongoose')
+const mongoose = require('mongoose') 
 
 const Schema = mongoose.Schema 
 
@@ -16,13 +16,21 @@ const skilledNClearance = new Schema({
     },
     nClearanceIsVerified:{
         type: String,
-        default: "false",
+        default: "pending",
     },
-    isDeleted:{
+    message:{
+        type: String,
+        default: "",
+    },
+    isRead:{
         type: Number,
         default: 0,
     },
-    isRead:{
+    isExpired:{
+        type: Number,
+        default: 0,
+    },
+    isDeleted:{
         type: Number,
         default: 0,
     },

@@ -4,6 +4,7 @@ const upload = require("../utils/multer")
 const {
     createExp,
     getAllExp,
+    getAllExpiredExp,
     getOneExp, 
     updateExp,
     deleteExp
@@ -15,11 +16,12 @@ router = express.Router()
 
 router.use(requireAuth)
 
-router.post('/post/', upload.array("photo"), createExp)
-router.get('/getAll/', getAllExp)
-router.get('/getOne/:id', getOneExp)
-router.put('/update/:id', upload.array("photo"), updateExp)
-router.patch('/delete/:id', deleteExp)
+router.post('/post/', upload.array("photo"), requireAuth, createExp)
+router.get('/getAll/', requireAuth, getAllExp)
+router.get('/getAll/expired', requireAuth, getAllExpiredExp)
+router.get('/getOne/:id', requireAuth, getOneExp)
+router.put('/update/:id', upload.array("photo"), requireAuth, updateExp)
+router.patch('/delete/:id', requireAuth, deleteExp)
 
 //export
 module.exports = router

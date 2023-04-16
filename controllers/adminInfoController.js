@@ -865,6 +865,163 @@ const adminGetAllSkilledDeact = async(req, res)=>{
         res.status(404).json({error: error.message})
     }  
 }
+const adminGetAllSkilledCertDetailExpired = async(req, res)=>{
+    const username = req.params.username;
+    try{
+        // Find skilled_id document based on username
+        const skilledIdDoc = await SkilledInfo.findOne({ username: username });
+
+        // Check if skilled_id exists for the given username
+        if (!skilledIdDoc) {
+        return res.status(404).json({ error: 'Skilled Worker not found' });
+        }
+        //get all query
+        const certificate = await Certificate.find({
+            skilled_id: skilledIdDoc._id,
+            isExpired: 1,
+            isDeleted: 0}).sort({updatedAt: 1})
+        .populate('skilled_id')
+        res.status(200).json(certificate)
+    }
+    catch(error){
+        res.status(404).json({error: error.message})
+    }  
+}
+const adminGetAllSkilledBarangayDetailExpired = async(req, res)=>{
+    const username = req.params.username;
+    try{
+        // Find skilled_id document based on username
+        const skilledIdDoc = await SkilledInfo.findOne({ username: username });
+
+        // Check if skilled_id exists for the given username
+        if (!skilledIdDoc) {
+        return res.status(404).json({ error: 'Skilled Worker not found' });
+        }
+        //get all query
+        const barangay = await Barangay.find({
+            skilled_id: skilledIdDoc._id,
+            isExpired:1, 
+            isDeleted: 0}).sort({updatedAt: 1})
+        .populate('skilled_id')
+        res.status(200).json(barangay)
+    }
+    catch(error){
+        res.status(404).json({error: error.message})
+    }  
+}
+
+const adminGetAllSkilledNbiDetailExpired = async(req, res)=>{
+    const username = req.params.username;
+    try{
+        // Find skilled_id document based on username
+        const skilledIdDoc = await SkilledInfo.findOne({ username: username });
+
+        // Check if skilled_id exists for the given username
+        if (!skilledIdDoc) {
+        return res.status(404).json({ error: 'Skilled Worker not found' });
+        }
+        //get all query
+        const nbi = await Nbi.find({
+            skilled_id: skilledIdDoc._id,
+            isExpired:1, 
+            isDeleted: 0}).sort({updatedAt: 1})
+        .populate('skilled_id')
+        res.status(200).json(nbi)
+    }
+    catch(error){
+        res.status(404).json({error: error.message})
+    }  
+}
+const adminGetAllSkilledExpDeleted = async(req, res)=>{
+    // const skilled_id = req.params.skilled_id;
+    const username = req.params.username;
+
+    try{
+        // Find skilled_id document based on username
+        const skilledIdDoc = await SkilledInfo.findOne({ username: username });
+
+        // Check if skilled_id exists for the given username
+        if (!skilledIdDoc) {
+        return res.status(404).json({ error: 'Skilled Worker not found' });
+        }
+
+        //get all query
+        const skilledExp = await Experience.find({
+            skilled_id: skilledIdDoc._id,
+            isDeleted: 1
+        })
+        .sort({updatedAt: 1})
+        .populate('skilled_id')
+        res.status(200).json(skilledExp)
+    }
+    catch(error){
+        res.status(404).json({error: error.message})
+    }  
+}
+const adminGetAllSkilledCertDeleted = async(req, res)=>{
+    const username = req.params.username;
+    try{
+        // Find skilled_id document based on username
+        const skilledIdDoc = await SkilledInfo.findOne({ username: username });
+
+        // Check if skilled_id exists for the given username
+        if (!skilledIdDoc) {
+        return res.status(404).json({ error: 'Skilled Worker not found' });
+        }
+        //get all query
+        const certificate = await Certificate.find({
+            skilled_id: skilledIdDoc._id,
+            isDeleted: 1}).sort({updatedAt: 1})
+        .populate('skilled_id')
+        res.status(200).json(certificate)
+    }
+    catch(error){
+        res.status(404).json({error: error.message})
+    }  
+}
+const adminGetAllSkilledBarangayDeleted= async(req, res)=>{
+    const username = req.params.username;
+    try{
+        // Find skilled_id document based on username
+        const skilledIdDoc = await SkilledInfo.findOne({ username: username });
+
+        // Check if skilled_id exists for the given username
+        if (!skilledIdDoc) {
+        return res.status(404).json({ error: 'Skilled Worker not found' });
+        }
+        //get all query
+        const barangay = await Barangay.find({
+            skilled_id: skilledIdDoc._id,
+            isDeleted: 1}).sort({updatedAt: 1})
+        .populate('skilled_id')
+        res.status(200).json(barangay)
+    }
+    catch(error){
+        res.status(404).json({error: error.message})
+    }  
+}
+
+const adminGetAllSkilledNbiDeleted = async(req, res)=>{
+    const username = req.params.username;
+    try{
+        // Find skilled_id document based on username
+        const skilledIdDoc = await SkilledInfo.findOne({ username: username });
+
+        // Check if skilled_id exists for the given username
+        if (!skilledIdDoc) {
+        return res.status(404).json({ error: 'Skilled Worker not found' });
+        }
+        //get all query
+        const nbi = await Nbi.find({
+            skilled_id: skilledIdDoc._id,
+            isDeleted: 1}).sort({updatedAt: 1})
+        .populate('skilled_id')
+        res.status(200).json(nbi)
+    }
+    catch(error){
+        res.status(404).json({error: error.message})
+    }  
+}
 //THIS IS NOT OFFICIAL
 const adminGetAllSkilledBill = async(req, res)=>{
 
@@ -1008,6 +1165,13 @@ module.exports = {
     adminUpdateBarangay,
     adminUpdateNbi,
     adminGetAllSkilledDeact,
+    adminGetAllSkilledCertDetailExpired,
+    adminGetAllSkilledBarangayDetailExpired,
+    adminGetAllSkilledNbiDetailExpired,
+    adminGetAllSkilledExpDeleted,
+    adminGetAllSkilledCertDeleted,
+    adminGetAllSkilledBarangayDeleted,
+    adminGetAllSkilledNbiDeleted,
     adminEditSkilledBill,
     adminUpdateSkilledBill,
     adminUpdateSkilledAccount,

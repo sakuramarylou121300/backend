@@ -58,7 +58,11 @@ const skilledExp = new Schema({
     },
     expIsVerified:{
         type: String,
-        default: "false"
+        default: "pending"
+    },
+    message:{
+        type: String,
+        default: ""
     },
     cloudinary_id:{
         type: String,
@@ -70,6 +74,10 @@ const skilledExp = new Schema({
         ref: 'SkilledInfo'
     },
     isRead:{
+        type: Number,
+        default: 0,
+    }, 
+    isExpired:{
         type: Number,
         default: 0,
     },

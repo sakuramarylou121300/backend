@@ -39,7 +39,8 @@ const createSkilledNClearance = async(req, res)=>{
         //search if existing
         const skilledNClearanceCheck = await SkilledNClearance.findOne({
             nClearanceExp:nClearanceExp,
-            nClearanceIsVerified:{$in: ["false", "true"]},
+            nClearanceIsVerified:{$in: ["false", "true", "pending"]},
+            isExpired:{$in: [0, 1]},
             isDeleted: 0,
             skilled_id:skilled_id
         })
@@ -70,7 +71,24 @@ const getAllSkilledNClearance = async(req, res)=>{
     try{
         const skilled_id = req.skilledInfo._id
         const skilledNClearance = await SkilledNClearance
-        .find({skilled_id,isDeleted: 0})
+        .find({skilled_id,
+            isDeleted: 0, 
+            isExpired:{$ne: 1}})
+        .sort({createdAt:-1})
+        res.status(200).json(skilledNClearance)
+    }
+    catch(err){
+        return res.status(500).json({messg: err.message})
+    }
+}
+
+const getAllExpiredNClearance = async(req, res)=>{
+    try{
+        const skilled_id = req.skilledInfo._id
+        const skilledNClearance = await SkilledNClearance
+        .find({skilled_id,
+            isDeleted: 0, 
+            isExpired: 1})
         .sort({createdAt:-1})
         res.status(200).json(skilledNClearance)
     }
@@ -144,7 +162,9 @@ const updateSkilledNClearance  = async(req, res) =>{
         const data = {
             nClearanceExp: req.body.nClearanceExp || skilledNClearance.nClearanceExp,
             photo: result?.secure_url || skilledNClearance.photo,
-            cloudinary_id: result?.public_id || skilledNClearance.cloudinary_id
+            cloudinary_id: result?.public_id || skilledNClearance.cloudinary_id,
+            nClearanceIsVerified: "pending",
+            message: ""
         }
 
         skilledNClearance = await SkilledNClearance.findByIdAndUpdate(req.params.id, 
@@ -180,6 +200,7 @@ const deleteSkilledNClearance = async(req, res)=>{
 module.exports = {
     createSkilledNClearance,
     getAllSkilledNClearance,
+    getAllExpiredNClearance, 
     getOneSkilledNClearance,
     updateSkilledNClearance,
     deleteSkilledNClearance

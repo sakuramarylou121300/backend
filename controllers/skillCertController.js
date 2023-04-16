@@ -53,7 +53,8 @@ const createCertificate = async(req, res)=>{
             issuedOn:issuedOn,
             validUntil:validUntil,
             skilled_id:skilled_id,
-            skillIsVerified:{$in: ["false", "true"]},
+            skillIsVerified:{$in: ["pending", "false", "true"]},
+            isExpired: {$in: [0, 1]},
             isDeleted: 0
         })
         
@@ -109,7 +110,10 @@ const getAllCertificate = async(req, res)=>{
         const skilled_id = req.skilledInfo._id
         //get all query
         const certificate = await Certificate
-        .find({skilled_id,  isDeleted: 0})
+        .find({skilled_id,  
+            isDeleted: 0, 
+            isExpired:{$ne: 1},
+            })
         .sort({createdAt: -1})
         .populate('skilled_id')
         res.status(200).json(certificate)
@@ -126,7 +130,9 @@ const getAllExpiredCert= async(req, res)=>{
         const skilled_id = req.skilledInfo._id
         //get all query
         const certificate = await Certificate
-        .find({skilled_id,  isExpired: 0})
+        .find({skilled_id,
+            isDeleted: 0,
+            isExpired: 1})
         .sort({createdAt: -1})
         .populate('skilled_id')
         res.status(200).json(certificate)
@@ -210,7 +216,9 @@ const updateCertificate = async(req,res)=>{
             issuedOn: req.body.issuedOn || certificate.issuedOn,
             validUntil: req.body.validUntil || certificate.validUntil,
             photo: result?.secure_url || certificate.photo,
-            cloudinary_id: result?.public_id || certificate.cloudinary_id
+            cloudinary_id: result?.public_id || certificate.cloudinary_id,
+            skillIsVerified: "pending",
+            message:""
         }
 
         certificate = await Certificate.findByIdAndUpdate(req.params.id, 
