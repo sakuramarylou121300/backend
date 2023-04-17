@@ -42,12 +42,12 @@ const skilledInfoSchema = new Schema({
     lname:{
         type: String,
         required: true,
-        // trim: true
+        trim: true
     },
     fname:{
         type: String,
         required: true,
-        // trim: true
+        trim: true
     },
     mname:{
         type: String,

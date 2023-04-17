@@ -130,6 +130,16 @@ const updateSkilledBClearance  = async(req, res) =>{
         if (!supportedTypes.includes(req.file.mimetype)) {
             return res.status(400).json({error: 'File type not supported. Please upload an image in PNG, JPEG, or JPG format.'})
         }
+        const trueBClearance = await SkilledBClearance.findOne({
+            _id: req.params.id,
+            bClearanceIsVerified: true,
+        });
+
+        if (trueBClearance) {
+            return res.status(400).json({
+                message: "You cannot update verified barangay clearance."
+            });
+        }
         // Convert the validUntil date string to a Date object
         const validUntilDate = new Date(req.body.bClearanceExp);
 

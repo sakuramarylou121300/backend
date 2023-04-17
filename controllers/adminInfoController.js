@@ -685,7 +685,7 @@ const adminGetAllSkilledExpDetail = async(req, res)=>{
         const skilledExp = await Experience.find({
             skilled_id: skilledIdDoc._id,
             // skilled_id:skilled_id,
-            expIsVerified: "false", 
+            isExpired:{$ne: 1}, 
             isDeleted: 0
         })
         .sort({updatedAt: 1})
@@ -710,7 +710,7 @@ const adminGetAllSkilledCertDetail = async(req, res)=>{
         //get all query
         const certificate = await Certificate.find({
             skilled_id: skilledIdDoc._id,
-            skillIsVerified:{$in: ["pending", "false"]},
+            isExpired:{$ne: 1},
             isDeleted: 0}).sort({updatedAt: 1})
         .populate('skilled_id')
         res.status(200).json(certificate)
@@ -733,7 +733,7 @@ const adminGetAllSkilledBarangayDetail = async(req, res)=>{
         //get all query
         const barangay = await Barangay.find({
             skilled_id: skilledIdDoc._id,
-            bClearanceIsVerified: "false", 
+            isExpired:{$ne: 1}, 
             isDeleted: 0}).sort({updatedAt: 1})
         .populate('skilled_id')
         res.status(200).json(barangay)
@@ -756,7 +756,7 @@ const adminGetAllSkilledNbiDetail = async(req, res)=>{
         //get all query
         const nbi = await Nbi.find({
             skilled_id: skilledIdDoc._id,
-            nClearanceIsVerified: "false", 
+            isExpired:{$ne: 1}, 
             isDeleted: 0}).sort({updatedAt: 1})
         .populate('skilled_id')
         res.status(200).json(nbi)
@@ -776,7 +776,10 @@ const adminUpdateExperience = async(req, res) =>{
 
      //delete query
      const experience = await Experience.findOneAndUpdate({_id: id},{
-         ...req.body //get new value
+         ...req.body,  //get new value
+         message: req.body.expIsVerified === "false" ? "please update your submitted work experience." : ""
+     
+
      })
     
      //check if not existing
@@ -798,7 +801,7 @@ const adminUpdateCertificate = async(req, res) =>{
      //delete query
      const certificate = await Certificate.findOneAndUpdate({_id: id},{
         ...req.body,
-        message: req.body.skillIsVerified === "false" ? "please reupload again" : ""
+        message: req.body.skillIsVerified === "false" ? "please update your submitted certificate." : ""
      })
     
      //check if not existing
@@ -819,7 +822,9 @@ const adminUpdateBarangay = async(req, res) =>{
 
      //delete query
      const barangay = await Barangay.findOneAndUpdate({_id: id},{
-         ...req.body //get new value
+         ...req.body, //get new value
+         message: req.body.bClearanceIsVerified === "false" ? "please update your submitted barangay clearance." : ""
+     
      })
     
      //check if not existing
@@ -840,7 +845,9 @@ const adminUpdateNbi = async(req, res) =>{
 
      //delete query
      const nbi = await Nbi.findOneAndUpdate({_id: id},{
-         ...req.body //get new value
+         ...req.body, //get new value
+         message: req.body.nClearanceIsVerified === "false" ? "please update your submitted NBI Clearance." : ""
+     
      })
     
      //check if not existing
@@ -850,6 +857,19 @@ const adminUpdateNbi = async(req, res) =>{
 
     res.status(200).json(nbi)
 }
+
+const reactivateSkilledInfo = async(req, res) =>{
+    const {username} = req.params 
+    try{
+        const skilledInfo = await SkilledInfo.findOneAndUpdate({username:username},
+            {isDeleted:0})
+        res.status(200).json(skilledInfo)
+    }
+    catch(error){
+        res.status(400).json({error:error.message})
+    }
+}
+
 //TABLES
 //list of deleted account for admin]
 const adminGetAllSkilledDeact = async(req, res)=>{
@@ -1172,6 +1192,7 @@ module.exports = {
     adminGetAllSkilledCertDeleted,
     adminGetAllSkilledBarangayDeleted,
     adminGetAllSkilledNbiDeleted,
+    reactivateSkilledInfo,
     adminEditSkilledBill,
     adminUpdateSkilledBill,
     adminUpdateSkilledAccount,

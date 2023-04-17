@@ -179,6 +179,18 @@ const updateCertificate = async(req,res)=>{
             res.status(400).send({ error: "Please enter your skill" });
             return;
         }
+
+        const trueCertificate = await Certificate.findOne({
+                _id: req.params.id,
+                skillIsVerified: true,
+            });
+    
+            if (trueCertificate) {
+                return res.status(400).json({
+                    message: "You cannot update verified certificate."
+                });
+            }
+        
         // Convert the validUntil date string to a Date object
         const validUntilDate = new Date(req.body.validUntil);
 

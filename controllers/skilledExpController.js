@@ -88,6 +88,10 @@ const createExp = async(req, res) => {
             return res.status(400).json({ error: `File type not supported. Please upload an image in PNG, JPEG, or JPG format. File ${i + 1} is not supported.` });
         }
     }
+    if (categorySkill === "Select") {
+        res.status(400).send({ error: "Please enter your skill" });
+        return;
+    }
 
     let uploadedPhotos = [];
 
@@ -235,6 +239,20 @@ const updateExp = async (req, res) => {
             if (!supportedTypes.includes(req.files[i].mimetype)) {
                 return res.status(400).json({ error: `File type not supported. Please upload an image in PNG, JPEG, or JPG format. File ${i + 1} is not supported.` });
             }
+        }
+        if (req.body.categorySkill === "Select") {
+            res.status(400).send({ error: "Please enter your skill" });
+            return;
+        }
+        const trueExp = await SkilledExp.findOne({
+            _id: req.params.id,
+            skillIsVerified: true,
+        });
+
+        if (trueExp) {
+            return res.status(400).json({
+                message: "You cannot update verified experience."
+            });
         }
         // remove the recent images
         await Promise.all(

@@ -14,7 +14,8 @@ const skilledExp = new Schema({
     },
     company:{
         type: String,
-        default: ''
+        default: '',
+        trim: true
     },
     isWorking:{
         type: String,
@@ -34,27 +35,33 @@ const skilledExp = new Schema({
     }],
     refLname:{
         type: String,
-        required: true
+        required: true,
+        trim: true
     },
     refFname:{
         type: String,
-        required: true
+        required: true,
+        trim: true
     },
     refMname:{
         type: String,
-        default: ''
+        default: '',
+        trim: true
     },
     refPosition:{
         type: String,
-        required: true
+        required: true,
+        trim: true
     },
     refOrg:{
         type: String,
-        required: true
+        required: true,
+        trim: true
     },
     refContactNo:{
         type: Number,
-        required: true
+        required: true,
+        trim: true
     },
     expIsVerified:{
         type: String,

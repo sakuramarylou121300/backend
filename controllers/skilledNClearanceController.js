@@ -132,6 +132,17 @@ const updateSkilledNClearance  = async(req, res) =>{
             return res.status(400).json({error: 'File type not supported. Please upload an image in PNG, JPEG, or JPG format.'})
         }
 
+        const trueNbi = await SkilledNClearance.findOne({
+            _id: req.params.id,
+            nClearanceIsVerified: true,
+        });
+
+        if (trueNbi) {
+            return res.status(400).json({
+                message: "You cannot update verified NBI Clearance."
+            });
+        }
+
         // Convert the validUntil date string to a Date object
         const validUntilDate = new Date(req.body.nClearanceExp);
         // Check if the validUntil date is less than today's date

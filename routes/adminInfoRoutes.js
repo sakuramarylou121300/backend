@@ -40,6 +40,7 @@ const{
     adminGetAllSkilledCertDeleted,
     adminGetAllSkilledBarangayDeleted,
     adminGetAllSkilledNbiDeleted,
+    reactivateSkilledInfo,
     adminGetAllSkilledBill,
     adminGetAllSkilledBillDetail,
     adminEditSkilledBill,
@@ -129,6 +130,7 @@ router.get('/getAll/Skilled/detail/nclearance', adminAuth, adminControlSkilled, 
 router.get('/getOne/Skilled/:id', adminAuth, adminControlSkilled, adminGetOneSkilled)
 router.patch('/update/Skilled/:id', adminAuth, adminControlSkilled, adminUpdateSkilled)
 router.patch('/delete/Skilled/:id', adminAuth, adminControlSkilled, adminDeleteSkilled)
+router.patch('/reactivate/Skilled/:username', adminAuth, adminControlSkilled, reactivateSkilledInfo)
 
 //SKILLED WORKER SKILL
 router.get('/getAll/skill', adminAuth, adminControlSkilled, adminGetAllSkill)
