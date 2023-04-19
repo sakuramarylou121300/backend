@@ -688,8 +688,15 @@ const adminGetAllSkilledExpDetail = async(req, res)=>{
             isExpired:{$ne: 1}, 
             isDeleted: 0
         })
+
         .sort({updatedAt: 1})
         .populate('skilled_id')
+
+        await Experience.updateMany({ 
+            skilled_id: skilledIdDoc._id,
+            isRead:0 }, 
+            {$set: { isRead: 1 } });
+
         res.status(200).json(skilledExp)
     }
     catch(error){
@@ -711,8 +718,21 @@ const adminGetAllSkilledCertDetail = async(req, res)=>{
         const certificate = await Certificate.find({
             skilled_id: skilledIdDoc._id,
             isExpired:{$ne: 1},
-            isDeleted: 0}).sort({updatedAt: 1})
+            isDeleted: 0})
+        .sort({updatedAt: 1})
         .populate('skilled_id')
+        
+        //update when admin opened then isRead1
+        await Certificate.updateMany({ 
+            skilled_id: skilledIdDoc._id,
+            isRead:0 }, 
+            {$set: { isRead: 1 } });
+
+        var currentDate = new Date();//date today
+        await Certificate.updateMany({ validUntil: {$lt:currentDate} }, 
+            {$set: 
+                { skillIsVerified: "false", isExpired: 1 } });
+        
         res.status(200).json(certificate)
     }
     catch(error){
@@ -734,8 +754,19 @@ const adminGetAllSkilledBarangayDetail = async(req, res)=>{
         const barangay = await Barangay.find({
             skilled_id: skilledIdDoc._id,
             isExpired:{$ne: 1}, 
-            isDeleted: 0}).sort({updatedAt: 1})
+            isDeleted: 0})
+        .sort({updatedAt: 1})
         .populate('skilled_id')
+        await Barangay.updateMany({ 
+            skilled_id: skilledIdDoc._id,
+            isRead:0 }, 
+            {$set: { isRead: 1 } });
+        
+        var currentDate = new Date();//date today
+        await Barangay.updateMany({ bClearanceExp: {$lt:currentDate} }, 
+            {$set: 
+                { bClearanceIsVerified: "false", isExpired: 1 } });
+        
         res.status(200).json(barangay)
     }
     catch(error){
@@ -757,8 +788,18 @@ const adminGetAllSkilledNbiDetail = async(req, res)=>{
         const nbi = await Nbi.find({
             skilled_id: skilledIdDoc._id,
             isExpired:{$ne: 1}, 
-            isDeleted: 0}).sort({updatedAt: 1})
+            isDeleted: 0})
+        .sort({updatedAt: 1})
         .populate('skilled_id')
+        await Nbi.updateMany({ 
+            skilled_id: skilledIdDoc._id,
+            isRead:0 }, 
+            {$set: { isRead: 1 } });
+        var currentDate = new Date();//date today
+        await Nbi.updateMany({ nClearanceExp: {$lt:currentDate} }, 
+            {$set: 
+                { nClearanceIsVerified: "false", isExpired: 1 } });
+        
         res.status(200).json(nbi)
     }
     catch(error){
@@ -867,6 +908,28 @@ const reactivateSkilledInfo = async(req, res) =>{
     }
     catch(error){
         res.status(400).json({error:error.message})
+    }
+}
+
+//update isRead: 1
+const updateExpIsRead = async(req, res) =>{
+    try {
+        // Find skilled_id document based on username
+        const skilledIdDoc = await SkilledInfo.findOne({ username: username });
+
+        // Check if skilled_id exists for the given username
+        if (!skilledIdDoc) {
+        return res.status(404).json({ error: 'Skilled Worker not found' });
+        }
+        const skilledExp = await Experience.updateMany({ 
+            skilled_id: skilledIdDoc._id,
+            isRead:0 }, 
+            {$set: { isRead: 1 } });
+        
+        return res.status(200).json(skilledExp);
+                // console.log(skilledBill) 
+    } catch (error) {
+      res.status(500).json({ error: 'Error updating documents', error });
     }
 }
 
@@ -1184,6 +1247,7 @@ module.exports = {
     adminUpdateCertificate,
     adminUpdateBarangay,
     adminUpdateNbi,
+    updateExpIsRead,
     adminGetAllSkilledDeact,
     adminGetAllSkilledCertDetailExpired,
     adminGetAllSkilledBarangayDetailExpired,

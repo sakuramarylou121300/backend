@@ -32,6 +32,7 @@ const{
     adminUpdateCertificate,
     adminUpdateBarangay,
     adminUpdateNbi,
+    updateExpIsRead,
     adminGetAllSkilledDeact, 
     adminGetAllSkilledCertDetailExpired,
     adminGetAllSkilledBarangayDetailExpired,

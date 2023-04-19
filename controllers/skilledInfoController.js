@@ -22,6 +22,7 @@ const skilledLogIn = async(req, res) =>{
         )
             //create token
             const token = skilledCreateToken(skilledInfo._id)
+
         res.status(200).json({username, skilledInfo, token})
     }
     catch(error){
@@ -72,6 +73,40 @@ const skilledSignUp = async(req, res) =>{
     }
 }
 
+// //skilledIsVerifiedOrNot
+// const verifiedSkilled = async(req, res) =>{ 
+//     try {
+//         // Find the document by its _id
+//         const skilledInfo = await SkilledInfo.findById(req.skilledInfo._id)
+//         .populate('skillBarangay')
+//         .populate('skillNbi');
+//         if (skilledInfo) {
+//             // Check the values of idIsVerified, address.addIsVerified, and skilledBill
+//             if (skilledInfo.skillBarangay.some(barangay => barangay.bClearanceIsVerified === 1) &&
+//                 skilledInfo.skillNbi.some(nbi => nbi.nClearanceIsVerified === 1)) {
+//                 // Update the userIsVerified field to 1
+//                 const updatedSkilledInfo = await SkilledInfo.findByIdAndUpdate(req.skilledInfo._id, 
+//                     { $set: { userIsVerified: 1 } }, { new: true });
+//                 return res.status(200).json(updatedSkilledInfo);
+//             } 
+//             else if (
+//                 !skilledInfo.skillBarangay.some(barangay => barangay.bClearanceIsVerified === 1) &&
+//                 !skilledInfo.skillNbi.some(nbi => nbi.nClearanceIsVerified === 1)) {
+//            // Update the userIsVerified field to 0
+//            const updatedSkilledInfo = await SkilledInfo.findByIdAndUpdate(req.skilledInfo._id, 
+//                { $set: { userIsVerified: 0 } }, { new: true });
+//            return res.status(200).json(updatedSkilledInfo);
+//        }
+//             // else {
+//             //     return res.status(200).json({ message: "Please check your id, address and your bill if they are verified." });
+//             // }
+//         } else {
+//             return res.status(404).json({ message: "SkilledInfo not found" });
+//         }   
+//     } catch (err) {
+//         return res.status(500).json({ message: err.toString() });
+//     }
+// }
 //get skilled info for update 
 const getSkilledInfo = async(req, res) =>{
 

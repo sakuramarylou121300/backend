@@ -116,6 +116,12 @@ const getAllCertificate = async(req, res)=>{
             })
         .sort({createdAt: -1})
         .populate('skilled_id')
+        var currentDate = new Date();//date today
+        await Certificate.updateMany({ validUntil: {$lt:currentDate} }, 
+            {$set: 
+                { skillIsVerified: "false", isExpired: 1 } });
+        
+        
         res.status(200).json(certificate)
     }
     catch(error){

@@ -75,6 +75,11 @@ const getAllSkilledBClearance = async(req, res)=>{
             isDeleted: 0,
             isExpired:{$ne: 1}})
         .sort({createdAt:-1})
+        var currentDate = new Date();//date today
+        await SkilledBClearance.updateMany({ bClearanceExp: {$lt:currentDate}}, 
+            {$set: 
+                { bClearanceIsVerified: "false", isExpired: 1 } });
+        
         res.status(200).json(skilledBClearance)
     }
     catch(err){

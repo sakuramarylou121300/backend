@@ -75,6 +75,11 @@ const getAllSkilledNClearance = async(req, res)=>{
             isDeleted: 0, 
             isExpired:{$ne: 1}})
         .sort({createdAt:-1})
+        var currentDate = new Date();//date today
+        await SkilledNClearance.updateMany({ nClearanceExp: {$lt:currentDate} }, 
+            {$set: 
+                { nClearanceIsVerified: "false", isExpired: 1 } });
+        
         res.status(200).json(skilledNClearance)
     }
     catch(err){
