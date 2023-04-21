@@ -66,6 +66,15 @@ const{
 } = require('../controllers/skillController')
 
 const{
+    createTitle,
+    getAllTitle,
+    getAllSkillTitle,
+    getOneTitle,
+    updateSkillTitle,
+    deleteTitle
+} = require('../controllers/skillTitleController')
+
+const{
     getOneExp,
     deleteExp
 } = require('../controllers/skilledExpController')
@@ -137,7 +146,15 @@ router.patch('/reactivate/Skilled/:username', adminAuth, adminControlSkilled, re
 router.get('/getAll/skill', adminAuth, adminControlSkilled, adminGetAllSkill)
 router.get('/getOne/skill/:id', adminAuth, adminControlSkilled, getOneSkill)
 router.patch('/update/skill/:id', adminAuth, adminControlSkilled, updateSkill)
-router.delete('/delete/skill/:id', adminAuth, adminControlSkilled, deleteSkill)
+// router.delete('/delete/skill/:id', adminAuth, adminControlSkilled, deleteSkill)
+
+//SKILLED WORKER SKILL TITLE
+router.post('/post/title', adminAuth, adminControlSkilled, createTitle)
+router.get('/getAll/title', adminAuth, adminControlSkilled, getAllTitle)
+router.get('/getAll/skillTitle/:skill_id', adminAuth, adminControlSkilled, getAllSkillTitle)
+router.get('/getOne/title/:id', adminAuth, adminControlSkilled, getOneTitle)
+router.patch('/update/title/:id', adminAuth, adminControlSkilled, updateSkillTitle)
+router.patch('/delete/title/:id', adminAuth, adminControlSkilled, deleteTitle)
 
 //SKILLED EXP   
 router.get('/getAll/SkilledExp/detail/:username', adminAuth, adminControlSkilled, adminGetAllSkilledExpDetail)

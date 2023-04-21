@@ -1,4 +1,4 @@
-const City = require('../models/adminCity') 
+const City = require('../models/adminCity')  
 const mongoose = require('mongoose')
 
 //CREATE prov exp

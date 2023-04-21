@@ -107,6 +107,7 @@ const skilledSignUp = async(req, res) =>{
 //         return res.status(500).json({ message: err.toString() });
 //     }
 // }
+
 //get skilled info for update 
 const getSkilledInfo = async(req, res) =>{
 

@@ -1,4 +1,4 @@
-const Barangay = require('../models/adminBarangay') 
+const Barangay = require('../models/adminBarangay')  
 const mongoose = require('mongoose')
 
 //CREATE prov exp
