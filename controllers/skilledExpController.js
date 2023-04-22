@@ -157,6 +157,28 @@ const getAllExp = async(req, res)=>{
     }  
 } 
 
+const getAllExpSkill = async(req, res)=>{ 
+
+    try{
+        //this is to find contact for specific user
+        const categorySkill = req.params.categorySkill
+        const skilled_id = req.skilledInfo._id
+        //get all query
+        const skilledExp = await SkilledExp
+        .find({
+            skilled_id, 
+            categorySkill,
+            isDeleted: 0,
+            isExpired:{$ne: 1},})
+        .sort({createdAt: -1})
+        .populate('skilled_id')
+        res.status(200).json(skilledExp)
+    }
+    catch(error){
+        res.status(404).json({error: error.message})
+    }  
+} 
+
 const getAllExpiredExp = async(req, res)=>{ 
 
     try{
@@ -323,6 +345,7 @@ const deleteExp = async(req, res)=>{
 module.exports = {
     createExp,
     getAllExp,
+    getAllExpSkill,
     getAllExpiredExp,
     getOneExp, 
     updateExp,
