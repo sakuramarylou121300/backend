@@ -10,7 +10,7 @@ const skillTitleSchema = new Schema({
         trim: true
     },
     skill_id:{
-        type: mongoose.Schema.Types.ObjectId, 
+        type: String, 
         ref: 'AdminSkill'
     },
     isDeleted:{
