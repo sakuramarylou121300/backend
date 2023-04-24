@@ -102,6 +102,7 @@ const{
 const adminControlAdmin = require('../middleware/adminControlAdmin')
 const adminAuth = require('../middleware/adminAuth')
 const adminControlSkilled = require('../middleware/adminControlSkilled')
+const requireAuth = require('../middleware/requireAuth')
 
 const router = express.Router()
 
@@ -155,6 +156,9 @@ router.get('/getAll/skillTitle/:skill_id', adminAuth, adminControlSkilled, getAl
 router.get('/getOne/title/:id', adminAuth, adminControlSkilled, getOneTitle)
 router.patch('/update/title/:id', adminAuth, adminControlSkilled, updateSkillTitle)
 router.patch('/delete/title/:id', adminAuth, adminControlSkilled, deleteTitle)
+
+//public
+router.get('/getAll/skillTitle/:skill_id', requireAuth, getAllSkillTitle)
 
 //SKILLED EXP   
 router.get('/getAll/SkilledExp/detail/:username', adminAuth, adminControlSkilled, adminGetAllSkilledExpDetail)

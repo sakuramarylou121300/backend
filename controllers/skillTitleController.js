@@ -29,7 +29,7 @@ const createTitle = async(req, res)=>{
 const getAllSkillTitle = async(req, res)=>{
     const skill_id = req.params.skill_id;
     try{
-        const title = await Title.find({skill_id:skill_id})
+        const title = await Title.find({isDeleted:0,skill_id:skill_id})
         .sort({title: 1})
         .populate('skill_id')
         // .populate('province_id').sort({ 'province_id.province': 1 })
