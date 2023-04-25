@@ -80,7 +80,7 @@ const updateSkillTitle = async(req, res) =>{
     if(!mongoose.Types.ObjectId.isValid(id)){
         return res.status(404).json({error: 'Invalid id'})
     }
-    const existingTitle = await Title.findOne({ skill_id, title });
+    const existingTitle = await Title.findOne({ skill_id, title,  isDeleted: 0 });
         if (existingTitle) {
             return res.status(400).json({ message: "Title already exists in this skill." });
         }

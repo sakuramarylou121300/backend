@@ -1,4 +1,6 @@
 const Certificate = require('../models/skillCert')
+const Skill = require('../models/skill')
+const Title = require('../models/skillTitle')  
 const Info = require('../models/skilledInfo')
 const mongoose = require('mongoose')
 const cloudinary = require("../utils/cloudinary"); 
@@ -129,6 +131,29 @@ const getAllCertificate = async(req, res)=>{
         res.status(404).json({error: error.message})
     }  
 }
+
+//redirect depending on the skill
+const getAllCertSkill = async(req, res)=>{ 
+
+    try{
+        //this is to find contact for specific user
+        const categorySkill = req.params.categorySkill
+        const skilled_id = req.skilledInfo._id
+        //get all query 
+        const skillCert = await Certificate
+        .find({
+            skilled_id, 
+            categorySkill,
+            isDeleted: 0,
+            isExpired:{$ne: 1},})
+        .sort({createdAt: -1})
+        .populate('skilled_id')
+        res.status(200).json(skillCert)
+    }
+    catch(error){
+        res.status(404).json({error: error.message})
+    }  
+} 
 
 const getAllExpiredCert= async(req, res)=>{
 
@@ -340,11 +365,44 @@ const deleteCertificate = async(req, res)=>{
     res.status(200).json(certificate)
 
 }
+
+const getAllSkillCertTitle= async(req, res)=>{
+    const skillName = req.params.skillName;
+    const skilled_id = req.skilledInfo._id
+    try{
+        // Find skilled_id document based on username
+        const skillIdDoc = await Skill.findOne({ 
+            skillName: skillName, 
+            skilled_id,
+            isDeleted: 0});
+
+        // Check if skilled_id exists for the given username
+        if (!skillIdDoc) {
+        return res.status(404).json({ error: 'Skill does not exist to this Skilled Worker' });
+        }
+        console.log(skillIdDoc)
+        //get all query
+        const title = await Title.find({
+            skill_id: skillIdDoc.skillName
+        })
+        // .sort({updatedAt: 1})
+
+        res.status(200).json(title)
+    }
+    catch(error){
+        res.status(404).json({error: error.message})
+    }  
+}
+
+//get all skill cert
+
 module.exports = {
     createCertificate,
     getAllCertificate,
+    getAllCertSkill,
     getAllExpiredCert,
     getOneCertificate,
     updateCertificate,
-    deleteCertificate
+    deleteCertificate,
+    getAllSkillCertTitle
 }

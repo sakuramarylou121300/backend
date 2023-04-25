@@ -38,7 +38,7 @@ const createSkills = async(req, res)=>{
       res.status(400).send(error);
     }
 }
-//CREATE skill
+//CREATE skill 
 const createSkill = async(req, res)=>{
     const {skillName} = req.body
 
