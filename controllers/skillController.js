@@ -91,7 +91,7 @@ const getAllSkill = async(req, res)=>{
         //get all query
         const skill = await Skill.find({skilled_id, isDeleted: 0}).sort({createdAt: -1})
         .populate('skillName')
-        .populate('skilled_id')
+        // .populate('skilled_id')
         res.status(200).json(skill)
     }
     catch(error){
