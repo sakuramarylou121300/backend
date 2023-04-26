@@ -1,5 +1,6 @@
 const mongoose = require('mongoose') 
 const SkilledExp = require('../models/skilledExp') 
+const AdminSkill = require('../models/adminSkill') 
 const cloudinary = require("../utils/cloudinary")
 const upload = require("../utils/multer") 
 
@@ -162,13 +163,22 @@ const getAllExpSkill = async(req, res)=>{
 
     try{
         //this is to find contact for specific user
-        const categorySkill = req.params.categorySkill
+        const skill = req.params.skill
         const skilled_id = req.skilledInfo._id
+
+        // Find skilled_id document based on username
+        const skilledIdDoc = await AdminSkill.findOne({ skill: skill });
+
+        // Check if skilled_id exists for the given username
+        if (!skilledIdDoc) {
+        return res.status(404).json({ error: 'Skill not found in Skilled Worker' });
+        }
+
         //get all query
         const skilledExp = await SkilledExp
         .find({
             skilled_id, 
-            categorySkill,
+            // categorySkill,
             isDeleted: 0,
             isExpired:{$ne: 1},})
         .sort({createdAt: -1})

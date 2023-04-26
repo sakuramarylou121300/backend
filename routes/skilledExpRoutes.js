@@ -19,7 +19,7 @@ router.use(requireAuth)
 
 router.post('/post/', upload.array("photo"), requireAuth, createExp)
 router.get('/getAll/', requireAuth, getAllExp)
-router.get('/getAll/skillexp/:categorySkill', requireAuth, getAllExpSkill)
+router.get('/getAll/skillexp/:skill', requireAuth, getAllExpSkill)
 router.get('/getAll/expired', requireAuth, getAllExpiredExp)
 router.get('/getOne/:id', requireAuth, getOneExp)
 router.put('/update/:id', upload.array("photo"), requireAuth, updateExp)
