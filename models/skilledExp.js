@@ -6,6 +6,7 @@ const skilledExp = new Schema({
     
     categorySkill:{
         type: String,
+        ref: 'AdminSkill',
         required: true
     },
     isHousehold:{

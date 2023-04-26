@@ -4,7 +4,7 @@ const Schema = mongoose.Schema
 
 const skillCertSchema = new Schema({
     categorySkill:{
-        type: mongoose.Schema.Types.ObjectId,
+        type: String,
         ref: 'AdminSkill',
         required: true
     },
