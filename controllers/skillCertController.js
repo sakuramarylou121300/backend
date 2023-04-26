@@ -146,8 +146,9 @@ const getAllCertSkill = async(req, res)=>{
             categorySkill,
             isDeleted: 0,
             isExpired:{$ne: 1},})
-        .sort({createdAt: -1})
+        .populate('categorySkill')
         .populate('skilled_id')
+        .sort({createdAt: -1})
         res.status(200).json(skillCert)
     }
     catch(error){

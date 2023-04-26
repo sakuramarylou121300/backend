@@ -6,6 +6,7 @@ const skillSchema = new Schema({
    
     skillName:{
         type: String,
+        ref: 'AdminSkill',
         required: true,
     },
     skilled_id:{

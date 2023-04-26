@@ -1,4 +1,4 @@
-const Title = require('../models/skillTitle')  
+const Title = require('../models/skillTitle')   
 const mongoose = require('mongoose')
 
 const createTitle = async(req, res)=>{
@@ -27,7 +27,7 @@ const createTitle = async(req, res)=>{
 }
 //get the title depending on the selected skill
 const getAllSkillTitle = async(req, res)=>{
-    const skill_id = req.params.skill_id;
+    const skill_id = req.params.skill_id; 
     try{
         const title = await Title.find({isDeleted:0,skill_id:skill_id})
         .sort({title: 1})

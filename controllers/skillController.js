@@ -3,7 +3,7 @@ const Info = require('../models/skilledInfo')
 const AdminInfo = require('../models/adminInfo')
 const mongoose = require('mongoose')
 
-const createSkills = async(req, res)=>{
+const createSkills = async(req, res)=>{ 
     try {
         const skilled_id = req.skilledInfo._id;
         const skillsToAdd = req.body.map(skillName => ({ ...skillName, skilled_id }));
@@ -24,10 +24,12 @@ const createSkills = async(req, res)=>{
                 res.status(400).send({ error: "Please enter your skill" });
                 return;
             }
+           
             if (existingSkillNames.includes(skill.skillName)) {
                 res.status(400).send({ error: `${skill.skillName} already exist. ` });
                 return;
             }
+           
             existingSkillNames.push(skill.skillName);
             newSkills.push(skill);
         }
@@ -87,7 +89,9 @@ const getAllSkill = async(req, res)=>{
         //this is to find skill for specific user
         const skilled_id = req.skilledInfo._id
         //get all query
-        const skill = await Skill.find({skilled_id, isDeleted: 0}).sort({createdAt: -1}).populate('skilled_id')
+        const skill = await Skill.find({skilled_id, isDeleted: 0}).sort({createdAt: -1})
+        .populate('skillName')
+        .populate('skilled_id')
         res.status(200).json(skill)
     }
     catch(error){
