@@ -11,7 +11,6 @@ const path = require('path')
 const createCertificate = async(req, res)=>{
     const {categorySkill,
         title,
-        issuedOn,
         validUntil
     } = req.body
     
@@ -22,9 +21,6 @@ const createCertificate = async(req, res)=>{
     }
     if(!title){
         emptyFields.push('title')
-    }
-    if(!issuedOn){
-        emptyFields.push('issuedOn')
     }
     if(!validUntil){
         emptyFields.push('validUntil')
@@ -52,7 +48,6 @@ const createCertificate = async(req, res)=>{
         const certCheck = await Certificate.findOne({
             categorySkill:categorySkill,
             title:title,
-            issuedOn:issuedOn,
             validUntil:validUntil,
             skilled_id:skilled_id,
             skillIsVerified:{$in: ["pending", "false", "true"]},
@@ -76,11 +71,6 @@ const createCertificate = async(req, res)=>{
             return res.status(400).json({ error: 'Your certificate is outdated. Please submit a valid one.' });
         }
 
-        if (issuedOn >= validUntil) {
-            res.status(400).send({ error: "Please check your certificate issued on and valid until" });
-            return;
-        }
-
         // let issuedOnDate = new Date(issuedOn)
         // console.log(issuedOnDate)
 
@@ -88,7 +78,6 @@ const createCertificate = async(req, res)=>{
         let certificate = new Certificate({
             categorySkill,
             title,
-            issuedOn,
             validUntil,
             photo: result.secure_url,     
             cloudinary_id: result.public_id,
@@ -137,7 +126,8 @@ const getAllCertSkill = async(req, res)=>{
 
     try{
         //this is to find contact for specific user
-        const categorySkill = req.params.categorySkill
+        // const categorySkill = req.params.categorySkill
+        const skill = req.params.skill
         const skilled_id = req.skilledInfo._id
         //get all query 
         const skillCert = await Certificate
@@ -215,7 +205,7 @@ const updateCertificate = async(req,res)=>{
 
         const trueCertificate = await Certificate.findOne({
                 _id: req.params.id,
-                skillIsVerified: true,
+                skillIsVerified: "true",
             });
     
             if (trueCertificate) {
@@ -258,7 +248,6 @@ const updateCertificate = async(req,res)=>{
         const data = {
             categorySkill: req.body.categorySkill || certificate.categorySkill,
             title: req.body.title || certificate.title,
-            issuedOn: req.body.issuedOn || certificate.issuedOn,
             validUntil: req.body.validUntil || certificate.validUntil,
             photo: result?.secure_url || certificate.photo,
             cloudinary_id: result?.public_id || certificate.cloudinary_id,

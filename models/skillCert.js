@@ -13,10 +13,6 @@ const skillCertSchema = new Schema({
         required: true,
         trim: true
     },
-    issuedOn:{
-        type: Date,
-        required: true 
-    },
     validUntil:{
         type: Date,
         required: true

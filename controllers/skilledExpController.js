@@ -1,5 +1,6 @@
 const mongoose = require('mongoose') 
 const SkilledExp = require('../models/skilledExp') 
+const Skill = require('../models/skill')
 const AdminSkill = require('../models/adminSkill') 
 const cloudinary = require("../utils/cloudinary")
 const upload = require("../utils/multer") 
