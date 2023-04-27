@@ -281,7 +281,7 @@ const updateExp = async (req, res) => {
         }
         const trueExp = await SkilledExp.findOne({
             _id: req.params.id,
-            skillIsVerified: true,
+            expIsVerified: "true",
         });
 
         if (trueExp) {
