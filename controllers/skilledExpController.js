@@ -167,10 +167,12 @@ const getAllExpSkill = async(req, res)=>{
         const skilled_id = req.skilledInfo._id
 
         // Find skilled_id document based on username
-        const skilledIdDoc = await AdminSkill.findOne({ skill: skill });
+        const skillIdDoc = await AdminSkill.findOne({ 
+            skill: skill,
+            skilled_id});
 
         // Check if skilled_id exists for the given username
-        if (!skilledIdDoc) {
+        if (!skillIdDoc) {
         return res.status(404).json({ error: 'Skill not found in Skilled Worker' });
         }
 
@@ -178,7 +180,7 @@ const getAllExpSkill = async(req, res)=>{
         const skilledExp = await SkilledExp
         .find({
             skilled_id, 
-            // categorySkill,
+            categorySkill: skillIdDoc._id,
             isDeleted: 0,
             isExpired:{$ne: 1},})
         .sort({createdAt: -1})
