@@ -26,7 +26,7 @@ router.use(requireAuth)
 
 router.post('/post/',  upload.single("photo"), requireAuth, createCertificate)
 router.get('/getAll/', requireAuth, getAllCertificate)
-router.get('/getAll/skillCert/:categorySkill', requireAuth, getAllCertSkill)
+router.get('/getAll/skillCert/:skill', requireAuth, getAllCertSkill)
 router.get('/getAll/expired', requireAuth, getAllExpiredCert)
 router.get('/getOne/:id', requireAuth, getOneCertificate)
 router.patch('/update/:id', upload.single("photo"), requireAuth, updateCertificate)

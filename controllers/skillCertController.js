@@ -1,6 +1,7 @@
 const Certificate = require('../models/skillCert')
-const Skill = require('../models/skill')
+const AdminSkill = require('../models/adminSkill') 
 const Title = require('../models/skillTitle')  
+const Skill = require('../models/skill')
 const Info = require('../models/skilledInfo')
 const mongoose = require('mongoose')
 const cloudinary = require("../utils/cloudinary"); 
@@ -129,11 +130,21 @@ const getAllCertSkill = async(req, res)=>{
         // const categorySkill = req.params.categorySkill
         const skill = req.params.skill
         const skilled_id = req.skilledInfo._id
-        //get all query 
+
+        // Find skilled_id document based on username
+        const skillIdDoc = await AdminSkill.findOne({ 
+            skill: skill,
+            skilled_id});
+
+        // Check if skilled_id exists for the given username
+        if (!skillIdDoc) {
+        return res.status(404).json({ error: 'Skill not found in Skilled Worker' });
+        }
+
         const skillCert = await Certificate
         .find({
             skilled_id, 
-            categorySkill,
+            categorySkill: skillIdDoc._id,
             isDeleted: 0,
             isExpired:{$ne: 1},})
         .populate('categorySkill')
