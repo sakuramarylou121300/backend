@@ -1,4 +1,5 @@
 const SkilledBClearance = require('../models/skilledBClearance') //for CRUD of skill (admin)
+const Notification = require('../models/notification')
 const SkilledInfo = require('../models/skilledInfo')
 const cloudinary = require("../utils/cloudinary")
 const mongoose = require('mongoose') 
@@ -56,6 +57,17 @@ const createSkilledBClearance = async(req, res)=>{
             skilled_id
         })
         await skilledBClearance.save()
+
+        // Get the name of the skilled user
+        const skilledInfo = await SkilledInfo.findOne({ _id: skilled_id });
+        const skilledUserName = skilledInfo.username;
+        const skilledUserDocUrl = `https://samplekasawapp.onrender.com`;
+        // Create a notification after successfully creating new skills
+        const notification = await Notification.create({
+            skilled_id,
+            message: `${skilledUserName} has added new skills.> </a>`
+        });
+        console.log(notification)
         console.log(skilledBClearance)
         res.status(200).json(skilledBClearance)
     

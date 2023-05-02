@@ -95,6 +95,11 @@ const{
 } = require('../controllers/skilledNClearanceController')
 
 const{
+    getAllNotification
+} = require('../controllers/notificationController')
+
+
+const{
     getOneSkilledBill,
     deleteSkilledBill
 } = require('../controllers/skilledBillController')
@@ -183,6 +188,9 @@ router.get('/getAll/Nbi/detail/:username', adminAuth, adminControlSkilled, admin
 router.get('/getOne/Nbi/:id', adminAuth, adminControlSkilled, getOneSkilledNClearance)
 router.patch('/update/Nbi/:id', adminAuth, adminControlSkilled, adminUpdateNbi)
 router.patch('/delete/Nbi/:id', adminAuth, adminControlSkilled, deleteSkilledNClearance)
+
+//NOTIFICATION
+router.get('/getAll/Notification/', adminAuth, getAllNotification)
 
 //TABLES
 router.get('/getAll/skilledDeact', adminAuth, adminControlSkilled, adminGetAllSkilledDeact)
