@@ -5,6 +5,7 @@ const Certificate = require('../models/skillCert')
 const Barangay = require('../models/skilledBClearance')
 const Nbi = require('../models/skilledNClearance')
 const Skill = require('../models/skill')
+const Notification = require('../models/skilledNotification')
 const SkilledBill = require('../models/skilledBill')
 const mongoose = require('mongoose')
 const jwt = require('jsonwebtoken')
@@ -755,7 +756,7 @@ const adminGetAllSkilledBarangayDetail = async(req, res)=>{
             skilled_id: skilledIdDoc._id,
             isExpired:{$ne: 1}, 
             isDeleted: 0})
-        .sort({updatedAt: 1})
+        .sort({updatedAt: -1})
         .populate('skilled_id')
         await Barangay.updateMany({ 
             skilled_id: skilledIdDoc._id,
@@ -789,7 +790,7 @@ const adminGetAllSkilledNbiDetail = async(req, res)=>{
             skilled_id: skilledIdDoc._id,
             isExpired:{$ne: 1}, 
             isDeleted: 0})
-        .sort({updatedAt: 1})
+        .sort({updatedAt: -1})
         .populate('skilled_id')
         await Nbi.updateMany({ 
             skilled_id: skilledIdDoc._id,
@@ -872,7 +873,16 @@ const adminUpdateBarangay = async(req, res) =>{
      if (!barangay){
         return res.status(404).json({error: 'Barangay Clearance not found'})
     }
-
+     //this is for the notification
+     const barangayNotif = await Barangay.findOne({ _id: id }); 
+     console.log(barangayNotif)
+     const skilled_id = barangayNotif.skilled_id;
+     // Create a notification after updating creating barangay
+    const notification = await Notification.create({
+        skilled_id,
+         message: 'Updated your barangay clerance'
+    })
+    console.log(notification)
     res.status(200).json(barangay)
 }
 

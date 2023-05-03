@@ -2,7 +2,7 @@ const mongoose = require('mongoose')
 
 const Schema = mongoose.Schema  
 
-const notificationSchema = new Schema({
+const adminNotificationSchema = new Schema({
     message:{
         type: String,
         required: true,
@@ -22,4 +22,4 @@ const notificationSchema = new Schema({
     }, 
 },{timestamps: true})
 
-module.exports = mongoose.model('Notification',notificationSchema)
+module.exports = mongoose.model('AdminNotification',adminNotificationSchema)

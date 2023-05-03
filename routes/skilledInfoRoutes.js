@@ -24,6 +24,11 @@ const{
    
 } = require('../controllers/skilledInfoController')
 
+const{ 
+    getAllNotification,
+    deleteNotification 
+} = require('../controllers/skilledNotificationController')
+
 const requireAuth = require('../middleware/requireAuth')
 
 const router = express.Router()
@@ -47,5 +52,8 @@ router.delete('/pull/address/:arrayId', requireAuth, pullAddress)
 router.patch('/push/contact', requireAuth, pushContact)
 router.put('/update/contact/:arrayId', requireAuth, updateContact)
 router.delete('/pull/contact/:arrayId', requireAuth, pullContact)
+
+//this is for the notification
+router.get('/get/notification', requireAuth, getAllNotification)
 
 module.exports = router

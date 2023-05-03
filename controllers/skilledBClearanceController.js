@@ -1,5 +1,5 @@
 const SkilledBClearance = require('../models/skilledBClearance') //for CRUD of skill (admin)
-const Notification = require('../models/notification')
+const Notification = require('../models/adminNotification')
 const SkilledInfo = require('../models/skilledInfo')
 const cloudinary = require("../utils/cloudinary")
 const mongoose = require('mongoose') 
@@ -65,7 +65,8 @@ const createSkilledBClearance = async(req, res)=>{
         // Create a notification after successfully creating new skills
         const notification = await Notification.create({
             skilled_id,
-            message: `${skilledUserName} has added new skills.> </a>`
+            message: `${skilledUserName} has added new skills. 
+            Click <a href="http://localhost:4000/api/admin/getAll/Barangay/detail/${skilledUserName}">here</a> to view the newly added skill.`
         });
         console.log(notification)
         console.log(skilledBClearance)
@@ -195,7 +196,20 @@ const updateSkilledBClearance  = async(req, res) =>{
 
         skilledBClearance = await SkilledBClearance.findByIdAndUpdate(req.params.id, 
             data, {new: true})
-            res.json(skilledBClearance)
+
+        //this is for the notification
+        const skilledInfo = await SkilledInfo.findOne({ _id: skilled_id }); 
+        const skilledUserName = skilledInfo.username;
+        const skilledUserDocUrl = `https://samplekasawapp.onrender.com`;
+        // Create a notification after successfully creating new skills
+        const notification = await Notification.create({
+            skilled_id,
+            message: `${skilledUserName} updated his barangay clerance.
+            Click <a href="http://localhost:4000/api/admin/getAll/Barangay/detail/${skilledUserName}">here</a> to view the newly added skill.`
+        });
+        console.log(notification)
+
+        res.json(skilledBClearance)
     }catch(error){
         res.status(404).json({error:error.message})
     }
