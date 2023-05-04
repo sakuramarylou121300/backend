@@ -11,12 +11,17 @@ const getAllNotification = async(req, res)=>{
         .sort({createdAt: -1})
         // .count({isRead:0})
         // const count = notification.filter(notification => notification.isRead === 0).length;
-
+        const unreadCount = notification.filter(notification => notification.isRead === 0).length;
+        const output = {
+            notification,
+            unreadCount
+        }
+        
         await Notification.updateMany({
             isRead:0 }, 
             {$set: { isRead: 1 } });
 
-        res.status(200).json(notification)
+        res.status(200).json(output)
     }
     catch(error){
         res.status(404).json({error: error.message})

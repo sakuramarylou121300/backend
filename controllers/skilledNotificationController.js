@@ -5,19 +5,23 @@ const mongoose = require('mongoose')
 //GET all notification
 const getAllNotification = async(req, res)=>{
     const skilled_id = req.skilledInfo._id
+    const count = await Notification.countDocuments({ skilled_id, isRead: 0 });
     try{
         const notification = await Notification
         .find({isDeleted: 0, skilled_id})
         .sort({createdAt: -1})
         // .populate('skilled_id')
-        // .count({isRead:0})
-        // const count = notification.filter(notification => notification.isRead === 0).length;
+   
+        const unreadCount = notification.filter(notification => notification.isRead === 0).length;
+        const output = {
+            notification,
+            unreadCount
+        }
+        await Notification.updateMany({
+            isRead:0 }, 
+            {$set: { isRead: 1 } });
 
-        // await Notification.updateMany({
-        //     isRead:0 }, 
-        //     {$set: { isRead: 1 } });
-
-        res.status(200).json(notification)
+        res.status(200).json(output)
     }
     catch(error){
         res.status(404).json({error: error.message})

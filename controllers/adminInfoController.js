@@ -865,7 +865,7 @@ const adminUpdateBarangay = async(req, res) =>{
      //delete query
      const barangay = await Barangay.findOneAndUpdate({_id: id},{
          ...req.body, //get new value
-         message: req.body.bClearanceIsVerified === "false" ? "please update your submitted barangay clearance." : ""
+        //  message: req.body.bClearanceIsVerified === "false" ? "please update your submitted barangay clearance." : ""
      
      })
     
@@ -875,12 +875,20 @@ const adminUpdateBarangay = async(req, res) =>{
     }
      //this is for the notification
      const barangayNotif = await Barangay.findOne({ _id: id }); 
-     console.log(barangayNotif)
+     const bClearanceIsVerified = barangayNotif.bClearanceIsVerified;
+     let bClearanceIsVerifiedValue
+     if(bClearanceIsVerified === "true"){
+        bClearanceIsVerifiedValue = "approved"
+     }
+     else if(bClearanceIsVerified === "false"){
+        bClearanceIsVerifiedValue = "disapproved"
+     }
      const skilled_id = barangayNotif.skilled_id;
      // Create a notification after updating creating barangay
     const notification = await Notification.create({
         skilled_id,
-         message: 'Updated your barangay clerance'
+         message: `Admin has ${bClearanceIsVerifiedValue} your barangay clearance
+         Click <a href = "http://localhost:4000/api/admin/getOne/Barangay/${barangay._id}"</a>here to view.`
     })
     console.log(notification)
     res.status(200).json(barangay)

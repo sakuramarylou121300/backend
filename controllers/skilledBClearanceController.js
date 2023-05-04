@@ -87,7 +87,7 @@ const getAllSkilledBClearance = async(req, res)=>{
             skilled_id,
             isDeleted: 0,
             isExpired:{$ne: 1}})
-        .sort({createdAt:-1})
+        .sort({updatedAt:-1})
         var currentDate = new Date();//date today
         await SkilledBClearance.updateMany({ bClearanceExp: {$lt:currentDate}}, 
             {$set: 
@@ -200,12 +200,13 @@ const updateSkilledBClearance  = async(req, res) =>{
         //this is for the notification
         const skilledInfo = await SkilledInfo.findOne({ _id: skilled_id }); 
         const skilledUserName = skilledInfo.username;
-        const skilledUserDocUrl = `https://samplekasawapp.onrender.com`;
+    
         // Create a notification after successfully creating new skills
         const notification = await Notification.create({
             skilled_id,
             message: `${skilledUserName} updated his barangay clerance.
-            Click <a href="http://localhost:4000/api/admin/getAll/Barangay/detail/${skilledUserName}">here</a> to view the newly added skill.`
+            Click <a href = "http://localhost:4000/api/admin/getOne/Barangay/${skilledBClearance._id}"</a>here to view the updated barangay clearance.
+            Click <a href="http://localhost:4000/api/admin/getAll/Barangay/detail/${skilledUserName}">here</a> to view the updated barangay clearance.`
         });
         console.log(notification)
 

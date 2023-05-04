@@ -55,5 +55,6 @@ router.delete('/pull/contact/:arrayId', requireAuth, pullContact)
 
 //this is for the notification
 router.get('/get/notification', requireAuth, getAllNotification)
+router.patch('/delete/notification/:id', requireAuth, deleteNotification)
 
 module.exports = router
