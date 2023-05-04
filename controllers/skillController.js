@@ -1,5 +1,6 @@
 const Skill = require('../models/skill')
-const Info = require('../models/skilledInfo')
+const SkilledInfo = require('../models/skilledInfo')
+const Notification = require('../models/adminNotification')
 const AdminInfo = require('../models/adminInfo')
 const mongoose = require('mongoose')
 
@@ -75,6 +76,16 @@ const createSkill = async(req, res)=>{
             skillName,
             skilled_id
         })
+
+        // Get the name of the skilled user
+        const skilledInfo = await SkilledInfo.findOne({ _id: skilled_id });
+        const skilledUserName = skilledInfo.username;
+        // Create a notification after successfully creating new skills
+        const notification = await Notification.create({
+            skilled_id,
+            message: `${skilledUserName} has added new skill ${skill._id}`
+        });
+        console.log(notification)
         res.status(200).json(skill)
     }
     catch(error){

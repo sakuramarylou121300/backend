@@ -61,15 +61,15 @@ const createSkilledBClearance = async(req, res)=>{
         // Get the name of the skilled user
         const skilledInfo = await SkilledInfo.findOne({ _id: skilled_id });
         const skilledUserName = skilledInfo.username;
-        const skilledUserDocUrl = `https://samplekasawapp.onrender.com`;
+
         // Create a notification after successfully creating new skills
         const notification = await Notification.create({
             skilled_id,
-            message: `${skilledUserName} has added new skills. 
-            Click <a href="http://localhost:4000/api/admin/getAll/Barangay/detail/${skilledUserName}">here</a> to view the newly added skill.`
+            message: `${skilledUserName} has added new skills.
+            Click <a href = "http://localhost:4000/api/admin/getOne/Barangay/${skilledBClearance._id}"</a>here to view the newly added skill.`
         });
         console.log(notification)
-        console.log(skilledBClearance)
+        // console.log(skilledBClearance)
         res.status(200).json(skilledBClearance)
     
     }
