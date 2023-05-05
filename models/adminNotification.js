@@ -11,6 +11,10 @@ const adminNotificationSchema = new Schema({
         type: String,
         required: true,
     },
+    urlReact:{
+        type: String,
+        required: true,
+    },
     isRead:{
         type: Number,
         default: 0,
