@@ -66,7 +66,7 @@ const createSkilledBClearance = async(req, res)=>{
         const notification = await Notification.create({
             skilled_id,
             message: `${skilledUserName} has added new skills.
-            Click <a href = "http://localhost:4000/api/admin/getOne/Barangay/${skilledBClearance._id}"</a>here to view the newly added skill.`
+            Click <a href = "https://samplekasawapp.onrender.com/api/admin/getOne/Barangay/${skilledBClearance._id}"</a>here to view the newly added barangay clearance.`
         });
         console.log(notification)
         // console.log(skilledBClearance)
