@@ -887,8 +887,8 @@ const adminUpdateBarangay = async(req, res) =>{
      // Create a notification after updating creating barangay
     const notification = await Notification.create({
         skilled_id,
-         message: `Admin has ${bClearanceIsVerifiedValue} your barangay clearance
-         Click <a href = "https://samplekasawapp.onrender.com/api/skilledBClearance/getOne/${barangay._id}"</a>here to view.`
+         message: `Admin has ${bClearanceIsVerifiedValue} your barangay clearance.`,
+         url: `https://samplekasawapp.onrender.com/api/skilledBClearance/getOne/${barangay._id}`
     })
     console.log(notification)
     res.status(200).json(barangay)

@@ -65,8 +65,8 @@ const createSkilledBClearance = async(req, res)=>{
         // Create a notification after successfully creating new skills
         const notification = await Notification.create({
             skilled_id,
-            message: `${skilledUserName} has added new skills.
-            Click <a href = "https://samplekasawapp.onrender.com/api/admin/getOne/Barangay/${skilledBClearance._id}"</a>here to view the newly added barangay clearance.`
+            message: `${skilledUserName} has added new skills.`,
+            url: `https://samplekasawapp.onrender.com/api/admin/getOne/Barangay/${skilledBClearance._id}`
         });
         console.log(notification)
         // console.log(skilledBClearance)
@@ -204,8 +204,9 @@ const updateSkilledBClearance  = async(req, res) =>{
         // Create a notification after successfully creating new skills
         const notification = await Notification.create({
             skilled_id,
-            message: `${skilledUserName} updated his barangay clerance.
-            Click <a href = "https://samplekasawapp.onrender.com/api/admin/getOne/Barangay/${skilledBClearance._id}"</a>here to view the updated barangay clearance.`
+            message: `${skilledUserName} updated his barangay clerance.`,
+            url: `https://samplekasawapp.onrender.com/api/admin/getOne/Barangay/${skilledBClearance._id}`
+        
         });
         console.log(notification)
 

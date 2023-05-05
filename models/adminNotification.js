@@ -7,6 +7,10 @@ const adminNotificationSchema = new Schema({
         type: String,
         required: true,
     },
+    url:{
+        type: String,
+        required: true,
+    },
     isRead:{
         type: Number,
         default: 0,

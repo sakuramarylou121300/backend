@@ -7,6 +7,10 @@ const skilledNotificationSchema = new Schema({
         type: String,
         required: true,
     },
+    url:{
+        type: String,
+        required: true,
+    },
     skilled_id:{
         type: mongoose.Schema.Types.ObjectId,
         required: true,
