@@ -205,8 +205,7 @@ const updateSkilledBClearance  = async(req, res) =>{
         const notification = await Notification.create({
             skilled_id,
             message: `${skilledUserName} updated his barangay clerance.
-            Click <a href = "http://localhost:4000/api/admin/getOne/Barangay/${skilledBClearance._id}"</a>here to view the updated barangay clearance.
-            Click <a href="http://localhost:4000/api/admin/getAll/Barangay/detail/${skilledUserName}">here</a> to view the updated barangay clearance.`
+            Click <a href = "https://samplekasawapp.onrender.com/api/admin/getOne/Barangay/${skilledBClearance._id}"</a>here to view the updated barangay clearance.`
         });
         console.log(notification)
 
