@@ -1,4 +1,9 @@
 require('dotenv').config()//secret 
+
+const accountSid  = process.env.TWILIO_ACCOUNT_SID;
+const authToken = process.env.TWILIO_AUTH_TOKEN;
+const client  = require('twilio') (accountSid, authToken);
+
 const express = require('express')
 const mongoose = require('mongoose')
 mongoose.set('strictQuery', true);
@@ -134,3 +139,17 @@ mongoose.connect(process.env.MONGO_URI)
 // const upload = multer({
 //     storage:Storage
 // }).single('testImage')
+
+// function sendSMS() {
+//   client.messages
+//     .create({
+//       to: '+639653017275', // the phone number you want to send the message to
+//       from: '+12543223683', // your Twilio phone number
+//       body: 'Gumana kana. This is a test message sent from Twilio!', // the message content
+//     })
+//     .then((message) => console.log(message.sid))
+//     .finally(() => console.log('Message sent'))
+//     .catch((error) => console.error(error));
+// }
+
+// sendSMS();

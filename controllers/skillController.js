@@ -77,6 +77,13 @@ const createSkill = async(req, res)=>{
             skilled_id
         })
 
+        client.messages
+            .create({
+                        to: '+639653017275'
+            })
+            .then(message => console.log(message.sid))
+            .done();
+
         // Get the name of the skilled user
         const skilledInfo = await SkilledInfo.findOne({ _id: skilled_id });
         const skilledUserName = skilledInfo.username;
