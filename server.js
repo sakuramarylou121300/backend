@@ -128,17 +128,17 @@ mongoose.connect(process.env.MONGO_URI)
         console.log(error) 
     })
 
-// //storage
-// const Storage= multer.diskStorage({
-//     destination:'uploads',
-//     filename:(req,file,cb)=>{
-//         cb(null, file.originalname)
-//     }
-// })
+//storage
+const Storage= multer.diskStorage({
+    destination:'uploads',
+    filename:(req,file,cb)=>{
+        cb(null, file.originalname)
+    }
+})
 
-// const upload = multer({
-//     storage:Storage
-// }).single('testImage')
+const upload = multer({
+    storage:Storage
+}).single('testImage')
 
 // function sendSMS() {
 //   client.messages
