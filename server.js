@@ -145,7 +145,7 @@ const upload = multer({
 //     .create({
 //       to: '+639653017275', // the phone number you want to send the message to
 //       from: '+12543223683', // your Twilio phone number
-//       body: 'Gumana kana. This is a test message sent from Twilio!', // the message content
+//       body: 'Final na to. This is a test message sent from Twilio!', // the message content
 //     })
 //     .then((message) => console.log(message.sid))
 //     .finally(() => console.log('Message sent'))
