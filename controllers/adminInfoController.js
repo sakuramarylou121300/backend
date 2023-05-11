@@ -829,6 +829,24 @@ const adminUpdateExperience = async(req, res) =>{
         return res.status(404).json({error: 'Skill Experience not found'})
     }
 
+    //this is for the notification
+    const expNotif = await Experience.findOne({ _id: id }); 
+    const expIsVerified = expNotif.expIsVerified;
+    let expIsVerifiedValue
+    if(expIsVerified === "true"){
+        expIsVerifiedValue = "approved"
+    }
+    else if(expIsVerified === "false"){
+        expIsVerifiedValue = "disapproved"
+    }
+    const skilled_id = expNotif.skilled_id;
+    // Create a notification after updating creating barangay
+   const notification = await Notification.create({
+       skilled_id,
+        message: `Admin has ${expIsVerifiedValue} your work experience.`,
+        // url: `https://samplekasawapp.onrender.com/api/skilledBClearance/getOne/${barangay._id}`
+   })
+
     res.status(200).json(experience)
 }
 
@@ -850,6 +868,24 @@ const adminUpdateCertificate = async(req, res) =>{
      if (!certificate){
         return res.status(404).json({error: 'Skill Certificate not found'})
     }
+
+    //this is for the notification
+    const certNotif = await Certificate.findOne({ _id: id }); 
+    const skillIsVerified = certNotif.skillIsVerified;
+    let skillIsVerifiedValue
+    if(skillIsVerified === "true"){
+        skillIsVerifiedValue = "approved"
+    }
+    else if(skillIsVerified === "false"){
+        skillIsVerifiedValue = "disapproved"
+    }
+    const skilled_id = certNotif.skilled_id;
+    // Create a notification after updating creating barangay
+const notification = await Notification.create({
+    skilled_id,
+        message: `Admin has ${skillIsVerifiedValue} your skill certificate.`,
+        // url: `https://samplekasawapp.onrender.com/api/skilledBClearance/getOne/${barangay._id}`
+})
 
     res.status(200).json(certificate)
 }
@@ -913,6 +949,24 @@ const adminUpdateNbi = async(req, res) =>{
      if (!nbi){
         return res.status(404).json({error: 'Nbi Clearance not found'})
     }
+
+    //this is for the notification
+    const nbiNotif = await Nbi.findOne({ _id: id }); 
+    const nClearanceIsVerified = nbiNotif.nClearanceIsVerified;
+    let nClearanceIsVerifiedValue
+    if(nClearanceIsVerified === "true"){
+        nClearanceIsVerifiedValue = "approved"
+    }
+    else if(nClearanceIsVerified === "false"){
+        nClearanceIsVerifiedValue = "disapproved"
+    }
+    const skilled_id = nbiNotif.skilled_id;
+    // Create a notification after updating creating barangay
+    const notification = await Notification.create({
+    skilled_id,
+        message: `Admin has ${nClearanceIsVerifiedValue} your barangay clearance.`,
+        // url: `https://samplekasawapp.onrender.com/api/skilledBClearance/getOne/${barangay._id}`
+})
 
     res.status(200).json(nbi)
 }
@@ -1010,7 +1064,6 @@ const adminGetAllSkilledBarangayDetailExpired = async(req, res)=>{
         res.status(404).json({error: error.message})
     }  
 }
-
 const adminGetAllSkilledNbiDetailExpired = async(req, res)=>{
     const username = req.params.username;
     try{

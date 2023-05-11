@@ -11,10 +11,10 @@ const skilledNotificationSchema = new Schema({
     //     type: String,
     //     required: true,
     // },
-    urlReact:{
-        type: String,
-        required: true,
-    },
+    // urlReact:{
+    //     type: String,
+    //     required: true,
+    // },
     skilled_id:{
         type: mongoose.Schema.Types.ObjectId,
         required: true,
