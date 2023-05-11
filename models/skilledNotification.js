@@ -7,10 +7,10 @@ const skilledNotificationSchema = new Schema({
         type: String,
         required: true,
     },
-    url:{
-        type: String,
-        required: true,
-    },
+    // url:{
+    //     type: String,
+    //     required: true,
+    // },
     urlReact:{
         type: String,
         required: true,

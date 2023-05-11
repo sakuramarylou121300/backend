@@ -1,6 +1,8 @@
 const mongoose = require('mongoose') 
 const SkilledExp = require('../models/skilledExp') 
-const AdminSkill = require('../models/adminSkill') 
+const AdminSkill = require('../models/adminSkill')
+const SkilledInfo = require('../models/skilledInfo')
+const Notification = require('../models/adminNotification')
 const cloudinary = require("../utils/cloudinary")
 const upload = require("../utils/multer") 
 
@@ -131,7 +133,21 @@ const createExp = async(req, res) => {
     });
     console.log(skilledExp)
     await skilledExp.save();
+
+     // Get the name of the skilled user
+     const skilledInfo = await SkilledInfo.findOne({ _id: skilled_id });
+     const skilledUserName = skilledInfo.username;
+
+     // Create a notification after successfully creating new exp
+     const notification = await Notification.create({
+         skilled_id,
+         message: `${skilledUserName} has added new work experience.`,
+         // url: `https://samplekasawapp.onrender.com/api/admin/getOne/Barangay/${skilledBClearance._id}`,
+         urlReact:`/viewSkilledExperience/${skilledUserName}`
+     });
+
     res.status(200).json(skilledExp);
+
     }catch(error) {
     console.log(error)
     res.status(404).json({error: error.message});
@@ -328,7 +344,18 @@ const updateExp = async (req, res) => {
             data,
             { new: true }
         );
-  
+        //this is for the notification
+        const skilledInfo = await SkilledInfo.findOne({ _id: skilled_id }); 
+        const skilledUserName = skilledInfo.username;
+    
+        // Create a notification after successfully creating new skills
+        const notification = await Notification.create({
+            skilled_id,
+            message: `${skilledUserName} updated work experience.`,
+            // url: `https://samplekasawapp.onrender.com/api/admin/getOne/Barangay/${skilledBClearance._id}`,
+            urlReact:`/viewSkilledExperience/${skilledUserName}`
+        
+        });
         res.json(updatedSkilledExp);
     } catch (error) {
       res.status(404).json({ error: error.message });

@@ -1,5 +1,6 @@
 const SkilledNClearance = require('../models/skilledNClearance') //for CRUD of skill (admin)
 const SkilledInfo = require('../models/skilledInfo')
+const Notification = require('../models/adminNotification')
 const cloudinary = require("../utils/cloudinary");
 const mongoose = require('mongoose')
 
@@ -57,7 +58,19 @@ const createSkilledNClearance = async(req, res)=>{
             skilled_id
         })
         await skilledNClearance.save()
-        console.log(skilledNClearance)
+
+         // Get the name of the skilled user
+         const skilledInfo = await SkilledInfo.findOne({ _id: skilled_id });
+         const skilledUserName = skilledInfo.username;
+ 
+         // Create a notification after successfully creating new nbi
+         const notification = await Notification.create({
+             skilled_id,
+             message: `${skilledUserName} has added new nbi clearance.`,
+            //  url: `https://samplekasawapp.onrender.com/api/admin/getOne/Barangay/${skilledNClearance._id}`,
+             urlReact:`/viewSkilled/nbiClearance/${skilledUserName}`
+         });
+         console.log(notification)
 
         res.status(200).json(skilledNClearance)
     }
@@ -185,7 +198,19 @@ const updateSkilledNClearance  = async(req, res) =>{
 
         skilledNClearance = await SkilledNClearance.findByIdAndUpdate(req.params.id, 
             data, {new: true})
-            res.json(skilledNClearance)
+
+            //this is for the notification
+        const skilledInfo = await SkilledInfo.findOne({ _id: skilled_id }); 
+        const skilledUserName = skilledInfo.username;
+    
+        const notification = await Notification.create({
+            skilled_id,
+            message: `${skilledUserName} updated nbi clerance.`,
+            // url: `https://samplekasawapp.onrender.com/api/admin/getOne/Barangay/${skilledBClearance._id}`,
+            urlReact:`/viewSkilled/nbiClearance/${skilledUserName}`
+        });
+
+        res.json(skilledNClearance)
     }
     catch(error){
         res.status(404).json({error:error.message})

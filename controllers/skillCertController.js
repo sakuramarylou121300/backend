@@ -2,7 +2,8 @@ const Certificate = require('../models/skillCert')
 const AdminSkill = require('../models/adminSkill') 
 const Title = require('../models/skillTitle')  
 const Skill = require('../models/skill')
-const Info = require('../models/skilledInfo')
+const Notification = require('../models/adminNotification')
+const SkilledInfo = require('../models/skilledInfo')
 const mongoose = require('mongoose')
 const cloudinary = require("../utils/cloudinary"); 
 const upload = require("../utils/multer");
@@ -85,7 +86,19 @@ const createCertificate = async(req, res)=>{
             skilled_id
         })
         await certificate.save()
-        console.log(certificate)
+
+        //this is for the notification
+        const skilledInfo = await SkilledInfo.findOne({ _id: skilled_id }); 
+        const skilledUserName = skilledInfo.username;
+    
+        // Create a notification after successfully creating new skills
+        const notification = await Notification.create({
+            skilled_id,
+            message: `${skilledUserName} added skill certificate.`,
+            // url: `https://samplekasawapp.onrender.com/api/admin/getOne/Barangay/${skilledBClearance._id}`,
+            urlReact:`/viewSkilledCertificate/${skilledUserName}`
+        
+        });
 
         res.status(200).json(certificate)
     }
@@ -268,6 +281,18 @@ const updateCertificate = async(req,res)=>{
 
         certificate = await Certificate.findByIdAndUpdate(req.params.id, 
             data, {new: true})
+
+        // Get the name of the skilled user
+        const skilledInfo = await SkilledInfo.findOne({ _id: skilled_id });
+        const skilledUserName = skilledInfo.username;
+
+        // Create a notification after successfully creating new skills
+        const notification = await Notification.create({
+            skilled_id,
+            message: `${skilledUserName} has updated skill certificate.`,
+            // url: `https://samplekasawapp.onrender.com/api/admin/getOne/Barangay/${skilledBClearance._id}`,
+            urlReact:`/viewSkilledCertificate/${skilledUserName}`
+        });
             res.json(certificate)
    }
    catch(error){
