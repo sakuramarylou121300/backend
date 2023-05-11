@@ -5,6 +5,7 @@ const Certificate = require('../models/skillCert')
 const Barangay = require('../models/skilledBClearance')
 const Nbi = require('../models/skilledNClearance')
 const Skill = require('../models/skill')
+const AdminSkill = require('../models/adminSkill')
 const Notification = require('../models/skilledNotification')
 const SkilledBill = require('../models/skilledBill')
 const mongoose = require('mongoose')
@@ -840,10 +841,13 @@ const adminUpdateExperience = async(req, res) =>{
         expIsVerifiedValue = "disapproved"
     }
     const skilled_id = expNotif.skilled_id;
+    const skilledInfo = await SkilledInfo.findOne({ _id: skilled_id });
+    const username = skilledInfo.username;
     // Create a notification after updating creating barangay
    const notification = await Notification.create({
        skilled_id,
         message: `Admin has ${expIsVerifiedValue} your work experience.`,
+        urlReact:`/profileSkilled/${username}`
         // url: `https://samplekasawapp.onrender.com/api/skilledBClearance/getOne/${barangay._id}`
    })
 
@@ -872,6 +876,7 @@ const adminUpdateCertificate = async(req, res) =>{
     //this is for the notification
     const certNotif = await Certificate.findOne({ _id: id }); 
     const skillIsVerified = certNotif.skillIsVerified;
+    
     let skillIsVerifiedValue
     if(skillIsVerified === "true"){
         skillIsVerifiedValue = "approved"
@@ -879,11 +884,20 @@ const adminUpdateCertificate = async(req, res) =>{
     else if(skillIsVerified === "false"){
         skillIsVerifiedValue = "disapproved"
     }
+    // get the username of the user
     const skilled_id = certNotif.skilled_id;
+    const skilledInfo = await SkilledInfo.findOne({ _id: skilled_id });
+    const username = skilledInfo.username;
+
+    // get the skill name of the skill
+    const skill = certNotif.categorySkill;
+    const adminSkill = await AdminSkill.findOne({ _id: skill });
+    const skillName = adminSkill.skill;
     // Create a notification after updating creating barangay
 const notification = await Notification.create({
     skilled_id,
         message: `Admin has ${skillIsVerifiedValue} your skill certificate.`,
+        urlReact:`/profileSkilledCert/${skillName}/${username}`
         // url: `https://samplekasawapp.onrender.com/api/skilledBClearance/getOne/${barangay._id}`
 })
 
@@ -924,7 +938,9 @@ const adminUpdateBarangay = async(req, res) =>{
     const notification = await Notification.create({
         skilled_id,
          message: `Admin has ${bClearanceIsVerifiedValue} your barangay clearance.`,
-         url: `https://samplekasawapp.onrender.com/api/skilledBClearance/getOne/${barangay._id}`
+         urlReact:`/profileSkilled`
+        //  url: `https://samplekasawapp.onrender.com/api/skilledBClearance/getOne/${barangay._id}`
+
     })
     console.log(notification)
     res.status(200).json(barangay)
@@ -964,7 +980,8 @@ const adminUpdateNbi = async(req, res) =>{
     // Create a notification after updating creating barangay
     const notification = await Notification.create({
     skilled_id,
-        message: `Admin has ${nClearanceIsVerifiedValue} your barangay clearance.`,
+        message: `Admin has ${nClearanceIsVerifiedValue} your nbi clearance.`,
+        urlReact:`/profileSkilled`
         // url: `https://samplekasawapp.onrender.com/api/skilledBClearance/getOne/${barangay._id}`
 })
 

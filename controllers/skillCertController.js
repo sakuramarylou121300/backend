@@ -119,7 +119,7 @@ const getAllCertificate = async(req, res)=>{
             isDeleted: 0, 
             isExpired:{$ne: 1},
             })
-        .sort({createdAt: -1})
+        .sort({updatedAt: -1})
         .populate('skilled_id')
         .populate('categorySkill')
         var currentDate = new Date();//date today

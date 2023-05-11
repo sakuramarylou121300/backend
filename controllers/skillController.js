@@ -2,6 +2,11 @@ const Skill = require('../models/skill')
 const SkilledInfo = require('../models/skilledInfo')
 const Notification = require('../models/adminNotification')
 const AdminInfo = require('../models/adminInfo')
+
+// const accountSid  = process.env.TWILIO_ACCOUNT_SID;
+// const authToken = process.env.TWILIO_AUTH_TOKEN;
+// const client  = require('twilio') (accountSid, authToken);
+
 const mongoose = require('mongoose')
 
 const createSkills = async(req, res)=>{ 
@@ -42,6 +47,47 @@ const createSkills = async(req, res)=>{
     }
 }
 //CREATE skill 
+// const createSkill = async(req, res)=>{
+//     const {skillName} = req.body
+
+//     // check empty fields
+//     let emptyFields = []
+    
+//     if(!skillName){
+//         emptyFields.push('skillName')
+//     }
+
+//     //send message if there is an empty fields
+//     if(emptyFields.length >0){
+//         return res.status(400).json({error: 'Please fill in all the blank fields.', emptyFields})
+//     }
+    
+//     try{
+//         //this is to assign the job to a specific client user, get id from clientInfo
+//         const skilled_id = req.skilledInfo._id
+//         const skillCheck = await Skill.findOne({
+//             skillName:skillName,
+//             skilled_id:skilled_id,
+//             isDeleted: 0
+//         })
+        
+//         if(skillCheck){
+//             return res.status(400).json({error: "Skill already exists in this user."})
+//         }
+
+//         //create query
+//         const skill = await Skill.create({
+//             skillName,
+//             skilled_id
+//         })
+//         res.status(200).json(skill)
+//     }
+
+//     catch(error){
+//         res.status(404).json({error: error.message})
+//     }
+// }
+
 const createSkill = async(req, res)=>{
     const {skillName} = req.body
 
@@ -60,7 +106,6 @@ const createSkill = async(req, res)=>{
     try{
         //this is to assign the job to a specific client user, get id from clientInfo
         const skilled_id = req.skilledInfo._id
-
         const skillCheck = await Skill.findOne({
             skillName:skillName,
             skilled_id:skilled_id,
@@ -75,25 +120,31 @@ const createSkill = async(req, res)=>{
         const skill = await Skill.create({
             skillName,
             skilled_id
-        })
-
-        client.messages
-            .create({
-                        to: '+639653017275'
-            })
-            .then(message => console.log(message.sid))
-            .done();
-
-        // Get the name of the skilled user
-        const skilledInfo = await SkilledInfo.findOne({ _id: skilled_id });
-        const skilledUserName = skilledInfo.username;
-        // Create a notification after successfully creating new skills
-        const notification = await Notification.create({
-            skilled_id,
-            message: `${skilledUserName} has added new skill ${skill._id}`
         });
-        console.log(notification)
-        res.status(200).json(skill)
+
+        // // define sendSMS function inside createSkill function
+        // const sendSMS = async () => {
+
+        //   // message content
+        //   const message = `skill gumana kana`;
+
+        //   try {
+        //     const messageSent = await client.messages.create({
+        //       body: message,
+        //       from: '+12543223683', // your Twilio phone number
+        //       to: '+639653017275', // the phone number you want to send the message to
+        //     });
+
+        //     console.log(`SMS sent with message sid: ${messageSent.sid}`);
+        //   } catch (error) {
+        //     console.error(`Error sending SMS: ${error.message}`);
+        //   }
+        // };
+
+        // // call sendSMS function after skill is created
+        // sendSMS();
+
+        res.status(200).json(skill);
     }
     catch(error){
         res.status(404).json({error: error.message})

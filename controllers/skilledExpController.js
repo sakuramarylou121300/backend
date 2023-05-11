@@ -165,7 +165,7 @@ const getAllExp = async(req, res)=>{
         .find({skilled_id, 
             isDeleted: 0,
             isExpired:{$ne: 1},})
-        .sort({createdAt: -1})
+        .sort({updatedAt: -1})
         .populate('categorySkill')
         .populate('skilled_id')
         res.status(200).json(skilledExp)
