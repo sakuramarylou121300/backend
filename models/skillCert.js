@@ -29,7 +29,8 @@ const skillCertSchema = new Schema({
         default: "pending"
     },
     message:{
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Reason',
         default: ""
     },
     skilled_id:{

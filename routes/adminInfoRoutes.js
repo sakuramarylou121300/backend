@@ -105,6 +105,15 @@ const{
     deleteSkilledBill
 } = require('../controllers/skilledBillController')
 
+const{
+    createReason,
+    getAllReason,
+    getOneReason,
+    updateReason,
+    deleteReason
+} = require('../controllers/reasonController')
+
+
 const adminControlAdmin = require('../middleware/adminControlAdmin')
 const adminAuth = require('../middleware/adminAuth')
 const adminControlSkilled = require('../middleware/adminControlSkilled')
@@ -203,6 +212,13 @@ router.get('/getAll/exp/deleted/:username', adminAuth, adminControlSkilled, admi
 router.get('/getAll/cert/deleted/:username', adminAuth, adminControlSkilled, adminGetAllSkilledCertDeleted)
 router.get('/getAll/barangay/deleted/:username', adminAuth, adminControlSkilled, adminGetAllSkilledBarangayDeleted)
 router.get('/getAll/nbi/deleted/:username', adminAuth, adminControlSkilled, adminGetAllSkilledNbiDeleted)
+
+//REASON
+router.post('/post/reason', adminAuth, adminControlSkilled, createReason)
+router.get('/getAll/reason', adminAuth, adminControlSkilled, getAllReason)
+router.get('/getOne/reason/:id', adminAuth, adminControlSkilled, getOneReason)
+router.patch('/update/reason/:id', adminAuth, adminControlSkilled, updateReason)
+router.patch('/delete/reason/:id', adminAuth, adminControlSkilled, deleteReason)
 
 router.get('/getAll/skilledBill', adminAuth, adminControlSkilled, adminGetAllSkilledBill)
 router.get('/getAll/skilledBill/detail', adminAuth, adminControlSkilled, adminGetAllSkilledBillDetail)

@@ -69,7 +69,8 @@ const skilledExp = new Schema({
         default: "pending"
     },
     message:{
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Reason',
         default: ""
     },
     cloudinary_id:{
