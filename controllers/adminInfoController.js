@@ -936,64 +936,7 @@ const adminUpdateCertificate = async (req, res) => {
       } catch (error) {
           res.status(400).json({ error: error.message })
       }
-  }
-// const adminUpdateCertificate = async(req, res) =>{
-//     const {id} = req.params   
-
-//     //check if id is not existing
-//     if(!mongoose.Types.ObjectId.isValid(id)){
-//         return res.status(404).json({error: 'Invalid id'})
-//     }
-
-//      //delete query
-//      const certificate = await Certificate.findOneAndUpdate({_id: id},{
-//         ...req.body,
-//         // message: req.body.skillIsVerified === "false" ? "please update your submitted certificate." : ""
-//      })
-    
-//      //check if not existing
-//      if (!certificate){
-//         return res.status(404).json({error: 'Skill Certificate not found'})
-//     }
-
-//     //this is for the notification
-//     const certNotif = await Certificate.findOne({ _id: id }); 
-//     const skillIsVerified = certNotif.skillIsVerified;
-    
-//     // get the value of reason, this is when the req is invalid
-//     const reason_id = certNotif.message
-//     const reason = await Reason.findOne({ _id: reason_id }); 
-//     const reasonMessage = reason.reason;
-
-//     let skillIsVerifiedValue
-//     if(skillIsVerified === "true"){
-//         skillIsVerifiedValue = "approved",
-//         messageNotif = `Admin has ${skillIsVerifiedValue} your work experience.`
-    
-//     }
-//     else if(skillIsVerified === "false"){
-//         skillIsVerifiedValue = "disapproved",
-//         messageNotif = `Admin has ${skillIsVerifiedValue} your skill certificate. Please update your uploaded certificate. Your certificate has ${reasonMessage} `
-//     }
-//     // get the username of the user
-//     const skilled_id = certNotif.skilled_id;
-//     const skilledInfo = await SkilledInfo.findOne({ _id: skilled_id });
-//     const username = skilledInfo.username;
-
-//     // get the skill name of the skill
-//     const skill = certNotif.categorySkill;
-//     const adminSkill = await AdminSkill.findOne({ _id: skill });
-//     const skillName = adminSkill.skill;
-//     // Create a notification after updating creating barangay
-// const notification = await Notification.create({
-//     skilled_id,
-//         message: messageNotif,
-//         urlReact:`/profileSkilledCert/${skillName}/${username}`
-//         // url: `https://samplekasawapp.onrender.com/api/skilledBClearance/getOne/${barangay._id}`
-// })
-
-//     res.status(200).json(certificate)
-// }
+}
 
 const adminUpdateBarangay = async(req, res) =>{
     const {id} = req.params   
