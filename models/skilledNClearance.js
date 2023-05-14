@@ -2,6 +2,13 @@ const mongoose = require('mongoose')
 
 const Schema = mongoose.Schema 
 
+const messageSchema = new Schema({
+    message:{
+        type: String,
+        ref: 'Reason' 
+    }
+})
+
 const skilledNClearance = new Schema({
     photo:{
         type: String,
@@ -18,10 +25,7 @@ const skilledNClearance = new Schema({
         type: String,
         default: "pending",
     },
-    message:{
-        type: String,
-        default: "",
-    },
+    message:[messageSchema],
     isRead:{
         type: Number,
         default: 0,

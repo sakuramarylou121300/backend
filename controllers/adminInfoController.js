@@ -938,54 +938,115 @@ const adminUpdateCertificate = async (req, res) => {
       }
 }
 
-const adminUpdateBarangay = async(req, res) =>{
-    const {id} = req.params   
-
-    //check if id is not existing
-    if(!mongoose.Types.ObjectId.isValid(id)){
-        return res.status(404).json({error: 'Invalid id'})
-    }
-
-     //delete query
-     const barangay = await Barangay.findOneAndUpdate({_id: id},{
-         ...req.body,
-        //  message: req.body.bClearanceIsVerified === "false" ? "please update your submitted barangay clearance." : ""
-     
-     })
-    
-     //check if not existing
-     if (!barangay){
-        return res.status(404).json({error: 'Barangay Clearance not found'})
-    }
-     //this is for the notification
-     const barangayNotif = await Barangay.findOne({ _id: id }); 
-     const bClearanceIsVerified = barangayNotif.bClearanceIsVerified;
-
-    // get the value of reason, this is when the req is invalid
-    const reason_id = barangayNotif.message
-    const reason = await Reason.findOne({ _id: reason_id }); 
-    const reasonMessage = reason.reason;
-
-     let bClearanceIsVerifiedValue
-     if(bClearanceIsVerified === "true"){
-        bClearanceIsVerifiedValue = "approved",
-        messageNotif = `Admin has ${bClearanceIsVerifiedValue} your barangay clearance.`
-     }
-     else if(bClearanceIsVerified === "false"){
-        bClearanceIsVerifiedValue = "disapproved",
-        messageNotif = `Admin has ${bClearanceIsVerifiedValue} your barangay clearance. Please update your uploaded barangay clearance. Your barangay clearance has ${reasonMessage} `
-     }
-     const skilled_id = barangayNotif.skilled_id;
-     // Create a notification after updating creating barangay
+const adminUpdateBarangay = async (req, res) => {
+    const { bClearanceIsVerified, message } = req.body
+  
+    try {
+      await Barangay.updateOne({ _id: req.params.id }, { $unset: { message: 1 } })
+      const barangay = await Barangay.findOneAndUpdate(
+        { _id: req.params.id },
+        {
+            $push: { message },
+            $set: { bClearanceIsVerified }
+        },
+        { new: true }
+      )
+      //notification
+      const barangayNotif = await Barangay.findOne({ _id: req.params.id })
+      .populate('message');
+      const messageIds = barangayNotif.message.map(msg => msg.message)
+      let messageNotif = '';
+      let bClearanceIsVerifiedValue;
+  
+    if (bClearanceIsVerified === 'true') {
+        bClearanceIsVerifiedValue = 'approved';
+        messageNotif = `Admin has ${bClearanceIsVerifiedValue} your barangay clearance.`;
+    } else if (bClearanceIsVerified === 'false') {
+        bClearanceIsVerifiedValue = 'disapproved';
+        //validation
+        if (!messageIds || messageIds.length === 0) {
+            return res.status(400).json({ error: 'Please select your reason.' })
+        }
+      
+        // Check for duplicate messages in request body
+        const duplicates = message.filter(
+            (m, i, self) => i !== self.findIndex((sm) => sm.message === m.message)
+        );
+        if (duplicates.length > 0) {
+            return res
+            .status(400)
+            .json({ error: 'Please remove repeating reason.' });
+        }
+        const messages = await Promise.all(messageIds.map(async (msgId) => {
+            const msg = await Reason.findOne({ _id: msgId });
+            return msg.reason;
+        }));
+            messageNotif = `Admin has ${bClearanceIsVerifiedValue} your nbi clearance. Please update your uploaded nbi clearance. Your nbi clearance has ${messages.join(', ')}.`;
+      }
+  
+    const skilled_id = barangayNotif.skilled_id;
+    const skilledInfo = await SkilledInfo.findOne({ _id: skilled_id });
+    const username = skilledInfo.username;
+    // Create a notification after updating creating barangay
     const notification = await Notification.create({
         skilled_id,
-         message: messageNotif,
-         urlReact:`/profileSkilled`
-        //  url: `https://samplekasawapp.onrender.com/api/skilledBClearance/getOne/${barangay._id}`
-
-    })
-    res.status(200).json(barangay)
+        messageReason: messageNotif,
+        urlReact:`/profileSkilled`
+    });
+      res.status(200).json(barangay)
+      } catch (error) {
+          res.status(400).json({ error: error.message })
+      }
 }
+
+// const adminUpdateBarangay = async(req, res) =>{
+//     const {id} = req.params   
+
+//     //check if id is not existing
+//     if(!mongoose.Types.ObjectId.isValid(id)){
+//         return res.status(404).json({error: 'Invalid id'})
+//     }
+
+//      //delete query
+//      const barangay = await Barangay.findOneAndUpdate({_id: id},{
+//          ...req.body,
+//         //  message: req.body.bClearanceIsVerified === "false" ? "please update your submitted barangay clearance." : ""
+     
+//      })
+    
+//      //check if not existing
+//      if (!barangay){
+//         return res.status(404).json({error: 'Barangay Clearance not found'})
+//     }
+//      //this is for the notification
+//      const barangayNotif = await Barangay.findOne({ _id: id }); 
+//      const bClearanceIsVerified = barangayNotif.bClearanceIsVerified;
+
+//     // get the value of reason, this is when the req is invalid
+//     const reason_id = barangayNotif.message
+//     const reason = await Reason.findOne({ _id: reason_id }); 
+//     const reasonMessage = reason.reason;
+
+//      let bClearanceIsVerifiedValue
+//      if(bClearanceIsVerified === "true"){
+//         bClearanceIsVerifiedValue = "approved",
+//         messageNotif = `Admin has ${bClearanceIsVerifiedValue} your barangay clearance.`
+//      }
+//      else if(bClearanceIsVerified === "false"){
+//         bClearanceIsVerifiedValue = "disapproved",
+//         messageNotif = `Admin has ${bClearanceIsVerifiedValue} your barangay clearance. Please update your uploaded barangay clearance. Your barangay clearance has ${reasonMessage} `
+//      }
+//      const skilled_id = barangayNotif.skilled_id;
+//      // Create a notification after updating creating barangay
+//     const notification = await Notification.create({
+//         skilled_id,
+//          message: messageNotif,
+//          urlReact:`/profileSkilled`
+//         //  url: `https://samplekasawapp.onrender.com/api/skilledBClearance/getOne/${barangay._id}`
+
+//     })
+//     res.status(200).json(barangay)
+// }
 
 const adminUpdateNbi = async(req, res) =>{
     const {id} = req.params   
