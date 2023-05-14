@@ -810,57 +810,64 @@ const adminGetAllSkilledNbiDetail = async(req, res)=>{
     }  
 }
 //UPDATE INFO
-const adminUpdateExperience = async(req, res) =>{
-    const {id} = req.params 
+const adminUpdateExperience = async (req, res) => {
+  const { expIsVerified, message } = req.body
 
-    //check if id is not existing
-    if(!mongoose.Types.ObjectId.isValid(id)){
-        return res.status(404).json({error: 'Invalid id'})
-    }
+  try {
+    await Experience.updateOne({ _id: req.params.id }, { $unset: { message: 1 } })
+    const skilledExp = await Experience.findOneAndUpdate(
+        { _id: req.params.id },
+        {
+            $push: { message },
+            $set: { expIsVerified }
+        },
+        { new: true }
+    )
+    //notification
+    const expNotif = await Experience.findOne({ _id: req.params.id })
+    .populate('message');
+    const messageIds = expNotif.message.map(msg => msg.message)
+    let messageNotif = '';
+    let expIsVerifiedValue;
 
-     //delete query
-     const experience = await Experience.findOneAndUpdate({_id: id},{
-         ...req.body,  //get new value
-        //  message: req.body.expIsVerified === "false" ? "please update your submitted work experience." : ""
-     
-
-     })
+    if (expIsVerified === 'true') {
+        expIsVerifiedValue = 'approved';
+        messageNotif = `Admin has ${expIsVerifiedValue} your work experience.`;
+    } else if (expIsVerified === 'false') {
+        expIsVerifiedValue = 'disapproved';
+        //validation
+        if (!messageIds || messageIds.length === 0) {
+            return res.status(400).json({ error: 'Please select your reason' })
+        }
     
-     //check if not existing
-     if (!experience){
-        return res.status(404).json({error: 'Skill Experience not found'})
+        const duplicates = message.filter((reason, index, self) =>
+          index !== self.findIndex((r) => r.reason === reason.reason)
+        )
+    
+        if (duplicates.length > 0) {
+          return res.status(400).json({ error: "Please remove repeating reason" })
+        }
+
+        const messages = await Promise.all(messageIds.map(async (msgId) => {
+            const msg = await Reason.findOne({ _id: msgId });
+            return msg.reason;
+        }));
+            messageNotif = `Admin has ${expIsVerifiedValue} your work experience. Please update your uploaded work experience. Your work experience has ${messages.join(', ')}.`;
     }
 
-    //this is for the notification
-    const expNotif = await Experience.findOne({ _id: id }); 
-    const expIsVerified = expNotif.expIsVerified;
-    // get the value of reason, this is when the req is invalid
-    const reason_id = expNotif.message
-    const reason = await Reason.findOne({ _id: reason_id }); 
-    const reasonMessage = reason.reason;
-
-    let expIsVerifiedValue
-    let messageNotif
-    if(expIsVerified === "true"){
-        expIsVerifiedValue = "approved",
-        messageNotif = `Admin has ${expIsVerifiedValue} your work experience.`
-    }
-    else if(expIsVerified === "false"){
-        expIsVerifiedValue = "disapproved",
-        messageNotif = `Admin has ${expIsVerifiedValue} your work experience. Please update your uploaded work experience. Your work experience has ${reasonMessage} `
-    }
     const skilled_id = expNotif.skilled_id;
     const skilledInfo = await SkilledInfo.findOne({ _id: skilled_id });
     const username = skilledInfo.username;
     // Create a notification after updating creating barangay
-   const notification = await Notification.create({
-       skilled_id,
-        message: messageNotif,
+    const notification = await Notification.create({
+        skilled_id,
+        messageReason: messageNotif,
         urlReact:`/profileSkilled/${username}`
-        // url: `https://samplekasawapp.onrender.com/api/skilledBClearance/getOne/${barangay._id}`
-   })
-
-    res.status(200).json(experience)
+    });
+    res.status(200).json({ skilledExp })
+    } catch (error) {
+        res.status(400).json({ error: error.message })
+    }
 }
 
 const adminUpdateCertificate = async(req, res) =>{

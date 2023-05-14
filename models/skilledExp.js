@@ -2,6 +2,14 @@ const mongoose = require('mongoose')
 
 const Schema = mongoose.Schema 
 
+const messageSchema = new Schema({
+    message:{
+        type: String,
+        ref: 'Reason',
+        // default: null
+    }
+})
+
 const skilledExp = new Schema({
     
     categorySkill:{
@@ -68,11 +76,7 @@ const skilledExp = new Schema({
         type: String,
         default: "pending"
     },
-    message:{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Reason',
-        default: ""
-    },
+    message:[messageSchema],
     cloudinary_id:{
         type: String,
         required: true,
