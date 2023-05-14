@@ -3,7 +3,7 @@ const mongoose = require('mongoose')
 const Schema = mongoose.Schema  
 
 const adminNotificationSchema = new Schema({
-    messageReason:{
+    message:{
         type: String,
         required: true,
     },

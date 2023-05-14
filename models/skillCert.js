@@ -2,6 +2,13 @@ const mongoose = require('mongoose')
  
 const Schema = mongoose.Schema 
 
+const messageSchema = new Schema({
+    message:{
+        type: String,
+        ref: 'Reason' 
+    }
+})
+
 const skillCertSchema = new Schema({
     categorySkill:{
         type: String,
@@ -28,11 +35,7 @@ const skillCertSchema = new Schema({
         type: String,
         default: "pending"
     },
-    message:{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Reason',
-        default: ""
-    },
+    message:[messageSchema],
     skilled_id:{
         type: String,
         required: true,

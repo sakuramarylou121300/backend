@@ -837,15 +837,17 @@ const adminUpdateExperience = async (req, res) => {
         expIsVerifiedValue = 'disapproved';
         //validation
         if (!messageIds || messageIds.length === 0) {
-            return res.status(400).json({ error: 'Please select your reason' })
+            return res.status(400).json({ error: 'Please select your reason.' })
         }
     
-        const duplicates = message.filter((reason, index, self) =>
-          index !== self.findIndex((r) => r.reason === reason.reason)
-        )
-    
+        // Check for duplicate messages in request body
+        const duplicates = message.filter(
+            (m, i, self) => i !== self.findIndex((sm) => sm.message === m.message)
+        );
         if (duplicates.length > 0) {
-          return res.status(400).json({ error: "Please remove repeating reason" })
+            return res
+            .status(400)
+            .json({ error: 'Please remove repeating reason.' });
         }
 
         const messages = await Promise.all(messageIds.map(async (msgId) => {
@@ -864,69 +866,134 @@ const adminUpdateExperience = async (req, res) => {
         messageReason: messageNotif,
         urlReact:`/profileSkilled/${username}`
     });
-    res.status(200).json({ skilledExp })
+    res.status(200).json(skilledExp)
     } catch (error) {
         res.status(400).json({ error: error.message })
     }
 }
 
-const adminUpdateCertificate = async(req, res) =>{
-    const {id} = req.params   
-
-    //check if id is not existing
-    if(!mongoose.Types.ObjectId.isValid(id)){
-        return res.status(404).json({error: 'Invalid id'})
-    }
-
-     //delete query
-     const certificate = await Certificate.findOneAndUpdate({_id: id},{
-        ...req.body,
-        // message: req.body.skillIsVerified === "false" ? "please update your submitted certificate." : ""
-     })
-    
-     //check if not existing
-     if (!certificate){
-        return res.status(404).json({error: 'Skill Certificate not found'})
-    }
-
-    //this is for the notification
-    const certNotif = await Certificate.findOne({ _id: id }); 
-    const skillIsVerified = certNotif.skillIsVerified;
-    
-    // get the value of reason, this is when the req is invalid
-    const reason_id = certNotif.message
-    const reason = await Reason.findOne({ _id: reason_id }); 
-    const reasonMessage = reason.reason;
-
-    let skillIsVerifiedValue
-    if(skillIsVerified === "true"){
-        skillIsVerifiedValue = "approved",
-        messageNotif = `Admin has ${skillIsVerifiedValue} your work experience.`
-    
-    }
-    else if(skillIsVerified === "false"){
-        skillIsVerifiedValue = "disapproved",
-        messageNotif = `Admin has ${skillIsVerifiedValue} your skill certificate. Please update your uploaded certificate. Your certificate has ${reasonMessage} `
-    }
-    // get the username of the user
+const adminUpdateCertificate = async (req, res) => {
+    const { skillIsVerified, message } = req.body
+  
+    try {
+      await Certificate.updateOne({ _id: req.params.id }, { $unset: { message: 1 } })
+      const certificate = await Certificate.findOneAndUpdate(
+          { _id: req.params.id },
+          {
+              $push: { message },
+              $set: { skillIsVerified }
+          },
+          { new: true }
+      )
+      //notification
+      const certNotif = await Certificate.findOne({ _id: req.params.id })
+      .populate('message');
+      const messageIds = certNotif.message.map(msg => msg.message)
+      let messageNotif = '';
+      let skillIsVerifiedValue;
+  
+      if (skillIsVerified === 'true') {
+        skillIsVerifiedValue = 'approved';
+          messageNotif = `Admin has ${skillIsVerifiedValue} your skill certificate.`;
+      } else if (skillIsVerified === 'false') {
+        skillIsVerifiedValue = 'disapproved';
+          //validation
+          if (!messageIds || messageIds.length === 0) {
+              return res.status(400).json({ error: 'Please select your reason.' })
+          }
+      
+        // Check for duplicate messages in request body
+        const duplicates = message.filter(
+            (m, i, self) => i !== self.findIndex((sm) => sm.message === m.message)
+        );
+        if (duplicates.length > 0) {
+            return res
+            .status(400)
+            .json({ error: 'Please remove repeating reason.' });
+        }
+  
+          const messages = await Promise.all(messageIds.map(async (msgId) => {
+              const msg = await Reason.findOne({ _id: msgId });
+              return msg.reason;
+          }));
+              messageNotif = `Admin has ${skillIsVerifiedValue} your skill certificate. Please update your uploaded skill certificate. Your skill certificate has ${messages.join(', ')}.`;
+      }
+  
     const skilled_id = certNotif.skilled_id;
     const skilledInfo = await SkilledInfo.findOne({ _id: skilled_id });
     const username = skilledInfo.username;
-
-    // get the skill name of the skill
+    //   get the skill name of the skill
     const skill = certNotif.categorySkill;
     const adminSkill = await AdminSkill.findOne({ _id: skill });
     const skillName = adminSkill.skill;
-    // Create a notification after updating creating barangay
-const notification = await Notification.create({
-    skilled_id,
-        message: messageNotif,
+      // Create a notification after updating creating barangay
+    const notification = await Notification.create({
+        skilled_id,
+        messageReason: messageNotif,
         urlReact:`/profileSkilledCert/${skillName}/${username}`
-        // url: `https://samplekasawapp.onrender.com/api/skilledBClearance/getOne/${barangay._id}`
-})
+    });
+      res.status(200).json(certificate)
+      } catch (error) {
+          res.status(400).json({ error: error.message })
+      }
+  }
+// const adminUpdateCertificate = async(req, res) =>{
+//     const {id} = req.params   
 
-    res.status(200).json(certificate)
-}
+//     //check if id is not existing
+//     if(!mongoose.Types.ObjectId.isValid(id)){
+//         return res.status(404).json({error: 'Invalid id'})
+//     }
+
+//      //delete query
+//      const certificate = await Certificate.findOneAndUpdate({_id: id},{
+//         ...req.body,
+//         // message: req.body.skillIsVerified === "false" ? "please update your submitted certificate." : ""
+//      })
+    
+//      //check if not existing
+//      if (!certificate){
+//         return res.status(404).json({error: 'Skill Certificate not found'})
+//     }
+
+//     //this is for the notification
+//     const certNotif = await Certificate.findOne({ _id: id }); 
+//     const skillIsVerified = certNotif.skillIsVerified;
+    
+//     // get the value of reason, this is when the req is invalid
+//     const reason_id = certNotif.message
+//     const reason = await Reason.findOne({ _id: reason_id }); 
+//     const reasonMessage = reason.reason;
+
+//     let skillIsVerifiedValue
+//     if(skillIsVerified === "true"){
+//         skillIsVerifiedValue = "approved",
+//         messageNotif = `Admin has ${skillIsVerifiedValue} your work experience.`
+    
+//     }
+//     else if(skillIsVerified === "false"){
+//         skillIsVerifiedValue = "disapproved",
+//         messageNotif = `Admin has ${skillIsVerifiedValue} your skill certificate. Please update your uploaded certificate. Your certificate has ${reasonMessage} `
+//     }
+//     // get the username of the user
+//     const skilled_id = certNotif.skilled_id;
+//     const skilledInfo = await SkilledInfo.findOne({ _id: skilled_id });
+//     const username = skilledInfo.username;
+
+//     // get the skill name of the skill
+//     const skill = certNotif.categorySkill;
+//     const adminSkill = await AdminSkill.findOne({ _id: skill });
+//     const skillName = adminSkill.skill;
+//     // Create a notification after updating creating barangay
+// const notification = await Notification.create({
+//     skilled_id,
+//         message: messageNotif,
+//         urlReact:`/profileSkilledCert/${skillName}/${username}`
+//         // url: `https://samplekasawapp.onrender.com/api/skilledBClearance/getOne/${barangay._id}`
+// })
+
+//     res.status(200).json(certificate)
+// }
 
 const adminUpdateBarangay = async(req, res) =>{
     const {id} = req.params   
