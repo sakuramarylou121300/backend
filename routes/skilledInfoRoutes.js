@@ -13,8 +13,6 @@ const{
     deleteSkilledInfo,
     generateOTP,
     verifyOTP,
-    createResetSession,
-    verifyAddress,
     skilledUpdateSkilledAccount,
     skilledUpdateNotVerifiedUsers,
     skilledUpdateBill,
@@ -50,8 +48,6 @@ router.patch('/delete', requireAuth, deleteSkilledInfo)
 // this is for the address
 router.get('/generateOTP', localVariables, requireAuth, generateOTP)
 router.get('/verifyOTP', requireAuth, verifyOTP)
-router.get('/createResetSession', requireAuth, createResetSession) // reset all the variables
-router.patch('/verifyAddress', requireAuth, verifyAddress); // use to verify address
 
 router.put('/update/account', requireAuth, skilledUpdateSkilledAccount)
 router.put('/update/account/not', requireAuth, skilledUpdateNotVerifiedUsers)

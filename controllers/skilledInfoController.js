@@ -400,35 +400,6 @@ const verifyOTP = async(req, res) =>{
     }
 }
 
-const createResetSession = async(req, res) =>{
-
-    try{
-        if(req.app.locals.resetSession){
-            return res.status(201).send({ flag : req.app.locals.resetSession})
-       }
-       return res.status(440).send({error : "Session expired!"})
-    }
-    catch(error){
-        res.status(400).json({error:error.message})
-    }
-}
-
-const verifyAddress = async(req, res) =>{
-
-    try{
-
-        const skilledInfo = await SkilledInfo.findOneAndUpdate({ _id: req.skilledInfo._id },
-            { addIsVerified: 1}, 
-                req.app.locals.resetSession = false // reset session
-               
-            );
-            return res.status(201).send(skilledInfo)
-    }
-    catch(error){
-        res.status(400).json({error:error.message})
-    }
-}
-
 //USER ACCOUNT VERFICATION
 //UDPATE SKILLED WORKER USER IS VERIFIED
 const skilledUpdateSkilledAccount = async(req, res) =>{ 
@@ -653,8 +624,6 @@ module.exports = {
     deleteSkilledInfo,
     generateOTP,
     verifyOTP,
-    createResetSession,
-    verifyAddress,
     skilledUpdateSkilledAccount,
     skilledUpdateNotVerifiedUsers,
     skilledUpdateBill,
