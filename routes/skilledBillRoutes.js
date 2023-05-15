@@ -6,7 +6,7 @@ const {
     updateSkilledBill,
     deleteSkilledBill,
 } = require('../controllers/skilledBillController')
-const requireAuth = require('../middleware/requireAuth')
+const {requireAuth} = require('../middleware/requireAuth')
 
 //instance of router
 router = express.Router()

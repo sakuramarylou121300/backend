@@ -4,7 +4,7 @@ const SkilledBill = require('../models/skilledBill')
 const jwt = require('jsonwebtoken') 
 const bcrypt = require('bcrypt')
 const validator = require('validator')
-
+const otpGenerator = require('otp-generator')
 
 //to generate json webtoken
 const skilledCreateToken = (_id)=>{
@@ -364,6 +364,71 @@ const deleteSkilledInfo = async(req, res) =>{
     }
 }
 
+const generateOTP = async(req, res) =>{
+
+    try{
+        req.app.locals.OTP = await otpGenerator.generate(6, { lowerCaseAlphabets: false, upperCaseAlphabets: false, specialChars: false})
+        res.status(201).send({ code: req.app.locals.OTP })
+
+        const skilledInfo = await SkilledInfo.findOneAndUpdate({ _id: req.skilledInfo._id },
+            { addIsVerified: 0}
+        );
+    }
+    catch(error){
+        res.status(400).json({error:error.message})
+    }
+}
+
+const verifyOTP = async(req, res) =>{
+
+    try{
+        const { code } = req.query;
+        if(parseInt(req.app.locals.OTP) === parseInt(code)){
+            req.app.locals.OTP = null; // reset the OTP value
+            req.app.locals.resetSession = true; // start session for reset password
+
+             //if verified then addIsVerified:1 or address is verified now
+            const skilledInfo = await SkilledInfo.findOneAndUpdate({ _id: req.skilledInfo._id },
+                { addIsVerified: 1}
+            );
+            return res.status(201).send({ msg: 'Verify Successsfully!'})
+    }
+    return res.status(400).send({ error: "Invalid OTP"});
+    }
+    catch(error){
+        res.status(400).json({error:error.message})
+    }
+}
+
+const createResetSession = async(req, res) =>{
+
+    try{
+        if(req.app.locals.resetSession){
+            return res.status(201).send({ flag : req.app.locals.resetSession})
+       }
+       return res.status(440).send({error : "Session expired!"})
+    }
+    catch(error){
+        res.status(400).json({error:error.message})
+    }
+}
+
+const verifyAddress = async(req, res) =>{
+
+    try{
+
+        const skilledInfo = await SkilledInfo.findOneAndUpdate({ _id: req.skilledInfo._id },
+            { addIsVerified: 1}, 
+                req.app.locals.resetSession = false // reset session
+               
+            );
+            return res.status(201).send(skilledInfo)
+    }
+    catch(error){
+        res.status(400).json({error:error.message})
+    }
+}
+
 //USER ACCOUNT VERFICATION
 //UDPATE SKILLED WORKER USER IS VERIFIED
 const skilledUpdateSkilledAccount = async(req, res) =>{ 
@@ -586,6 +651,10 @@ module.exports = {
     editAddress,
     editBill,
     deleteSkilledInfo,
+    generateOTP,
+    verifyOTP,
+    createResetSession,
+    verifyAddress,
     skilledUpdateSkilledAccount,
     skilledUpdateNotVerifiedUsers,
     skilledUpdateBill,

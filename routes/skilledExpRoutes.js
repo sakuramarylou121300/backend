@@ -10,7 +10,7 @@ const {
     updateExp,
     deleteExp
 } = require('../controllers/skilledExpController')
-const requireAuth = require('../middleware/requireAuth')
+const {requireAuth} = require('../middleware/requireAuth')
 
 //instance of router
 router = express.Router()

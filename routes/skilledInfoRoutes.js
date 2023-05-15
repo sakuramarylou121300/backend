@@ -11,6 +11,10 @@ const{
     editAddress,
     editBill,
     deleteSkilledInfo,
+    generateOTP,
+    verifyOTP,
+    createResetSession,
+    verifyAddress,
     skilledUpdateSkilledAccount,
     skilledUpdateNotVerifiedUsers,
     skilledUpdateBill,
@@ -29,7 +33,7 @@ const{
     deleteNotification 
 } = require('../controllers/skilledNotificationController')
 
-const requireAuth = require('../middleware/requireAuth')
+const {requireAuth, localVariables} = require('../middleware/requireAuth')
 
 const router = express.Router()
 
@@ -42,6 +46,13 @@ router.patch('/update', requireAuth, updateSkilledInfo)
 router.put('/edit/address', requireAuth, editAddress)
 router.put('/edit/bill', requireAuth, editBill)
 router.patch('/delete', requireAuth, deleteSkilledInfo)
+
+// this is for the address
+router.get('/generateOTP', localVariables, requireAuth, generateOTP)
+router.get('/verifyOTP', requireAuth, verifyOTP)
+router.get('/createResetSession', requireAuth, createResetSession) // reset all the variables
+router.patch('/verifyAddress', requireAuth, verifyAddress); // use to verify address
+
 router.put('/update/account', requireAuth, skilledUpdateSkilledAccount)
 router.put('/update/account/not', requireAuth, skilledUpdateNotVerifiedUsers)
 router.put('/update/bill', requireAuth, skilledUpdateBill)

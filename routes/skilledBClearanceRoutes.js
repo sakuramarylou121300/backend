@@ -9,7 +9,7 @@ const {
     updateSkilledBClearance,
     deleteSkilledBClearance
 } = require('../controllers/skilledBClearanceController')
-const requireAuth = require('../middleware/requireAuth')
+const {requireAuth} = require('../middleware/requireAuth')
 
 //instance of router
 router = express.Router()

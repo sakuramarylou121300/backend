@@ -117,7 +117,7 @@ const{
 const adminControlAdmin = require('../middleware/adminControlAdmin')
 const adminAuth = require('../middleware/adminAuth')
 const adminControlSkilled = require('../middleware/adminControlSkilled')
-const requireAuth = require('../middleware/requireAuth')
+const {requireAuth} = require('../middleware/requireAuth')
 
 const router = express.Router()
 

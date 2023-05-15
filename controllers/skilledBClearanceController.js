@@ -69,10 +69,7 @@ const createSkilledBClearance = async(req, res)=>{
             // url: `https://samplekasawapp.onrender.com/api/admin/getOne/Barangay/${skilledBClearance._id}`,
             urlReact:`/viewSkilled/brgyClearance/${skilledUserName}`
         });
-        console.log(notification)
-        // console.log(skilledBClearance)
         res.status(200).json(skilledBClearance)
-    
     }
     catch(error){
         console.log(error)
@@ -235,9 +232,7 @@ const deleteSkilledBClearance = async(req, res)=>{
     if (!skilledBClearance){
         return res.status(404).json({error: 'Barangay Clearance not found'})
     }
-
     res.status(200).json(skilledBClearance)
-
 }
 
 module.exports = {

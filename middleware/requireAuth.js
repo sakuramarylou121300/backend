@@ -23,4 +23,13 @@ const requireAuth = async (req, res, next) =>{
     }
 }
 
-module.exports = requireAuth
+
+const localVariables = async (req, res, next) =>{
+    req.app.locals = {
+        OTP : null,
+        resetSession : false
+    }
+    next()
+}
+
+module.exports = {requireAuth, localVariables}

@@ -7,7 +7,7 @@ const {
     editRefName,
     deleteExperience
 } = require('../controllers/experienceController')
-const requireAuth = require('../middleware/requireAuth')
+const {requireAuth} = require('../middleware/requireAuth')
 
 //this is for the multiple uploads
 const multer = require('multer')
