@@ -1,6 +1,7 @@
 const SkilledInfo = require('../models/skilledInfo')     
 const AdminInfo = require('../models/adminInfo')    
 const SkilledBill = require('../models/skilledBill')
+const Notification = require('../models/adminNotification')
 const jwt = require('jsonwebtoken') 
 const bcrypt = require('bcrypt')
 const validator = require('validator')
@@ -307,6 +308,120 @@ const updateSkilledInfo = async(req, res) =>{
     }
 }
 
+const updateSkilledAddress = async(req, res) =>{
+  
+    try{
+        
+        //get info
+        const {houseNo,
+                street,
+                barangayAddr,
+                cityAddr,
+                provinceAddr,
+                regionAddr} = req.body
+
+        //validation
+        if (!street || !barangayAddr || !cityAddr ||
+            !provinceAddr || !regionAddr){
+            throw Error('Please fill in all the blank fields.')
+        }
+        const skilledInfoCheck = await SkilledInfo.findOne({
+            houseNo: houseNo,
+            street: street,
+            barangayAddr: barangayAddr,
+            cityAddr: cityAddr,
+            provinceAddr: provinceAddr,
+            regionAddr: regionAddr
+        })
+        
+        if(skilledInfoCheck){
+            return res.status(400).json({error: "You have entered the same address, please try again."})
+        }
+
+        //update info
+        const skilledInfo = await SkilledInfo.findOneAndUpdate(
+            {_id: req.skilledInfo._id},
+            {houseNo,
+            street,
+            barangayAddr,
+            cityAddr,
+            provinceAddr,
+            regionAddr,
+            addIsVerified:0
+        })
+
+        //success
+        res.status(200).json(skilledInfo)
+    }
+    catch(error){
+
+        res.status(400).json({error:error.message})
+    }
+}
+
+//delete skilled info
+const deleteSkilledInfo = async(req, res) =>{
+
+    try{
+        const skilledInfo = await SkilledInfo.findOneAndUpdate({_id: req.skilledInfo._id},
+            {isDeleted:1})
+        res.status(200).json(skilledInfo)
+    }
+    catch(error){
+        res.status(400).json({error:error.message})
+    }
+}
+
+const generateOTP = async(req, res) =>{
+
+    try{
+        req.app.locals.OTP = await otpGenerator.generate(8, {specialChars: false})
+
+        const skilledInfo = await SkilledInfo.findOneAndUpdate({ _id: req.skilledInfo._id },
+            { addIsVerified: 0, otp: req.app.locals.OTP }
+        );
+        res.status(200).json({ message: 'Request Sent.'})
+    }
+    catch(error){
+        res.status(400).json({error:error.message})
+    }
+}
+
+const verifyOTP = async(req, res) =>{
+
+    try{
+        const {otp} = req.body
+       
+        const skilledFindOTP = await SkilledInfo.findOne({ _id: req.skilledInfo._id })
+        skilledOTP = skilledFindOTP.otp
+        if (otp !== skilledOTP) {
+
+            const otpReset = await SkilledInfo.findOneAndUpdate(
+                { _id: req.skilledInfo._id }, { otp:""}
+            );
+            return res.status(400).json({ error: 'Invalid OTP, please request again.' })
+        }
+    
+        //if verified then addIsVerified:1 or address is verified now
+        const skilledInfo = await SkilledInfo.findOneAndUpdate({ _id: req.skilledInfo._id },
+            { addIsVerified: 1, otp:""}
+        );
+        //create notification when verification is successful
+        const skilledInfoNotif = await SkilledInfo.findOne({ _id: req.skilledInfo._id });
+        const skilledUserName = skilledInfoNotif.username;
+        const notification = await Notification.create({
+            skilled_id: req.skilledInfo._id,
+            message: `${skilledUserName} has requested OTP to verify address.`,
+            urlReact:`/temporary/${skilledUserName}`
+        });
+
+        return res.status(201).send({ message: 'Verified Successsfully!'})
+    }
+    catch(error){
+        res.status(400).json({error:error.message})
+    }
+}
+
 //update or edit address
 const editAddress = async(req,res) =>{
     // const arrayId = req.params.arrayId;
@@ -350,56 +465,6 @@ const editBill = async(req,res) =>{
     }
 
 }
-
-//delete skilled info
-const deleteSkilledInfo = async(req, res) =>{
-
-    try{
-        const skilledInfo = await SkilledInfo.findOneAndUpdate({_id: req.skilledInfo._id},
-            {isDeleted:1})
-        res.status(200).json(skilledInfo)
-    }
-    catch(error){
-        res.status(400).json({error:error.message})
-    }
-}
-
-const generateOTP = async(req, res) =>{
-
-    try{
-        req.app.locals.OTP = await otpGenerator.generate(6, { lowerCaseAlphabets: false, upperCaseAlphabets: false, specialChars: false})
-        res.status(201).send({ code: req.app.locals.OTP })
-
-        const skilledInfo = await SkilledInfo.findOneAndUpdate({ _id: req.skilledInfo._id },
-            { addIsVerified: 0}
-        );
-    }
-    catch(error){
-        res.status(400).json({error:error.message})
-    }
-}
-
-const verifyOTP = async(req, res) =>{
-
-    try{
-        const { code } = req.query;
-        if(parseInt(req.app.locals.OTP) === parseInt(code)){
-            req.app.locals.OTP = null; // reset the OTP value
-            req.app.locals.resetSession = true; // start session for reset password
-
-             //if verified then addIsVerified:1 or address is verified now
-            const skilledInfo = await SkilledInfo.findOneAndUpdate({ _id: req.skilledInfo._id },
-                { addIsVerified: 1}
-            );
-            return res.status(201).send({ msg: 'Verify Successsfully!'})
-    }
-    return res.status(400).send({ error: "Invalid OTP"});
-    }
-    catch(error){
-        res.status(400).json({error:error.message})
-    }
-}
-
 //USER ACCOUNT VERFICATION
 //UDPATE SKILLED WORKER USER IS VERIFIED
 const skilledUpdateSkilledAccount = async(req, res) =>{ 
@@ -619,6 +684,7 @@ module.exports = {
     updateSkilledUserName,
     updateSkilledPass,
     updateSkilledInfo,
+    updateSkilledAddress,
     editAddress,
     editBill,
     deleteSkilledInfo,

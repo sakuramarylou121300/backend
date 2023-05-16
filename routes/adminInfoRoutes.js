@@ -113,6 +113,13 @@ const{
     deleteReason
 } = require('../controllers/reasonController')
 
+const{
+    createReasonDeact,
+    getAllReasonDeact,
+    getOneReasonDeact,
+    updateReasonDeact,
+    deleteReasonDeact
+} = require('../controllers/reasonDeactController')
 
 const adminControlAdmin = require('../middleware/adminControlAdmin')
 const adminAuth = require('../middleware/adminAuth')
@@ -213,12 +220,20 @@ router.get('/getAll/cert/deleted/:username', adminAuth, adminControlSkilled, adm
 router.get('/getAll/barangay/deleted/:username', adminAuth, adminControlSkilled, adminGetAllSkilledBarangayDeleted)
 router.get('/getAll/nbi/deleted/:username', adminAuth, adminControlSkilled, adminGetAllSkilledNbiDeleted)
 
-//REASON
+//REASON FOR REQ
 router.post('/post/reason', adminAuth, adminControlSkilled, createReason)
 router.get('/getAll/reason', adminAuth, adminControlSkilled, getAllReason)
 router.get('/getOne/reason/:id', adminAuth, adminControlSkilled, getOneReason)
 router.patch('/update/reason/:id', adminAuth, adminControlSkilled, updateReason)
 router.patch('/delete/reason/:id', adminAuth, adminControlSkilled, deleteReason)
+
+//REASON FOR DEACT
+router.post('/post/reasonDeact', adminAuth, adminControlSkilled, createReasonDeact)
+router.get('/getAll/reasonDeact', adminAuth, adminControlSkilled, getAllReasonDeact)
+router.get('/getOne/reasonDeact/:id', adminAuth, adminControlSkilled, getOneReasonDeact)
+router.patch('/update/reasonDeact/:id', adminAuth, adminControlSkilled, updateReasonDeact)
+router.patch('/delete/reasonDeact/:id', adminAuth, adminControlSkilled, deleteReasonDeact)
+
 
 router.get('/getAll/skilledBill', adminAuth, adminControlSkilled, adminGetAllSkilledBill)
 router.get('/getAll/skilledBill/detail', adminAuth, adminControlSkilled, adminGetAllSkilledBillDetail)

@@ -8,11 +8,12 @@ const{
     updateSkilledUserName,
     updateSkilledPass,
     updateSkilledInfo,
-    editAddress,
-    editBill,
+    updateSkilledAddress,
     deleteSkilledInfo,
     generateOTP,
     verifyOTP,
+    editAddress,
+    editBill,
     skilledUpdateSkilledAccount,
     skilledUpdateNotVerifiedUsers,
     skilledUpdateBill,
@@ -41,6 +42,7 @@ router.get('/get', requireAuth, getSkilledInfo)
 router.patch('/update/username', requireAuth, updateSkilledUserName)
 router.patch('/update/password', requireAuth, updateSkilledPass)
 router.patch('/update', requireAuth, updateSkilledInfo)
+router.patch('/update/address', requireAuth, updateSkilledAddress)
 router.put('/edit/address', requireAuth, editAddress)
 router.put('/edit/bill', requireAuth, editBill)
 router.patch('/delete', requireAuth, deleteSkilledInfo)

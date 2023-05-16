@@ -89,6 +89,10 @@ const skilledInfoSchema = new Schema({
         type: Number,
         default: 0
     },
+    otp:{
+        type: String,
+        default: ''
+    },
     idIsVerified:{
         type: Number,
         default: 0
@@ -100,7 +104,12 @@ const skilledInfoSchema = new Schema({
     isDeleted:{
         type: Number,
         default: 0
-    }
+    },
+    //to follow
+    skilledDeact:{
+        type: Number,
+        default: 0
+    },
     // validId:{
     //     type:String
     // },
