@@ -3,7 +3,7 @@ const mongoose = require('mongoose')
 const Schema = mongoose.Schema  
 
 const skilledNotificationSchema = new Schema({
-    messageReason:{
+    message:{
         type: String,
         default: ''
     },

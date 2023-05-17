@@ -897,7 +897,7 @@ const adminUpdateExperience = async (req, res) => {
     // Create a notification after updating creating barangay
     const notification = await Notification.create({
         skilled_id,
-        messageReason: messageNotif,
+        message: messageNotif,
         urlReact:`/profileSkilled/${username}`
     });
     res.status(200).json(skilledExp)
@@ -963,7 +963,7 @@ const adminUpdateCertificate = async (req, res) => {
       // Create a notification after updating creating barangay
     const notification = await Notification.create({
         skilled_id,
-        messageReason: messageNotif,
+        message: messageNotif,
         urlReact:`/profileSkilledCert/${skillName}/${username}`
     });
       res.status(200).json(certificate)
@@ -1022,7 +1022,7 @@ const adminUpdateBarangay = async (req, res) => {
     // Create a notification after updating creating barangay
     const notification = await Notification.create({
         skilled_id,
-        messageReason: messageNotif,
+        message: messageNotif,
         urlReact:`/profileSkilled`
     });
       res.status(200).json(barangay)
@@ -1081,7 +1081,7 @@ const adminUpdateNbi = async (req, res) => {
     // Create a notification after updating creating barangay
     const notification = await Notification.create({
         skilled_id,
-        messageReason: messageNotif,
+        message: messageNotif,
         urlReact:`/profileSkilled`
     });
       res.status(200).json(nbi)
