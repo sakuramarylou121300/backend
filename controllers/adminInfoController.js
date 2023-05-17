@@ -931,26 +931,32 @@ const adminUpdateCertificate = async (req, res) => {
           messageNotif = `Your skill certificate has been ${skillIsVerifiedValue}.`;
       } else if (skillIsVerified === 'false') {
         skillIsVerifiedValue = 'disapproved';
-          //validation
-          if (!messageIds || messageIds.length === 0) {
-              return res.status(400).json({ error: 'Please select your reason.' })
-          }
-      
-        // Check for duplicate messages in request body
-        const duplicates = message.filter(
-            (m, i, self) => i !== self.findIndex((sm) => sm.message === m.message)
-        );
-        if (duplicates.length > 0) {
-            return res
-            .status(400)
-            .json({ error: 'Please remove repeating reason.' });
+        const isEmptyMessage = message.some((obj) => obj.message === "");
+
+        if (isEmptyMessage) {
+        return res.status(400).json({ error: 'Please enter a reason.' });
+        }
+
+        // Check for duplicate messages in the array
+        const hasDuplicates = message.some((obj, index) => {
+            let foundDuplicate = false;
+            message.forEach((innerObj, innerIndex) => {
+                if (index !== innerIndex && obj.message === innerObj.message) {
+                    foundDuplicate = true;
+                }
+            });
+            return foundDuplicate;
+        });
+        
+        if (hasDuplicates) {
+            return res.status(400).json({ error: 'Please remove duplicate data.' });
         }
   
-          const messages = await Promise.all(messageIds.map(async (msgId) => {
-              const msg = await Reason.findOne({ _id: msgId });
-              return msg.reason;
-          }));
-              messageNotif = `Your skill certificate has been ${skillIsVerifiedValue}. Please update your uploaded skill certificate. Your skill certificate has ${messages.join(', ')}.`;
+        const messages = await Promise.all(messageIds.map(async (msgId) => {
+            const msg = await Reason.findOne({ _id: msgId });
+            return msg.reason;
+        }));
+            messageNotif = `Your skill certificate has been ${skillIsVerifiedValue}. Please update your uploaded skill certificate. Your skill certificate has ${messages.join(', ')}.`;
       }
   
     const skilled_id = certNotif.skilled_id;

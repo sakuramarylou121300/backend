@@ -5,7 +5,7 @@ const Schema = mongoose.Schema
 const skilledNotificationSchema = new Schema({
     message:{
         type: String,
-        default: ''
+        required: true,
     },
     // url:{
     //     type: String,

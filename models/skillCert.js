@@ -4,8 +4,9 @@ const Schema = mongoose.Schema
 
 const messageSchema = new Schema({
     message:{
-        type: String,
-        ref: 'Reason' 
+        type:  String,
+        ref: 'Reason',
+        default: ''
     }
 })
 
