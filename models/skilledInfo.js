@@ -172,11 +172,11 @@ skilledInfoSchema.virtual('skillBarangay', {
     localField: '_id',
     foreignField: 'skilled_id'
 });
-skilledInfoSchema.virtual('skillBarangay', {
-    ref: 'SkilledBClearance',
-    localField: '_id',
-    foreignField: 'skilled_id'
-});
+// skilledInfoSchema.virtual('skillBarangay', {
+//     ref: 'SkilledBClearance',
+//     localField: '_id',
+//     foreignField: 'skilled_id'
+// });
 skilledInfoSchema.virtual('skillNbi', {
     ref: 'SkilledNClearance',
     localField: '_id',

@@ -422,6 +422,35 @@ const verifyOTP = async(req, res) =>{
     }
 }
 
+const updateSkilledAccount = async (req, res) => {
+    try {
+        // Find the document by its _id
+        const skilledInfo = await SkilledInfo.findById(req.skilledInfo._id)
+        .populate('skillBarangay')
+        .populate('skillNbi');
+     
+        if (skilledInfo) {
+            // Check the values of idIsVerified, address.addIsVerified, and skilledBill
+            if (skilledInfo.addIsVerified === 1 &&
+                skilledInfo.skillBarangay.some(brgy => brgy.bClearanceIsVerified === "true") &&
+                skilledInfo.skillNbi.some(nbi => nbi.nClearanceIsVerified === "true")) {
+                const skilledInfoVerified = await SkilledInfo.findByIdAndUpdate(req.skilledInfo._id, { $set: { userIsVerified: 1 } }, { new: true });
+                return res.status(200).json(skilledInfoVerified);
+            } else if (skilledInfo.addIsVerified === 0 ||
+                skilledInfo.skillBarangay.some(brgy => brgy.bClearanceIsVerified === "true") ||
+                skilledInfo.skillNbi.some(nbi => nbi.nClearanceIsVerified === "true")) {
+                const skilledInfoNotVerified = await SkilledInfo.findByIdAndUpdate(req.skilledInfo._id, { $set: { userIsVerified: 0 } }, { new: true });
+                return res.status(200).json(skilledInfoNotVerified);
+            }
+        } else {
+            return res.status(404).json({ message: "Skilled worker not found" });
+        }
+    } catch (err) {
+        return res.status(500).json({ message: err.toString() });
+    }
+};
+
+//NOT SURE IF INCLUDED
 //update or edit address
 const editAddress = async(req,res) =>{
     // const arrayId = req.params.arrayId;
@@ -527,30 +556,7 @@ const skilledUpdateBill = async(req, res) =>{
     }
 }
 
-const updateSkilledAccount = async (req, res) => {
-    try {
-        // Find the document by its _id
-        const skilledInfo = await SkilledInfo.findById(req.skilledInfo._id).populate('skilledBill');
-     
-        if (skilledInfo) {
-            // Check the values of idIsVerified, address.addIsVerified, and skilledBill
-            if (skilledInfo.idIsVerified === 1 &&
-                skilledInfo.address.addIsVerified === 1 &&
-                skilledInfo.skilledBill.some(bill => bill.billIsVerified === 1)) {
-                return skilledUpdateSkilledAccount(req, res);
-            } else if (skilledInfo.idIsVerified === 0 ||
-                skilledInfo.address.addIsVerified === 0 ||
-                (skilledInfo.skilledBill && 
-                !skilledInfo.skilledBill.some(bill => bill.billIsVerified === 1))) {
-                return skilledUpdateNotVerifiedUsers(req, res);
-            }
-        } else {
-            return res.status(404).json({ message: "SkilledInfo not found" });
-        }
-    } catch (err) {
-        return res.status(500).json({ message: err.toString() });
-    }
-};
+
  
 //push address
 const pushAddress = async(req,res) =>{
