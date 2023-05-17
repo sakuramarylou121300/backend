@@ -922,15 +922,15 @@ const adminUpdateCertificate = async (req, res) => {
       //notification
       const certNotif = await Certificate.findOne({ _id: req.params.id })
       .populate('message');
-      skillIsVerified = certNotif.skillIsVerified;
+      isVerified = certNotif.skillIsVerified;
       const messageIds = certNotif.message.map(msg => msg.message)
       let messageNotif = '';
       let skillIsVerifiedValue;
   
-      if (skillIsVerified === 'true') {
+      if (isVerified === 'true') {
         skillIsVerifiedValue = 'approved';
           messageNotif = `Your skill certificate has been ${skillIsVerifiedValue}.`;
-      } else if (skillIsVerified === 'false') {
+      } else if (isVerified === 'false') {
         skillIsVerifiedValue = 'disapproved';
         const isEmptyMessage = message.some((obj) => obj.message === "");
 
