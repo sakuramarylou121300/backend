@@ -862,26 +862,33 @@ const adminUpdateExperience = async (req, res) => {
     .populate('message');
     const messageIds = expNotif.message.map(msg => msg.message)
     let messageNotif = '';
+    let isVerified = expNotif.expIsVerified;
     let expIsVerifiedValue;
 
-    if (expIsVerified === 'true') {
+    if (isVerified === 'true') {
         expIsVerifiedValue = 'approved';
         messageNotif = `Your work experience has been ${expIsVerifiedValue}.`;
-    } else if (expIsVerified === 'false') {
+    } else if (isVerified === 'false') {
         expIsVerifiedValue = 'disapproved';
         //validation
-        if (!messageIds || messageIds.length === 0) {
-            return res.status(400).json({ error: 'Please select your reason.' })
+        const isEmptyMessage = message.some((obj) => obj.message === "");
+        if (isEmptyMessage) {
+        return res.status(400).json({ error: 'Please select a reason.' });
         }
     
         // Check for duplicate messages in request body
-        const duplicates = message.filter(
-            (m, i, self) => i !== self.findIndex((sm) => sm.message === m.message)
-        );
-        if (duplicates.length > 0) {
-            return res
-            .status(400)
-            .json({ error: 'Please remove repeating reason.' });
+        const hasDuplicates = message.some((obj, index) => {
+            let foundDuplicate = false;
+            message.forEach((innerObj, innerIndex) => {
+                if (index !== innerIndex && obj.message === innerObj.message) {
+                    foundDuplicate = true;
+                }
+            });
+            return foundDuplicate;
+        });
+        
+        if (hasDuplicates) {
+            return res.status(400).json({ error: 'Please remove repeating reason.' });
         }
 
         const messages = await Promise.all(messageIds.map(async (msgId) => {
@@ -922,9 +929,10 @@ const adminUpdateCertificate = async (req, res) => {
       //notification
       const certNotif = await Certificate.findOne({ _id: req.params.id })
       .populate('message');
-      isVerified = certNotif.skillIsVerified;
+      
       const messageIds = certNotif.message.map(msg => msg.message)
       let messageNotif = '';
+      let isVerified = certNotif.skillIsVerified;
       let skillIsVerifiedValue;
   
       if (isVerified === 'true') {
@@ -932,10 +940,10 @@ const adminUpdateCertificate = async (req, res) => {
           messageNotif = `Your skill certificate has been ${skillIsVerifiedValue}.`;
       } else if (isVerified === 'false') {
         skillIsVerifiedValue = 'disapproved';
-        const isEmptyMessage = message.some((obj) => obj.message === "");
 
+        const isEmptyMessage = message.some((obj) => obj.message === "");
         if (isEmptyMessage) {
-        return res.status(400).json({ error: 'Please enter a reason.' });
+        return res.status(400).json({ error: 'Please select a reason.' });
         }
 
         // Check for duplicate messages in the array
@@ -950,7 +958,7 @@ const adminUpdateCertificate = async (req, res) => {
         });
         
         if (hasDuplicates) {
-            return res.status(400).json({ error: 'Please remove duplicate data.' });
+            return res.status(400).json({ error: 'Please remove repeating reason.' });
         }
   
         const messages = await Promise.all(messageIds.map(async (msgId) => {
@@ -997,27 +1005,35 @@ const adminUpdateBarangay = async (req, res) => {
       .populate('message');
       const messageIds = barangayNotif.message.map(msg => msg.message)
       let messageNotif = '';
+      let isVerified = barangayNotif.bClearanceIsVerified;
       let bClearanceIsVerifiedValue;
   
-    if (bClearanceIsVerified === 'true') {
+    if (isVerified === 'true') {
         bClearanceIsVerifiedValue = 'approved';
         messageNotif = `Your barangay clearance has been ${bClearanceIsVerifiedValue}.`;
-    } else if (bClearanceIsVerified === 'false') {
+    } else if (isVerified === 'false') {
         bClearanceIsVerifiedValue = 'disapproved';
         //validation
-        if (!messageIds || messageIds.length === 0) {
-            return res.status(400).json({ error: 'Please select your reason.' })
+        const isEmptyMessage = message.some((obj) => obj.message === "");
+        if (isEmptyMessage) {
+        return res.status(400).json({ error: 'Please select a reason.' });
         }
       
-        // Check for duplicate messages in request body
-        const duplicates = message.filter(
-            (m, i, self) => i !== self.findIndex((sm) => sm.message === m.message)
-        );
-        if (duplicates.length > 0) {
-            return res
-            .status(400)
-            .json({ error: 'Please remove repeating reason.' });
+        // Check for duplicate messages in the array
+        const hasDuplicates = message.some((obj, index) => {
+            let foundDuplicate = false;
+            message.forEach((innerObj, innerIndex) => {
+                if (index !== innerIndex && obj.message === innerObj.message) {
+                    foundDuplicate = true;
+                }
+            });
+            return foundDuplicate;
+        });
+        
+        if (hasDuplicates) {
+            return res.status(400).json({ error: 'Please remove repeating reason.' });
         }
+
         const messages = await Promise.all(messageIds.map(async (msgId) => {
             const msg = await Reason.findOne({ _id: msgId });
             return msg.reason;
@@ -1056,26 +1072,33 @@ const adminUpdateNbi = async (req, res) => {
       .populate('message');
       const messageIds = nbiNotif.message.map(msg => msg.message)
       let messageNotif = '';
+      let isVerified = nbiNotif.nClearanceIsVerified;
       let nClearanceIsVerifiedValue;
   
-    if (nClearanceIsVerified === 'true') {
+    if (isVerified === 'true') {
         nClearanceIsVerifiedValue = 'approved';
         messageNotif = `Your nbi clearance has been ${nClearanceIsVerifiedValue}.`;
-    } else if (nClearanceIsVerified === 'false') {
+    } else if (isVerified === 'false') {
         nClearanceIsVerifiedValue = 'disapproved';
         //validation
-        if (!messageIds || messageIds.length === 0) {
-            return res.status(400).json({ error: 'Please select your reason.' })
+        const isEmptyMessage = message.some((obj) => obj.message === "");
+        if (isEmptyMessage) {
+        return res.status(400).json({ error: 'Please select a reason.' });
         }
       
-        // Check for duplicate messages in request body
-        const duplicates = message.filter(
-            (m, i, self) => i !== self.findIndex((sm) => sm.message === m.message)
-        );
-        if (duplicates.length > 0) {
-            return res
-            .status(400)
-            .json({ error: 'Please remove repeating reason.' });
+        // Check for duplicate messages in the array
+        const hasDuplicates = message.some((obj, index) => {
+            let foundDuplicate = false;
+            message.forEach((innerObj, innerIndex) => {
+                if (index !== innerIndex && obj.message === innerObj.message) {
+                    foundDuplicate = true;
+                }
+            });
+            return foundDuplicate;
+        });
+        
+        if (hasDuplicates) {
+            return res.status(400).json({ error: 'Please remove repeating reason.' });
         }
         const messages = await Promise.all(messageIds.map(async (msgId) => {
             const msg = await Reason.findOne({ _id: msgId });
