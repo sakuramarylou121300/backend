@@ -7,7 +7,7 @@ const adminControlSkilled = async(req, res, next) =>{
             path: 'roleCapabality',
             match: { isDeleted: 0} 
         })
-        console.log(adminInfo)
+        // console.log(adminInfo)
         let hasAccess = adminInfo.roleCapabality.some(capability => capability.capability_id.toString() === "63da858085bb5180f0eabba3")
         if(!hasAccess)
             return res.status(400).json({messg: 'Admin access denied.'})

@@ -921,7 +921,7 @@ const adminUpdateCertificate = async (req, res) => {
       )
       //notification
       const certNotif = await Certificate.findOne({ _id: req.params.id })
-      .populate('message');
+    //   .populate('message');
       const messageIds = certNotif.message.map(msg => msg.message)
       let messageNotif = '';
       let skillIsVerifiedValue;
