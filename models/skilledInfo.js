@@ -28,6 +28,14 @@ const Schema = mongoose.Schema
 //     }  
 // })
 
+const messageSchema = new Schema({
+    message:{
+        type: String,
+        ref: 'ReasonDeact',
+        default: ''
+    }
+})
+
 const skilledInfoSchema = new Schema({
     
     username:{
@@ -89,6 +97,7 @@ const skilledInfoSchema = new Schema({
         type: Number,
         default: 0
     },
+    message:[messageSchema],
     otp:{
         type: String,
         default: ''
@@ -275,9 +284,18 @@ skilledInfoSchema.statics.login = async function(username, password){
     if (!skilledInfo){
         throw Error('Incorrect username.')
     }
-      //check if the user is deleted
-      if (skilledInfo.isDeleted === 1) {
-        throw Error('Incorrect username.');
+
+    //if deleted then show reason
+    if (skilledInfo.isDeleted === 1) {
+        const messageIds = skilledInfo.message.map(msg => msg.message);
+        
+        const messages = await Promise.all(messageIds.map(async (msgId) => {
+            const msg = await ReasonDeact.findOne({ _id: msgId });
+            return msg.reason;
+        }));
+  
+        throw Error(`Your account has been deleted because of ${messages.join(', ')}.`);
+        
     }
 
     //check if the password and password hash in match
@@ -324,4 +342,5 @@ skilledInfoSchema.statics.login = async function(username, password){
 module.exports = mongoose.model('SkilledInfo', skilledInfoSchema)
 const AdminInfo = require('../models/adminInfo') 
 const ClientInfo = require('../models/clientInfo') 
+const ReasonDeact = require('../models/reasonDeact') 
 

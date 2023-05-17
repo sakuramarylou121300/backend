@@ -8,6 +8,7 @@ const Skill = require('../models/skill')
 const AdminSkill = require('../models/adminSkill')
 const Notification = require('../models/skilledNotification')
 const Reason = require('../models/reason')
+const ReasonDeact = require('../models/reasonDeact')
 const SkilledBill = require('../models/skilledBill')
 const mongoose = require('mongoose')
 const jwt = require('jsonwebtoken')
@@ -479,25 +480,58 @@ const adminUpdateSkilled = async(req, res) =>{
     res.status(200).json(skilledInfo)
 }
 
-const adminDeleteSkilled = async(req, res)=>{
-    const {id} = req.params
-    
-    //check if id is not existing
-    if(!mongoose.Types.ObjectId.isValid(id)){
-        return res.status(404).json({error: 'Invalid id'})
-    }
-
-    //delete query
-    const skilledInfo = await SkilledInfo.findOneAndUpdate({_id: id},
-        {isDeleted: 1})
-    
-    //check if not existing
-    if (!skilledInfo){
-        return res.status(404).json({error: 'Skilled Worker not found'})
-    }
-
-    res.status(200).json(skilledInfo)
-
+const adminDeleteSkilled = async (req, res) => {
+    const { message } = req.body
+  
+    try {
+      await SkilledInfo.updateOne({ _id: req.params.id }, { $unset: { message: 1 } })
+      const adminInfo = await SkilledInfo.findOneAndUpdate(
+        { _id: req.params.id },
+        {
+            $push: { message },
+            $set: { isDeleted:1 }
+        },
+        { new: true }
+      )
+      //notification
+      const adminSkilledNotif = await SkilledInfo.findOne({ _id: req.params.id })
+    //   .populate('message');
+      const messageIds = adminSkilledNotif.message.map(msg => msg.message)
+      let messageNotif = '';
+      let isDeletedValue;
+  
+        isDeletedValue = 'deleted';
+        //validation
+        if (!messageIds || messageIds.length === 0) {
+            return res.status(400).json({ error: 'Please select your reason.' })
+        }
+      
+        // Check for duplicate messages in request body
+        const duplicates = message.filter(
+            (m, i, self) => i !== self.findIndex((sm) => sm.message === m.message)
+        );
+        if (duplicates.length > 0) {
+            return res
+            .status(400)
+            .json({ error: 'Please remove repeating reason.' });
+        }
+        const messages = await Promise.all(messageIds.map(async (msgId) => {
+            const msg = await ReasonDeact.findOne({ _id: msgId });
+            return msg.reason;
+        }));
+            messageNotif = `Your account has been ${isDeletedValue} because of ${messages.join(', ')}.`;
+  
+    const skilled_id = adminSkilledNotif._id;
+    // Create a notification after updating creating barangay
+    const notification = await Notification.create({
+        skilled_id,
+        messageReason: messageNotif,
+        urlReact:`/temporary`
+    });
+      res.status(200).json(adminInfo)
+      } catch (error) {
+          res.status(400).json({ error: error.message })
+      }
 }
 
 //SORT BY RECENTLY ADDED
