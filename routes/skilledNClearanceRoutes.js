@@ -21,5 +21,14 @@ router.get('/getOne/:id', requireAuth, getOneSkilledNClearance)
 router.patch('/update/:id', requireAuth, upload.single("photo"), updateSkilledNClearance)
 router.patch('/delete/:id', requireAuth, deleteSkilledNClearance)
 
+// Error handling middleware
+router.use((err, req, res, next) => {
+    if (err.statusCode && err.statusCode === 400) {
+      return res.status(400).json({ error: err.message });
+    }
+    // Handle other errors
+    return res.status(500).json({ error: 'File is not supported. Please upload a photo with JPEG, JPG, PNG format only.' });
+});
+
 //export
 module.exports = router
