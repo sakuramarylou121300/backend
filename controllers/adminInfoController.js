@@ -501,20 +501,27 @@ const adminDeleteSkilled = async (req, res) => {
       let isDeletedValue;
   
         isDeletedValue = 'deleted';
-        //validation
-        if (!messageIds || messageIds.length === 0) {
-            return res.status(400).json({ error: 'Please select your reason.' })
-        }
-      
-        // Check for duplicate messages in request body
-        const duplicates = message.filter(
-            (m, i, self) => i !== self.findIndex((sm) => sm.message === m.message)
-        );
-        if (duplicates.length > 0) {
-            return res
-            .status(400)
-            .json({ error: 'Please remove repeating reason.' });
-        }
+        
+       //validation
+       const isEmptyMessage = message.some((obj) => obj.message === "");
+       if (isEmptyMessage) {
+       return res.status(400).json({ error: 'Please select a reason.' });
+       }
+   
+       // Check for duplicate messages in request body
+       const hasDuplicates = message.some((obj, index) => {
+           let foundDuplicate = false;
+           message.forEach((innerObj, innerIndex) => {
+               if (index !== innerIndex && obj.message === innerObj.message) {
+                   foundDuplicate = true;
+               }
+           });
+           return foundDuplicate;
+       });
+       
+       if (hasDuplicates) {
+           return res.status(400).json({ error: 'Please remove repeating reason.' });
+       }
         const messages = await Promise.all(messageIds.map(async (msgId) => {
             const msg = await ReasonDeact.findOne({ _id: msgId });
             return msg.reason;
