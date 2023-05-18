@@ -525,7 +525,7 @@ const adminDeleteSkilled = async (req, res) => {
     // Create a notification after updating creating barangay
     const notification = await Notification.create({
         skilled_id,
-        messageReason: messageNotif,
+        message: messageNotif,
         urlReact:`/temporary`
     });
       res.status(200).json(adminInfo)
