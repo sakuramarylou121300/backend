@@ -37,12 +37,12 @@ const createCertificate = async(req, res)=>{
         return res.status(400).json({error: 'Please upload your certificate photo.'})
     }
 
-    // // Check if file type is supported
+    // Check if file type is supported
     const supportedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
     if (!supportedTypes.includes(req.file.mimetype)) {
         return res.status(400).json({error: 'File type not supported. Please upload an image in PNG, JPEG, or JPG format.'})
     }
-    
+
     try{
         //this is to assign the job to a specific client user, get id from clientInfo
         const skilled_id = req.skilledInfo._id
@@ -72,9 +72,6 @@ const createCertificate = async(req, res)=>{
         if (validUntilDate < new Date()) {
             return res.status(400).json({ error: 'Your certificate is outdated. Please submit a valid one.' });
         }
-
-        // let issuedOnDate = new Date(issuedOn)
-        // console.log(issuedOnDate)
 
         result = await cloudinary.uploader.upload(req.file.path)
         let certificate = new Certificate({
