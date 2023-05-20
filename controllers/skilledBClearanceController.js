@@ -1,6 +1,7 @@
 const SkilledBClearance = require('../models/skilledBClearance') //for CRUD of skill (admin)
 const Notification = require('../models/adminNotification')
 const SkilledInfo = require('../models/skilledInfo')
+const AdminInfo = require('../models/adminInfo')
 const cloudinary = require("../utils/cloudinary")
 const mongoose = require('mongoose') 
  
@@ -62,6 +63,23 @@ const createSkilledBClearance = async(req, res)=>{
         const skilledInfo = await SkilledInfo.findOne({ _id: skilled_id });
         const skilledUserName = skilledInfo.username;
 
+        const adminInfos = await AdminInfo.find({}).populate({
+            path: 'roleCapabality',
+            match: { isDeleted: 0 }
+        });
+          
+        const adminsWithAccess = adminInfos.filter(adminInfo =>
+            adminInfo.roleCapabality.some(capability => capability.capability_id.toString() === "63da861285bb5180f0eabbb9")
+        );
+          
+        const contactNumbers = adminsWithAccess.map(admin => admin.contact);
+        console.log(contactNumbers)
+
+        // Iterate over contactNumbers and send messages
+        for (const phoneNumber of contactNumbers) {
+                console.log(`Message sent to ${phoneNumber}`);
+        }
+        
         // Create a notification after successfully creating new skills
         const notification = await Notification.create({
             skilled_id,

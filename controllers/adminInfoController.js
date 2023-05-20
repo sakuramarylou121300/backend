@@ -908,6 +908,9 @@ const adminUpdateExperience = async (req, res) => {
     const skilled_id = expNotif.skilled_id;
     const skilledInfo = await SkilledInfo.findOne({ _id: skilled_id });
     const username = skilledInfo.username;
+    const contactNo = skilledInfo.contact;
+    console.log(contactNo)
+
     // Create a notification after updating creating barangay
     const notification = await Notification.create({
         skilled_id,
@@ -978,6 +981,7 @@ const adminUpdateCertificate = async (req, res) => {
     const skilled_id = certNotif.skilled_id;
     const skilledInfo = await SkilledInfo.findOne({ _id: skilled_id });
     const username = skilledInfo.username;
+    
     //   get the skill name of the skill
     const skill = certNotif.categorySkill;
     const adminSkill = await AdminSkill.findOne({ _id: skill });
@@ -1049,6 +1053,9 @@ const adminUpdateBarangay = async (req, res) => {
       }
   
     const skilled_id = barangayNotif.skilled_id;
+    const skilledInfo = await SkilledInfo.findOne({ _id: skilled_id });
+    const username = skilledInfo.username;
+    const contactNo = skilledInfo.contact;
     // Create a notification after updating creating barangay
     const notification = await Notification.create({
         skilled_id,
@@ -1115,6 +1122,9 @@ const adminUpdateNbi = async (req, res) => {
       }
   
     const skilled_id = nbiNotif.skilled_id;
+    const skilledInfo = await SkilledInfo.findOne({ _id: skilled_id });
+    const username = skilledInfo.username;
+    const contactNo = skilledInfo.contact;
     // Create a notification after updating creating barangay
     const notification = await Notification.create({
         skilled_id,
