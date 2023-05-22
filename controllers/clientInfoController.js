@@ -1,4 +1,6 @@
 const ClientInfo = require('../models/clientInfo')
+const AdminInfo = require('../models/adminInfo')    
+const SkilledInfo = require('../models/skilledInfo')    
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
 const validator = require('validator')
@@ -31,22 +33,33 @@ const clientLogIn = async(req, res) =>{
 const clientSignUp = async(req, res) =>{
     const {
         username, 
-        password, 
-        lname, 
-        fname, 
+        password,
+        lname,
+        fname,
         mname,
         contact,
-        address} = req.body
+        houseNo,
+        street,
+        barangayAddr,
+        cityAddr,
+        provinceAddr,
+        regionAddr
+    } = req.body
     try{
         //just call the function from the model
         const clientInfo = await ClientInfo.signup(
             username, 
-            password, 
-            lname, 
-            fname, 
+            password,
+            lname,
+            fname,
             mname,
             contact,
-            address
+            houseNo,
+            street,
+            barangayAddr,
+            cityAddr,
+            provinceAddr,
+            regionAddr
         )
 
             //create token
@@ -64,9 +77,6 @@ const getClientInfo = async(req, res) =>{
     try{
         const clientInfo = await ClientInfo.findById(req.clientInfo._id)
         .select("-password")
-        .populate('contacts')
-        .populate('location')
-
         res.status(200).json(clientInfo)
     }
     catch(error){
@@ -75,10 +85,9 @@ const getClientInfo = async(req, res) =>{
 }
 
 //update client info username
-const updateClientusername = async(req, res) =>{
+const updateClientUsername = async(req, res) =>{
   
     try{
-        
         //get info
         const {username} = req.body
 
@@ -97,6 +106,14 @@ const updateClientusername = async(req, res) =>{
         if (exists){
             throw Error('username already in use. Please enter a new unique username.')
         }
+        const adminExists = await AdminInfo.findOne({username})
+        if (adminExists){
+            throw Error('Username already in use.')
+        }
+        const skilledExists = await SkilledInfo.findOne({username})
+        if (skilledExists){
+            throw Error('Username already in use.')
+        }
 
         //update info
         const clientInfo = await ClientInfo.findOneAndUpdate(
@@ -104,7 +121,7 @@ const updateClientusername = async(req, res) =>{
             {username})
 
         //success
-        res.status(200).json({messg: 'Successfully updated'})
+        res.status(200).json(clientInfo)
     }
     catch(error){
 
@@ -155,7 +172,7 @@ const updateClientPass = async(req, res) =>{
             {password:hash})
 
         //success
-        res.status(200).json({messg: 'Successfully updated.'})
+        res.status(200).json(clientInfo)
     }
     catch(error){
 
@@ -186,7 +203,7 @@ const updateClientInfo = async(req, res) =>{
             mname})
 
         //success
-        res.status(200).json({messg: 'Successfully updated'})
+        res.status(200).json(clientInfo)
     }
     catch(error){
 
@@ -194,153 +211,117 @@ const updateClientInfo = async(req, res) =>{
     }
 }
 
+const updateClientAddress = async(req, res) =>{
+  
+    try{
+        
+        //get info
+        const {houseNo,
+                street,
+                barangayAddr,
+                cityAddr,
+                provinceAddr,
+                regionAddr} = req.body
+
+        //validation
+        if (!street || !barangayAddr || !cityAddr ||
+            !provinceAddr || !regionAddr){
+            throw Error('Please fill in all the blank fields.')
+        }
+        const clientInfoCheck = await ClientInfo.findOne({
+            houseNo: houseNo,
+            street: street,
+            barangayAddr: barangayAddr,
+            cityAddr: cityAddr,
+            provinceAddr: provinceAddr,
+            regionAddr: regionAddr
+        })
+        
+        if(clientInfoCheck){
+            return res.status(400).json({error: "You have entered the same address, please try again."})
+        }
+
+        //update info
+        const clientInfo = await ClientInfo.findOneAndUpdate(
+            {_id: req.skilledInfo._id},
+            {houseNo,
+            street,
+            barangayAddr,
+            cityAddr,
+            provinceAddr,
+            regionAddr,
+            addIsVerified:0
+        })
+
+        //success
+        res.status(200).json(clientInfo)
+    }
+    catch(error){
+
+        res.status(400).json({error:error.message})
+    }
+}
 //delete acc
 const deleteClientInfo = async(req, res) =>{
 
     try{
         const clientInfo = await ClientInfo.findByIdAndDelete(req.clientInfo._id)
-        res.status(200).json({messg: 'Successfully deleted'})
+        res.status(200).json(clientInfo)
     }
     catch(error){
         res.status(400).json({error:error.message})
     }
 }
 
-//push address
-const pushAddress = async(req,res) =>{
+const generateOTP = async(req, res) =>{
+
     try{
-        const {address} = req.body
+        req.app.locals.OTP = await otpGenerator.generate(8, {specialChars: false})
 
-        const clientInfo = await ClientInfo.findOneAndUpdate(
-            {_id:req.clientInfo._id},
-            {$push:{
-                address
-            }}
-        )
-        res.status(200).json({messg: 'Successfully added.'})
+        const clientInfo = await ClientInfo.findOneAndUpdate({ _id: req.clientInfo._id },
+            { addIsVerified: 0, otp: req.app.locals.OTP }
+        );
+        res.status(200).json({ message: 'Request Sent.'})
     }
     catch(error){
         res.status(400).json({error:error.message})
     }
 }
 
-//update or edit address
-const updateAddress = async(req,res) =>{
-    const arrayId = req.params.arrayId;
-    const {houseNo, street, barangay, city, province} = req.body
-    
-    const address = await ClientInfo.updateOne({
-        "address._id":arrayId
-    },
-    {
-        $set:{
-            "address.$.houseNo":houseNo,
-            "address.$.street":street,
-            "address.$.barangay":barangay,
-            "address.$.city":city,
-            "address.$.province":province
-        }
-    })
+const verifyOTP = async(req, res) =>{
 
-    if(address){
-        res.send('Successfully updated.')
-    }else{
-        res.status(500).send('Something is wrong.')
-    }
-}
-
-//pull address
-const pullAddress = async(req,res) =>{
-    const arrayId = req.params.arrayId;
-    
-    const address = await ClientInfo.updateOne(
-    {
-        "address._id":arrayId
-    },
-    {
-        $pull:{
-            address:{_id:arrayId}
-        }
-    })
-
-    if(address){
-        res.send('Successfully deleted.')
-    }else{
-        res.status(500).send('Something is wrong.')
-    }
-}
-
-//push contact
-const pushContact = async(req,res) =>{
     try{
-        const {contact} = req.body
+        const {otp} = req.body
+       
+        const clientFindOTP = await ClientInfo.findOne({ _id: req.clientInfo._id })
+        clientOTP = clientFindOTP.otp
+        if (otp !== clientOTP) {
 
-        const clientInfo = await ClientInfo.findOneAndUpdate(
-            {_id:req.clientInfo._id},
-            {$push:{
-                contact
-            }}
-        )
-        res.status(200).json({messg: 'Successfully added.'})
+            const otpReset = await ClientInfo.findOneAndUpdate(
+                { _id: req.clientInfo._id }, { otp:""}
+            );
+            return res.status(400).json({ error: 'Invalid OTP, please request again.' })
+        }
+    
+        //if verified then addIsVerified:1 or address is verified now
+        const clientInfo = await ClientInfo.findOneAndUpdate({ _id: req.clientInfo._id },
+            { addIsVerified: 1, otp:""}
+        );
+
+        return res.status(201).send({ message: 'Verified Successsfully!'})
     }
     catch(error){
         res.status(400).json({error:error.message})
     }
 }
 
-//update or edit contact
-const updateContact = async(req,res) =>{
-    const arrayId = req.params.arrayId;
-    const {contactNo} = req.body
-    
-    const contact = await ClientInfo.updateOne({
-        "contact._id":arrayId
-    },
-    {
-        $set:{
-            "contact.$.contactNo":contactNo
-        }
-    })
-
-    if(contact){
-        res.send('Successfully updated.')
-    }else{
-        res.status(500).send('Something is wrong.')
-    }
-}
-
-//pull contact
-const pullContact = async(req,res) =>{
-    const arrayId = req.params.arrayId;
-    
-    const contact = await ClientInfo.updateOne(
-    {
-        "contact._id":arrayId
-    },
-    {
-        $pull:{
-            contact:{_id:arrayId}
-        }
-    })
-
-    if(contact){
-        res.send('Successfully deleted.')
-    }else{
-        res.status(500).send('Something is wrong.')
-    }
-}
 module.exports = {
     clientLogIn,
     clientSignUp,
     getClientInfo,
-    updateClientusername,
+    updateClientUsername,
     updateClientPass,
     updateClientInfo,
-    deleteClientInfo,
-    pushAddress,
-    updateAddress,
-    pullAddress,
-    pushContact,
-    updateContact,
-    pullContact
+    updateClientAddress,
+    deleteClientInfo
 }
