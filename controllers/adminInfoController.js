@@ -535,7 +535,7 @@ const adminDeleteSkilled = async (req, res) => {
         message: messageNotif,
         urlReact:`/temporary`
     });
-      res.status(200).json(adminInfo)
+      res.status(200).json({ message: 'Skilled Worker deactivated.'})
       } catch (error) {
           res.status(400).json({ error: error.message })
       }
@@ -917,7 +917,7 @@ const adminUpdateExperience = async (req, res) => {
         message: messageNotif,
         urlReact:`/profileSkilled/${username}`
     });
-    res.status(200).json(skilledExp)
+    res.status(200).json({ message: 'Successfully updated.'})
     } catch (error) {
         res.status(400).json({ error: error.message })
     }
@@ -951,6 +951,7 @@ const adminUpdateCertificate = async (req, res) => {
       } else if (isVerified === 'false') {
         skillIsVerifiedValue = 'disapproved';
 
+        //validation
         const isEmptyMessage = message.some((obj) => obj.message === "");
         if (isEmptyMessage) {
         return res.status(400).json({ error: 'Please select a reason.' });
@@ -992,7 +993,7 @@ const adminUpdateCertificate = async (req, res) => {
         message: messageNotif,
         urlReact:`/profileSkilledCert/${skillName}/${username}`
     });
-      res.status(200).json(certificate)
+      res.status(200).json({ message: 'Successfully updated.'})
       } catch (error) {
           res.status(400).json({ error: error.message })
       }
@@ -1061,7 +1062,7 @@ const adminUpdateBarangay = async (req, res) => {
         message: messageNotif,
         urlReact:`/profileSkilled`
     });
-      res.status(200).json(barangay)
+      res.status(200).json({ message: 'Successfully updated.'})
       } catch (error) {
           res.status(400).json({ error: error.message })
       }
@@ -1141,7 +1142,7 @@ const reactivateSkilledInfo = async(req, res) =>{
     try{
         const skilledInfo = await SkilledInfo.findOneAndUpdate({username:username},
             {isDeleted:0})
-        res.status(200).json(skilledInfo)
+        res.status(200).json({ message: 'Skilled Worker Reactivated.'})
     }
     catch(error){
         res.status(400).json({error:error.message})

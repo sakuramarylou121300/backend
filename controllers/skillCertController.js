@@ -97,7 +97,7 @@ const createCertificate = async(req, res)=>{
         
         });
 
-        res.status(200).json(certificate)
+        res.status(200).json({ message: 'Successfully added.'})
     }
     catch(error){
         console.log(error)
@@ -290,7 +290,7 @@ const updateCertificate = async(req,res)=>{
             // url: `https://samplekasawapp.onrender.com/api/admin/getOne/Barangay/${skilledBClearance._id}`,
             urlReact:`/viewSkilledCertificate/${skilledUserName}`
         });
-            res.json(certificate)
+            res.json({ message: 'Successfully updated.'})
    }
    catch(error){
         res.status(404).json({error: error.message})
@@ -385,7 +385,7 @@ const deleteCertificate = async(req, res)=>{
         return res.status(404).json({error: 'Skill Certificate not found'})
     }
 
-    res.status(200).json(certificate)
+    res.status(200).json({ message: 'Successfully deleted.'})
 
 }
 

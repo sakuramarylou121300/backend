@@ -36,7 +36,7 @@ const createSkills = async(req, res)=>{
         }
 
         const skills = await Skill.insertMany(newSkills);
-        res.status(201).send(skills);
+        res.status(201).send({ message: 'Successfully added.'});
     } catch (error) {
       res.status(400).send(error);
     }
@@ -75,7 +75,7 @@ const createSkill = async(req, res)=>{
             skillName,
             skilled_id
         })
-        res.status(200).json(skill)
+        res.status(200).json({ message: 'Successfully added.'})
     }
 
     catch(error){
@@ -166,7 +166,7 @@ const updateSkill = async(req, res) =>{
         return res.status(404).json({error: 'Skill not found'})
     }
 
-    res.status(200).json(skill)
+    res.status(200).json({ message: 'Successfully updated.'})
 }
 
 //DELETE skill
@@ -187,7 +187,7 @@ const deleteSkill = async(req, res)=>{
         return res.status(404).json({error: 'Skill not found'})
     }
 
-    res.status(200).json(skill)
+    res.status(200).json({ message: 'Successfully deleted.'})
 
 }
 

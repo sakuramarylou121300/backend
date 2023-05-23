@@ -135,7 +135,7 @@ const getSkilledInfo = async(req, res) =>{
             path: 'skillNbi',
             match: { isDeleted: 0} 
         })
-
+        
         res.status(200).json(skilledInfo)
     }
     catch(error){
