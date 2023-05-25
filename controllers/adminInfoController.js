@@ -607,6 +607,12 @@ const adminGetAllCertSkilledDetail = async(req, res)=>{
             match: { isDeleted: 0},
             options: { sort: { createdAt: -1 } } 
         })
+        .populate({
+            path: 'message.message',
+            model: 'Reason',
+            select: 'reason',
+            options: { lean: true },
+        })
         .lean() // Convert Mongoose Document to JS object
         //count each skilled info skillCert unread
         const skilledInfoWithCountsAndLatestCertTimes  = skilledInfo.map(info => {
@@ -732,9 +738,14 @@ const adminGetAllSkilledExpDetail = async(req, res)=>{
             isExpired:{$ne: 1}, 
             isDeleted: 0
         })
-
         .sort({updatedAt: 1})
         .populate('skilled_id')
+        .populate({
+            path: 'message.message',
+            model: 'Reason',
+            select: 'reason',
+            options: { lean: true },
+        })
 
         await Experience.updateMany({ 
             skilled_id: skilledIdDoc._id,
@@ -765,6 +776,12 @@ const adminGetAllSkilledCertDetail = async(req, res)=>{
             isDeleted: 0})
         .sort({updatedAt: 1})
         .populate('skilled_id')
+        .populate({
+            path: 'message.message',
+            model: 'Reason',
+            select: 'reason',
+            options: { lean: true },
+        })
         
         //update when admin opened then isRead1
         await Certificate.updateMany({ 
@@ -801,6 +818,12 @@ const adminGetAllSkilledBarangayDetail = async(req, res)=>{
             isDeleted: 0})
         .sort({updatedAt: -1})
         .populate('skilled_id')
+        .populate({
+            path: 'message.message',
+            model: 'Reason',
+            select: 'reason',
+            options: { lean: true },
+        })
         await Barangay.updateMany({ 
             skilled_id: skilledIdDoc._id,
             isRead:0 }, 
@@ -835,6 +858,12 @@ const adminGetAllSkilledNbiDetail = async(req, res)=>{
             isDeleted: 0})
         .sort({updatedAt: -1})
         .populate('skilled_id')
+        .populate({
+            path: 'message.message',
+            model: 'Reason',
+            select: 'reason',
+            options: { lean: true },
+        })
         await Nbi.updateMany({ 
             skilled_id: skilledIdDoc._id,
             isRead:0 }, 
@@ -1140,6 +1169,7 @@ const adminUpdateNbi = async (req, res) => {
 const reactivateSkilledInfo = async(req, res) =>{
     const {username} = req.params 
     try{
+        await SkilledInfo.updateOne({username:username}, { $unset: { message: 1 } })
         const skilledInfo = await SkilledInfo.findOneAndUpdate({username:username},
             {isDeleted:0})
         res.status(200).json({ message: 'Skilled Worker Reactivated.'})
@@ -1180,6 +1210,12 @@ const adminGetAllSkilledDeact = async(req, res)=>{
         //get all query
         const skilledInfo = await SkilledInfo.find({isDeleted: 1})
         .sort({updatedAt: -1})
+        .populate({
+            path: 'message.message',
+            model: 'ReasonDeact',
+            select: 'reason',
+            options: { lean: true },
+        })
         res.status(200).json(skilledInfo)
     }
     catch(error){

@@ -119,6 +119,12 @@ const getAllCertificate = async(req, res)=>{
         .sort({updatedAt: -1})
         .populate('skilled_id')
         .populate('categorySkill')
+        .populate({
+            path: 'message.message',
+            model: 'Reason',
+            select: 'reason',
+            options: { lean: true },
+        })
         var currentDate = new Date();//date today
         await Certificate.updateMany({ validUntil: {$lt:currentDate} }, 
             {$set: 
@@ -159,6 +165,12 @@ const getAllCertSkill = async(req, res)=>{
             isExpired:{$ne: 1},})
         .populate('categorySkill')
         .populate('skilled_id')
+        .populate({
+            path: 'message.message',
+            model: 'Reason',
+            select: 'reason',
+            options: { lean: true },
+        })
         .sort({createdAt: -1})
         res.status(200).json(skillCert)
     }
@@ -196,6 +208,12 @@ const getOneCertificate = async(req, res)=>{
 
     //find query
     const certificate = await Certificate.findById({_id: id})
+    .populate({
+        path: 'message.message',
+        model: 'Reason',
+        select: 'reason',
+        options: { lean: true },
+    })
 
     //check if not existing
     if (!certificate){
