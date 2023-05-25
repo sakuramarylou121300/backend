@@ -745,6 +745,7 @@ const adminGetAllSkilledExpDetail = async(req, res)=>{
             path: 'message.message',
             model: 'Reason',
             select: 'reason',
+            match: { message: { $ne: '' } }, // Exclude empty messages
             options: { lean: true },
         })
 
@@ -929,16 +930,10 @@ const adminUpdateExperience = async (req, res) => {
         }
 
         const messages = await Promise.all(messageIds.map(async (msgId) => {
-            if (!msgId) {
-                return ''; // Return an empty value for the skipped iteration
-            }
-        
             const msg = await Reason.findOne({ _id: msgId });
-            return msg ? msg.reason : '';
+            return msg.reason;
         }));
-        
-        
-        messageNotif = `Your work experience has been ${expIsVerifiedValue}. Please update your uploaded work experience. Your work experience has ${messages.join(', ')}.`;
+            messageNotif = `Your work experience has been ${expIsVerifiedValue}. Please update your uploaded work experience. Your work experience has ${messages.join(', ')}.`;
     }
 
     const skilled_id = expNotif.skilled_id;
