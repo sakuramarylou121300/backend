@@ -745,7 +745,7 @@ const adminGetAllSkilledExpDetail = async(req, res)=>{
             path: 'message.message',
             model: 'Reason',
             select: 'reason',
-            match: { message: { $ne: '' } }, // Exclude empty messages
+            match: { reason: { $ne: '' } }, // Exclude empty reasons
             options: { lean: true },
         })
 
