@@ -718,118 +718,48 @@ const adminGetAllNClearanceSkilledDetail = async(req, res)=>{
 }
 
 //USERNAME GET ALL
-// const adminGetAllSkilledExpDetail = async(req, res)=>{
-//     // const skilled_id = req.params.skilled_id;
-//     const username = req.params.username;
+const adminGetAllSkilledExpDetail = async(req, res)=>{
+    // const skilled_id = req.params.skilled_id;
+    const username = req.params.username;
 
-//     try{
-//         // Find skilled_id document based on username
-//         const skilledIdDoc = await SkilledInfo.findOne({ username: username });
+    try{
+        // Find skilled_id document based on username
+        const skilledIdDoc = await SkilledInfo.findOne({ username: username });
 
-//         // Check if skilled_id exists for the given username
-//         if (!skilledIdDoc) {
-//         return res.status(404).json({ error: 'Skilled Worker not found' });
-//         }
+        // Check if skilled_id exists for the given username
+        if (!skilledIdDoc) {
+        return res.status(404).json({ error: 'Skilled Worker not found' });
+        }
 
-//         //get all query
-//         const skilledExp = await Experience.find({
-//             skilled_id: skilledIdDoc._id,
-//             // skilled_id:skilled_id,
-//             isExpired:{$ne: 1}, 
-//             isDeleted: 0
-//         })
-//         .sort({updatedAt: 1})
-//         .populate('skilled_id')
-//         .populate('categorySkill')
-//         .populate({
-//             path: 'message.message',
-//             model: 'Reason',
-//             select: 'reason',
-//             match: { reason: { $ne: '' } }, // Exclude empty reasons
-//             options: { lean: true },
-//         })
+        //get all query
+        const skilledExp = await Experience.find({
+            skilled_id: skilledIdDoc._id,
+            // skilled_id:skilled_id,
+            isExpired:{$ne: 1}, 
+            isDeleted: 0
+        })
+        .sort({updatedAt: 1})
+        .populate('skilled_id')
+        .populate('categorySkill')
+        // .populate({
+        //     path: 'message.message',
+        //     model: 'Reason',
+        //     select: 'reason',
+        //     match: { reason: { $ne: '' } }, // Exclude empty reasons
+        //     options: { lean: true },
+        // })
 
-//         await Experience.updateMany({ 
-//             skilled_id: skilledIdDoc._id,
-//             isRead:0 }, 
-//             {$set: { isRead: 1 } });
+        await Experience.updateMany({ 
+            skilled_id: skilledIdDoc._id,
+            isRead:0 }, 
+            {$set: { isRead: 1 } });
 
-//         res.status(200).json(skilledExp)
-//     }
-//     catch(error){
-//         res.status(404).json({error: error.message})
-//     }  
-// }
-
-const adminGetAllSkilledExpDetail = async (req, res) => {
-  const username = req.params.username;
-
-  try {
-    const skilledIdDoc = await SkilledInfo.findOne({ username: username });
-
-    if (!skilledIdDoc) {
-      return res.status(404).json({ error: 'Skilled Worker not found' });
+        res.status(200).json(skilledExp)
     }
-
-    const skilledExp = await Experience.aggregate([
-      {
-        $match: {
-          skilled_id: skilledIdDoc._id,
-          isExpired: { $ne: 1 },
-          isDeleted: 0
-        }
-      },
-      {
-        $sort: { updatedAt: 1 }
-      },
-      {
-        $lookup: {
-          from: 'Reason', // Replace with the actual collection name for 'Reason' model
-          localField: '_id',
-          foreignField: 'message',
-          as: 'reasons'
-        }
-      },
-      {
-        $match: {
-          reasons: { $ne: [] } // Exclude experiences without reasons
-        }
-      },
-      {
-        $lookup: {
-          from: 'SkilledInfo', // Replace with the actual collection name for 'SkilledInfo' model
-          localField: 'skilled_id',
-          foreignField: '_id',
-          as: 'skilled_id'
-        }
-      },
-      {
-        $lookup: {
-          from: 'CategorySkill', // Replace with the actual collection name for 'CategorySkill' model
-          localField: 'categorySkill',
-          foreignField: '_id',
-          as: 'categorySkill'
-        }
-      },
-      {
-        $project: {
-          skilled_id: { $arrayElemAt: ['$skilled_id', 0] },
-          categorySkill: { $arrayElemAt: ['$categorySkill', 0] },
-          message: { $arrayElemAt: ['$reasons', 0] }
-        }
-      }
-    ]);
-
-    await Experience.updateMany(
-      { skilled_id: skilledIdDoc._id, isRead: 0 },
-      { $set: { isRead: 1 } }
-    );
-
-    res.status(200).json(skilledExp);
-  } catch (error) {
-    res.status(404).json({ error: error.message });
-  }
-};
+    catch(error){
+        res.status(404).json({error: error.message})
+    }  
+}
 
 
 const adminGetAllSkilledCertDetail = async(req, res)=>{
@@ -849,12 +779,12 @@ const adminGetAllSkilledCertDetail = async(req, res)=>{
             isDeleted: 0})
         .sort({updatedAt: 1})
         .populate('skilled_id')
-        .populate({
-            path: 'message.message',
-            model: 'Reason',
-            select: 'reason',
-            options: { lean: true },
-        })
+        // .populate({
+        //     path: 'message.message',
+        //     model: 'Reason',
+        //     select: 'reason',
+        //     options: { lean: true },
+        // })
         
         //update when admin opened then isRead1
         await Certificate.updateMany({ 
@@ -891,12 +821,12 @@ const adminGetAllSkilledBarangayDetail = async(req, res)=>{
             isDeleted: 0})
         .sort({updatedAt: -1})
         .populate('skilled_id')
-        .populate({
-            path: 'message.message',
-            model: 'Reason',
-            select: 'reason',
-            options: { lean: true },
-        })
+        // .populate({
+        //     path: 'message.message',
+        //     model: 'Reason',
+        //     select: 'reason',
+        //     options: { lean: true },
+        // })
         await Barangay.updateMany({ 
             skilled_id: skilledIdDoc._id,
             isRead:0 }, 
@@ -931,12 +861,12 @@ const adminGetAllSkilledNbiDetail = async(req, res)=>{
             isDeleted: 0})
         .sort({updatedAt: -1})
         .populate('skilled_id')
-        .populate({
-            path: 'message.message',
-            model: 'Reason',
-            select: 'reason',
-            options: { lean: true },
-        })
+        // .populate({
+        //     path: 'message.message',
+        //     model: 'Reason',
+        //     select: 'reason',
+        //     options: { lean: true },
+        // })
         await Nbi.updateMany({ 
             skilled_id: skilledIdDoc._id,
             isRead:0 }, 

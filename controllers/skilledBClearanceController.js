@@ -104,12 +104,12 @@ const getAllSkilledBClearance = async(req, res)=>{
             isDeleted: 0,
             isExpired:{$ne: 1}})
         .sort({updatedAt:-1})
-        .populate({
-            path: 'message.message',
-            model: 'Reason',
-            select: 'reason',
-            options: { lean: true },
-        })
+        // .populate({
+        //     path: 'message.message',
+        //     model: 'Reason',
+        //     select: 'reason',
+        //     options: { lean: true },
+        // })
         var currentDate = new Date();//date today
         await SkilledBClearance.updateMany({ bClearanceExp: {$lt:currentDate}}, 
             {$set: 
@@ -148,12 +148,12 @@ const getOneSkilledBClearance = async(req, res)=>{
 
     //find query
     const skilledBClearance = await SkilledBClearance.findById({_id: id})
-    .populate({
-        path: 'message.message',
-        model: 'Reason',
-        select: 'reason',
-        options: { lean: true },
-    })
+    // .populate({
+    //     path: 'message.message',
+    //     model: 'Reason',
+    //     select: 'reason',
+    //     options: { lean: true },
+    // })
 
     //check if not existing
     if (!skilledBClearance){
