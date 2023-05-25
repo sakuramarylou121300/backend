@@ -250,6 +250,7 @@ const getOneExp = async(req, res)=>{
 
     //find query
     const skilledExp = await SkilledExp.findById({_id: id})
+    .populate('categorySkill')
     .populate({
         path: 'message.message',
         model: 'Reason',

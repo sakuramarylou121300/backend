@@ -740,6 +740,7 @@ const adminGetAllSkilledExpDetail = async(req, res)=>{
         })
         .sort({updatedAt: 1})
         .populate('skilled_id')
+        .populate('categorySkill')
         .populate({
             path: 'message.message',
             model: 'Reason',

@@ -1,4 +1,5 @@
 const RoleCapability = require('../models/roleCapability')
+const Capability = require('../models/capability')
 const AdminInfo = require('../models/adminInfo')
 
 const mongoose = require('mongoose')
@@ -59,6 +60,37 @@ const getAllRoleCapability = async(req, res)=>{
         .populate('capability_id')
         .populate('adminInfo_id')
         res.status(200).json(roleCapability)
+    }
+    catch(error){
+        res.status(404).json({error: error.message})
+    }  
+}
+
+const getAllCapability = async(req, res)=>{
+    const username = req.params.username;
+    try{
+        // Find skilled_id document based on username
+        const adminIdDoc = await AdminInfo
+        .findOne({ username: username });
+
+        // Check if skilled_id exists for the given username
+        if (!adminIdDoc) {
+        return res.status(404).json({ error: 'Admin not found' });
+        }
+        //get all query
+        const roleCap = await RoleCapability.find({
+            adminInfo_id: adminIdDoc._id,
+            isDeleted: 0
+        })
+        .sort({updatedAt: -1})
+        .populate({
+            path: 'capability_id',
+            model: 'Capability',
+            select: 'capabilityName',
+            options: { lean: true },
+        })
+    
+        res.status(200).json(roleCap)
     }
     catch(error){
         res.status(404).json({error: error.message})
@@ -152,6 +184,7 @@ const deleteRoleCapability = async(req, res)=>{
 module.exports = {
     createRoleCapability,
     getAllRoleCapability,
+    getAllCapability,
     getOneRoleCapability,
     updateRoleCapability,
     deleteRoleCapability

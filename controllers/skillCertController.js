@@ -214,6 +214,7 @@ const getOneCertificate = async(req, res)=>{
         select: 'reason',
         options: { lean: true },
     })
+    .populate('categorySkill')
 
     //check if not existing
     if (!certificate){
