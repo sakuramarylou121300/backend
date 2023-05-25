@@ -6,7 +6,7 @@ const reasonSchema = new Schema({
     
     reason:{
         type: String,
-        required: true
+        default: ''
     },
     isDeleted:{
         type: Number,

@@ -80,13 +80,14 @@ const getAllCapability = async(req, res)=>{
         //get all query
         const roleCap = await RoleCapability.find({
             adminInfo_id: adminIdDoc._id,
-            isDeleted: 0
+            isDeleted: 0,
         })
         .sort({updatedAt: -1})
+
         .populate({
             path: 'capability_id',
             model: 'Capability',
-            select: 'capabilityName',
+            select: 'capabilityName', 
             options: { lean: true },
         })
     
