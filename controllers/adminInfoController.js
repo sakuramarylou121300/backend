@@ -929,12 +929,16 @@ const adminUpdateExperience = async (req, res) => {
         }
 
         const messages = await Promise.all(messageIds.map(async (msgId) => {
-            if (msgId) {
-                const msg = await Reason.findOne({ _id: msgId });
-                return msg.reason;
+            if (!msgId) {
+                return ''; // Return an empty value for the skipped iteration
             }
+        
+            const msg = await Reason.findOne({ _id: msgId });
+            return msg ? msg.reason : '';
         }));
-            messageNotif = `Your work experience has been ${expIsVerifiedValue}. Please update your uploaded work experience. Your work experience has ${messages.join(', ')}.`;
+        
+        
+        messageNotif = `Your work experience has been ${expIsVerifiedValue}. Please update your uploaded work experience. Your work experience has ${messages.join(', ')}.`;
     }
 
     const skilled_id = expNotif.skilled_id;
