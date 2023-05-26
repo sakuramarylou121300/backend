@@ -168,12 +168,12 @@ const getAllExp = async(req, res)=>{
         .sort({updatedAt: -1})
         .populate('categorySkill')
         .populate('skilled_id')
-        // .populate({
-        //     path: 'message.message',
-        //     model: 'Reason',
-        //     select: 'reason',
-        //     options: { lean: true },
-        // })
+        .populate({
+            path: 'message.message',
+            model: 'Reason',
+            select: 'reason',
+            options: { lean: true },
+        })
         res.status(200).json(skilledExp)
     }
     catch(error){
@@ -207,12 +207,12 @@ const getAllExpSkill = async(req, res)=>{
             isExpired:{$ne: 1},})
         .sort({createdAt: -1})
         .populate('skilled_id')
-        // .populate({
-        //     path: 'message.message',
-        //     model: 'Reason',
-        //     select: 'reason',
-        //     options: { lean: true },
-        // })
+        .populate({
+            path: 'message.message',
+            model: 'Reason',
+            select: 'reason',
+            options: { lean: true },
+        })
         res.status(200).json(skilledExp)
     }
     catch(error){
@@ -251,12 +251,12 @@ const getOneExp = async(req, res)=>{
     //find query
     const skilledExp = await SkilledExp.findById({_id: id})
     .populate('categorySkill')
-    // .populate({
-    //     path: 'message.message',
-    //     model: 'Reason',
-    //     select: 'reason',
-    //     options: { lean: true },
-    // })
+    .populate({
+        path: 'message.message',
+        model: 'Reason',
+        select: 'reason',
+        options: { lean: true },
+    })
 
     //check if not existing
     if (!skilledExp){

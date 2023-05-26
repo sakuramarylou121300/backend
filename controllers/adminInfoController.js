@@ -741,12 +741,12 @@ const adminGetAllSkilledExpDetail = async(req, res)=>{
         .sort({updatedAt: 1})
         .populate('skilled_id')
         .populate('categorySkill')
-        // .populate({
-        //     path: 'message.message',
-        //     model: 'Reason',
-        //     select: 'reason',
-        //     options: { lean: true },
-        // })
+        .populate({
+            path: 'message.message',
+            model: 'Reason',
+            select: 'reason',
+            options: { lean: true },
+        })
 
         await Experience.updateMany({ 
             skilled_id: skilledIdDoc._id,
@@ -777,12 +777,12 @@ const adminGetAllSkilledCertDetail = async(req, res)=>{
             isDeleted: 0})
         .sort({updatedAt: 1})
         .populate('skilled_id')
-        // .populate({
-        //     path: 'message.message',
-        //     model: 'Reason',
-        //     select: 'reason',
-        //     options: { lean: true },
-        // })
+        .populate({
+            path: 'message.message',
+            model: 'Reason',
+            select: 'reason',
+            options: { lean: true },
+        })
         
         //update when admin opened then isRead1
         await Certificate.updateMany({ 
@@ -819,12 +819,12 @@ const adminGetAllSkilledBarangayDetail = async(req, res)=>{
             isDeleted: 0})
         .sort({updatedAt: -1})
         .populate('skilled_id')
-        // .populate({
-        //     path: 'message.message',
-        //     model: 'Reason',
-        //     select: 'reason',
-        //     options: { lean: true },
-        // })
+        .populate({
+            path: 'message.message',
+            model: 'Reason',
+            select: 'reason',
+            options: { lean: true },
+        })
         await Barangay.updateMany({ 
             skilled_id: skilledIdDoc._id,
             isRead:0 }, 
@@ -859,12 +859,12 @@ const adminGetAllSkilledNbiDetail = async(req, res)=>{
             isDeleted: 0})
         .sort({updatedAt: -1})
         .populate('skilled_id')
-        // .populate({
-        //     path: 'message.message',
-        //     model: 'Reason',
-        //     select: 'reason',
-        //     options: { lean: true },
-        // })
+        .populate({
+            path: 'message.message',
+            model: 'Reason',
+            select: 'reason',
+            options: { lean: true },
+        })
         await Nbi.updateMany({ 
             skilled_id: skilledIdDoc._id,
             isRead:0 }, 
