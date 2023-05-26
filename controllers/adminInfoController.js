@@ -745,7 +745,6 @@ const adminGetAllSkilledExpDetail = async(req, res)=>{
         //     path: 'message.message',
         //     model: 'Reason',
         //     select: 'reason',
-        //     match: { reason: { $ne: '' } }, // Exclude empty reasons
         //     options: { lean: true },
         // })
 
@@ -760,7 +759,6 @@ const adminGetAllSkilledExpDetail = async(req, res)=>{
         res.status(404).json({error: error.message})
     }  
 }
-
 
 const adminGetAllSkilledCertDetail = async(req, res)=>{
     const username = req.params.username;
