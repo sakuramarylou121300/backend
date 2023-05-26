@@ -222,7 +222,7 @@ const updateSkilledNClearance  = async(req, res) =>{
             urlReact:`/viewSkilled/nbiClearance/${skilledUserName}`
         });
 
-        res.status(200).json({ message: 'Successfully updated.'})
+        res.json({ message: 'Successfully updated.'})
     }
     catch(error){
         res.status(404).json({error:error.message})

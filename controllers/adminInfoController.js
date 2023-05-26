@@ -1161,7 +1161,7 @@ const adminUpdateNbi = async (req, res) => {
         message: messageNotif,
         urlReact:`/profileSkilled`
     });
-      res.status(200).json(nbi)
+        res.status(200).json({ message: 'Successfully updated.'})
       } catch (error) {
           res.status(400).json({ error: error.message })
       }
