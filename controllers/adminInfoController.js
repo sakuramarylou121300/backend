@@ -958,7 +958,7 @@ const adminUpdateExperience = async (req, res) => {
   
     try {
         // Validation
-        const isEmptyMessage = message.some((obj) => obj.message === '');
+        const isEmptyMessage = message.some((obj) => obj.message.trim() === '');
         if (expIsVerified === 'false' && isEmptyMessage) {
             return res.status(400).json({ error: 'Please select a reason.' });
         }
