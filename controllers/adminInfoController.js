@@ -881,114 +881,170 @@ const adminGetAllSkilledNbiDetail = async(req, res)=>{
     }  
 }
 //UPDATE INFO
-const adminUpdateExperience = async (req, res) => {
-  const { expIsVerified, message } = req.body
+// const adminUpdateExperience = async (req, res) => {
+//   const { expIsVerified, message } = req.body
 
-  try {
-    await Experience.updateOne({ _id: req.params.id }, { $unset: { message: 1 } })
-    const skilledExp = await Experience.findOneAndUpdate(
-        { _id: req.params.id },
-        {
-            $push: { message },
-            $set: { expIsVerified }
-        },
-        { new: true }
-    )
-    //notification
-    const expNotif = await Experience.findOne({ _id: req.params.id })
-    .populate('message');
-    const messageIds = expNotif.message.map(msg => msg.message)
-    let messageNotif = '';
-    let isVerified = expNotif.expIsVerified;
-    let expIsVerifiedValue;
+//   try {
+//     await Experience.updateOne({ _id: req.params.id }, { $unset: { message: 1 } })
+//     const skilledExp = await Experience.findOneAndUpdate(
+//         { _id: req.params.id },
+//         {
+//             $push: { message },
+//             $set: { expIsVerified }
+//         },
+//         { new: true }
+//     )
+//     //notification
+//     const expNotif = await Experience.findOne({ _id: req.params.id })
+//     .populate('message');
+//     const messageIds = expNotif.message.map(msg => msg.message)
+//     let messageNotif = '';
+//     let isVerified = expNotif.expIsVerified;
+//     let expIsVerifiedValue;
 
-    if (isVerified === 'true') {
-        expIsVerifiedValue = 'approved';
-        messageNotif = `Your work experience has been ${expIsVerifiedValue}.`;
-    } else if (isVerified === 'false') {
-        expIsVerifiedValue = 'disapproved';
-        //validation
-        const isEmptyMessage = message.some((obj) => obj.message === "");
-        if (isEmptyMessage) {
-        return res.status(400).json({ error: 'Please select a reason.' });
-        }
+//     if (isVerified === 'true') {
+//         expIsVerifiedValue = 'approved';
+//         messageNotif = `Your work experience has been ${expIsVerifiedValue}.`;
+//     } else if (isVerified === 'false') {
+//         expIsVerifiedValue = 'disapproved';
+//         //validation
+//         const isEmptyMessage = message.some((obj) => obj.message === "");
+//         if (isEmptyMessage) {
+//             return res.status(400).json({ error: 'Please select a reason.' });
+//         }
     
+//         // Check for duplicate messages in request body
+//         const hasDuplicates = message.some((obj, index) => {
+//             let foundDuplicate = false;
+//             message.forEach((innerObj, innerIndex) => {
+//                 if (index !== innerIndex && obj.message === innerObj.message) {
+//                     foundDuplicate = true;
+//                 }
+//             });
+//             return foundDuplicate;
+//         });
+        
+//         if (hasDuplicates) {
+//             return res.status(400).json({ error: 'Please remove repeating reason.' });
+//         }
+
+//         const messages = await Promise.all(messageIds.map(async (msgId) => {
+//             const msg = await Reason.findOne({ _id: msgId });
+//             return msg.reason;
+//         }));
+//             messageNotif = `Your work experience has been ${expIsVerifiedValue}. Please update your uploaded work experience. Your work experience has ${messages.join(', ')}.`;
+//     }
+
+//     const skilled_id = expNotif.skilled_id;
+//     const skilledInfo = await SkilledInfo.findOne({ _id: skilled_id });
+//     const username = skilledInfo.username;
+//     const contactNo = skilledInfo.contact;
+//     console.log(contactNo)
+
+//     // Create a notification after updating creating barangay
+//     const notification = await Notification.create({
+//         skilled_id,
+//         message: messageNotif,
+//         urlReact:`/profileSkilled/${username}`
+//     });
+//     res.status(200).json({ message: 'Successfully updated.'})
+//     } catch (error) {
+//         res.status(400).json({ error: error.message })
+//     }
+// }
+
+const adminUpdateExperience = async (req, res) => {
+    const { expIsVerified, message } = req.body;
+  
+    try {
+        // Validation
+        const isEmptyMessage = message.some((obj) => obj.message === '');
+        if (expIsVerified === 'false' && isEmptyMessage) {
+            return res.status(400).json({ error: 'Please select a reason.' });
+        }
+  
         // Check for duplicate messages in request body
         const hasDuplicates = message.some((obj, index) => {
             let foundDuplicate = false;
             message.forEach((innerObj, innerIndex) => {
-                if (index !== innerIndex && obj.message === innerObj.message) {
-                    foundDuplicate = true;
-                }
+            if (index !== innerIndex && obj.message === innerObj.message) {
+                foundDuplicate = true;
+            }
             });
             return foundDuplicate;
         });
-        
+  
         if (hasDuplicates) {
             return res.status(400).json({ error: 'Please remove repeating reason.' });
         }
-
-        const messages = await Promise.all(messageIds.map(async (msgId) => {
-            const msg = await Reason.findOne({ _id: msgId });
-            return msg.reason;
-        }));
-            messageNotif = `Your work experience has been ${expIsVerifiedValue}. Please update your uploaded work experience. Your work experience has ${messages.join(', ')}.`;
-    }
-
-    const skilled_id = expNotif.skilled_id;
-    const skilledInfo = await SkilledInfo.findOne({ _id: skilled_id });
-    const username = skilledInfo.username;
-    const contactNo = skilledInfo.contact;
-    console.log(contactNo)
-
-    // Create a notification after updating creating barangay
-    const notification = await Notification.create({
-        skilled_id,
-        message: messageNotif,
-        urlReact:`/profileSkilled/${username}`
-    });
-    res.status(200).json({ message: 'Successfully updated.'})
+    
+        await Experience.updateOne({ _id: req.params.id }, { $unset: { message: 1 } });
+        const skilledExp = await Experience.findOneAndUpdate(
+            { _id: req.params.id },
+            {
+            $push: { message },
+            $set: { expIsVerified },
+            },
+            { new: true }
+        );
+  
+        // Notification
+        const expNotif = await Experience.findOne({ _id: req.params.id }).populate('message');
+        const messageIds = expNotif.message.map(msg => msg.message);
+        let messageNotif = '';
+        let isVerified = expNotif.expIsVerified;
+        let expIsVerifiedValue;
+  
+        if (isVerified === 'true') {
+            expIsVerifiedValue = 'approved';
+            messageNotif = `Your work experience has been ${expIsVerifiedValue}.`;
+        } else if (isVerified === 'false') {
+            expIsVerifiedValue = 'disapproved';
+    
+            const messages = await Promise.all(
+            messageIds.map(async (msgId) => {
+                if (msgId) {
+                const msg = await Reason.findOne({ _id: msgId });
+                return msg.reason;
+                }
+                return null;
+            })
+            );
+  
+            messageNotif = `Your work experience has been ${expIsVerifiedValue}. Please update your uploaded work experience. Your work experience has ${messages.filter(msg => msg !== null).join(', ')}.`;
+        }
+  
+        const skilled_id = expNotif.skilled_id;
+        const skilledInfo = await SkilledInfo.findOne({ _id: skilled_id });
+        const username = skilledInfo.username;
+        const contactNo = skilledInfo.contact;
+        console.log(contactNo);
+  
+        // Create a notification after updating creating barangay
+        const notification = await Notification.create({
+            skilled_id,
+            message: messageNotif,
+            urlReact: `/profileSkilled/${username}`,
+        });
+  
+        res.status(200).json({ message: 'Successfully updated.' });
     } catch (error) {
-        res.status(400).json({ error: error.message })
+        res.status(400).json({ error: error.message });
     }
-}
-
+};
+  
 const adminUpdateCertificate = async (req, res) => {
     const { skillIsVerified, message } = req.body
   
     try {
-      await Certificate.updateOne({ _id: req.params.id }, { $unset: { message: 1 } })
-      const certificate = await Certificate.findOneAndUpdate(
-          { _id: req.params.id },
-          {
-              $push: { message },
-              $set: { skillIsVerified }
-          },
-          { new: true }
-      )
-      //notification
-      const certNotif = await Certificate.findOne({ _id: req.params.id })
-      .populate('message');
-      
-      const messageIds = certNotif.message.map(msg => msg.message)
-      let messageNotif = '';
-      let isVerified = certNotif.skillIsVerified;
-      let skillIsVerifiedValue;
-  
-      if (isVerified === 'true') {
-        skillIsVerifiedValue = 'approved';
-          messageNotif = `Your skill certificate has been ${skillIsVerifiedValue}.`;
-      } else if (isVerified === 'false') {
-        skillIsVerifiedValue = 'disapproved';
-
-        //validation
-        const isEmptyMessage = message.some((obj) => obj.message === "");
-        if (isEmptyMessage) {
-        return res.status(400).json({ error: 'Please select a reason.' });
+        // Validation
+        const isEmptyMessage = message.some((obj) => obj.message === '');
+        if (skillIsVerified === 'false' && isEmptyMessage) {
+            return res.status(400).json({ error: 'Please select a reason.' });
         }
 
-        // Check for duplicate messages in the array
-        const hasDuplicates = message.some((obj, index) => {
+         // Check for duplicate messages in the array
+         const hasDuplicates = message.some((obj, index) => {
             let foundDuplicate = false;
             message.forEach((innerObj, innerIndex) => {
                 if (index !== innerIndex && obj.message === innerObj.message) {
@@ -1001,80 +1057,105 @@ const adminUpdateCertificate = async (req, res) => {
         if (hasDuplicates) {
             return res.status(400).json({ error: 'Please remove repeating reason.' });
         }
+
+        await Certificate.updateOne({ _id: req.params.id }, { $unset: { message: 1 } })
+        const certificate = await Certificate.findOneAndUpdate(
+            { _id: req.params.id },
+            {
+                $push: { message },
+                $set: { skillIsVerified }
+            },
+            { new: true }
+        )
+        //notification
+        const certNotif = await Certificate.findOne({ _id: req.params.id })
+        .populate('message');
+        
+        const messageIds = certNotif.message.map(msg => msg.message)
+        let messageNotif = '';
+        let isVerified = certNotif.skillIsVerified;
+        let skillIsVerifiedValue;
   
-        const messages = await Promise.all(messageIds.map(async (msgId) => {
-            const msg = await Reason.findOne({ _id: msgId });
-            return msg.reason;
-        }));
-            messageNotif = `Your skill certificate has been ${skillIsVerifiedValue}. Please update your uploaded skill certificate. Your skill certificate has ${messages.join(', ')}.`;
-      }
-  
-    const skilled_id = certNotif.skilled_id;
-    const skilledInfo = await SkilledInfo.findOne({ _id: skilled_id });
-    const username = skilledInfo.username;
+        if (isVerified === 'true') {
+            skillIsVerifiedValue = 'approved';
+            messageNotif = `Your skill certificate has been ${skillIsVerifiedValue}.`;
+        } else if (isVerified === 'false') {
+            skillIsVerifiedValue = 'disapproved';
     
-    //   get the skill name of the skill
-    const skill = certNotif.categorySkill;
-    const adminSkill = await AdminSkill.findOne({ _id: skill });
-    const skillName = adminSkill.skill;
-      // Create a notification after updating creating barangay
-    const notification = await Notification.create({
-        skilled_id,
-        message: messageNotif,
-        urlReact:`/profileSkilledCert/${skillName}/${username}`
-    });
-      res.status(200).json({ message: 'Successfully updated.'})
-      } catch (error) {
-          res.status(400).json({ error: error.message })
-      }
+            const messages = await Promise.all(messageIds.map(async (msgId) => {
+                const msg = await Reason.findOne({ _id: msgId });
+                return msg.reason;
+            }));
+                messageNotif = `Your skill certificate has been ${skillIsVerifiedValue}. Please update your uploaded skill certificate. Your skill certificate has ${messages.join(', ')}.`;
+        }
+  
+        const skilled_id = certNotif.skilled_id;
+        const skilledInfo = await SkilledInfo.findOne({ _id: skilled_id });
+        const username = skilledInfo.username;
+    
+        //   get the skill name of the skill
+        const skill = certNotif.categorySkill;
+        const adminSkill = await AdminSkill.findOne({ _id: skill });
+        const skillName = adminSkill.skill;
+        // Create a notification after updating creating barangay
+        const notification = await Notification.create({
+            skilled_id,
+            message: messageNotif,
+            urlReact:`/profileSkilledCert/${skillName}/${username}`
+        });
+        res.status(200).json({ message: 'Successfully updated.'})
+        } catch (error) {
+            res.status(400).json({ error: error.message })
+        }
 }
 
 const adminUpdateBarangay = async (req, res) => {
     const { bClearanceIsVerified, message } = req.body
   
     try {
-      await Nbi.updateOne({ _id: req.params.id }, { $unset: { message: 1 } })
-      const barangay = await Barangay.findOneAndUpdate(
-        { _id: req.params.id },
-        {
-            $push: { message },
-            $set: { bClearanceIsVerified }
-        },
-        { new: true }
-      )
-      //notification
-      const brgyNotif = await Barangay.findOne({ _id: req.params.id })
-      .populate('message');
-      const messageIds = brgyNotif.message.map(msg => msg.message)
-      let messageNotif = '';
-      let isVerified = brgyNotif.bClearanceIsVerified;
-      let bClearanceIsVerifiedValue;
+        const isEmptyMessage = message.some((obj) => obj.message === '');
+        if (bClearanceIsVerified === 'false' && isEmptyMessage) {
+            return res.status(400).json({ error: 'Please select a reason.' });
+        }
+
+        // Check for duplicate messages in request body
+        const hasDuplicates = message.some((obj, index) => {
+            let foundDuplicate = false;
+            message.forEach((innerObj, innerIndex) => {
+            if (index !== innerIndex && obj.message === innerObj.message) {
+                foundDuplicate = true;
+            }
+            });
+            return foundDuplicate;
+        });
+  
+        if (hasDuplicates) {
+            return res.status(400).json({ error: 'Please remove repeating reason.' });
+        }
+
+        await Barangay.updateOne({ _id: req.params.id }, { $unset: { message: 1 } })
+        const barangay = await Barangay.findOneAndUpdate(
+            { _id: req.params.id },
+            {
+                $push: { message },
+                $set: { bClearanceIsVerified }
+            },
+            { new: true }
+        )
+        //notification
+        const brgyNotif = await Barangay.findOne({ _id: req.params.id })
+        .populate('message');
+        const messageIds = brgyNotif.message.map(msg => msg.message)
+        let messageNotif = '';
+        let isVerified = brgyNotif.bClearanceIsVerified;
+        let bClearanceIsVerifiedValue;
   
     if (isVerified === 'true') {
         bClearanceIsVerifiedValue = 'approved';
         messageNotif = `Your barangay clearance has been ${bClearanceIsVerifiedValue}.`;
     } else if (isVerified === 'false') {
         bClearanceIsVerifiedValue = 'disapproved';
-        //validation
-        const isEmptyMessage = message.some((obj) => obj.message === "");
-        if (isEmptyMessage) {
-        return res.status(400).json({ error: 'Please select a reason.' });
-        }
-      
-        // Check for duplicate messages in the array
-        const hasDuplicates = message.some((obj, index) => {
-            let foundDuplicate = false;
-            message.forEach((innerObj, innerIndex) => {
-                if (index !== innerIndex && obj.message === innerObj.message) {
-                    foundDuplicate = true;
-                }
-            });
-            return foundDuplicate;
-        });
-        
-        if (hasDuplicates) {
-            return res.status(400).json({ error: 'Please remove repeating reason.' });
-        }
+       
         const messages = await Promise.all(messageIds.map(async (msgId) => {
             const msg = await Reason.findOne({ _id: msgId });
             return msg.reason;
@@ -1102,6 +1183,27 @@ const adminUpdateNbi = async (req, res) => {
     const { nClearanceIsVerified, message } = req.body
   
     try {
+        // Validation
+        const isEmptyMessage = message.some((obj) => obj.message === '');
+        if (nClearanceIsVerified === 'false' && isEmptyMessage) {
+            return res.status(400).json({ error: 'Please select a reason.' });
+        }
+
+        // Check for duplicate messages in the array
+        const hasDuplicates = message.some((obj, index) => {
+            let foundDuplicate = false;
+            message.forEach((innerObj, innerIndex) => {
+                if (index !== innerIndex && obj.message === innerObj.message) {
+                    foundDuplicate = true;
+                }
+            });
+            return foundDuplicate;
+        });
+        
+        if (hasDuplicates) {
+            return res.status(400).json({ error: 'Please remove repeating reason.' });
+        }
+
       await Nbi.updateOne({ _id: req.params.id }, { $unset: { message: 1 } })
       const nbi = await Nbi.findOneAndUpdate(
         { _id: req.params.id },
@@ -1124,26 +1226,7 @@ const adminUpdateNbi = async (req, res) => {
         messageNotif = `Your nbi clearance has been ${nClearanceIsVerifiedValue}.`;
     } else if (isVerified === 'false') {
         nClearanceIsVerifiedValue = 'disapproved';
-        //validation
-        const isEmptyMessage = message.some((obj) => obj.message === "");
-        if (isEmptyMessage) {
-        return res.status(400).json({ error: 'Please select a reason.' });
-        }
       
-        // Check for duplicate messages in the array
-        const hasDuplicates = message.some((obj, index) => {
-            let foundDuplicate = false;
-            message.forEach((innerObj, innerIndex) => {
-                if (index !== innerIndex && obj.message === innerObj.message) {
-                    foundDuplicate = true;
-                }
-            });
-            return foundDuplicate;
-        });
-        
-        if (hasDuplicates) {
-            return res.status(400).json({ error: 'Please remove repeating reason.' });
-        }
         const messages = await Promise.all(messageIds.map(async (msgId) => {
             const msg = await Reason.findOne({ _id: msgId });
             return msg.reason;
