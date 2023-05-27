@@ -957,12 +957,10 @@ const adminUpdateExperience = async (req, res) => {
     const { expIsVerified, message } = req.body;
   
     try {
-  
         // Check for duplicate messages in request body
         const hasDuplicates = message.some((obj, index) => {
-
-             if (obj.message.trim() === '') {
-                throw new Error('Please enter a message.');
+            if (obj.message.trim() === '') {
+                throw new Error('Please enter a reason.');
             }
 
             let foundDuplicate = false;
@@ -1037,14 +1035,13 @@ const adminUpdateCertificate = async (req, res) => {
     const { skillIsVerified, message } = req.body
   
     try {
-        // Validation
-        const isEmptyMessage = message.some((obj) => obj.message === '');
-        if (skillIsVerified === 'false' && isEmptyMessage) {
-            return res.status(400).json({ error: 'Please select a reason.' });
-        }
-
          // Check for duplicate messages in the array
-         const hasDuplicates = message.some((obj, index) => {
+        const hasDuplicates = message.some((obj, index) => {
+
+            if (obj.message.trim() === '') {
+                throw new Error('Please enter a reason.');
+            }
+
             let foundDuplicate = false;
             message.forEach((innerObj, innerIndex) => {
                 if (index !== innerIndex && obj.message === innerObj.message) {
@@ -1113,13 +1110,12 @@ const adminUpdateBarangay = async (req, res) => {
     const { bClearanceIsVerified, message } = req.body
   
     try {
-        const isEmptyMessage = message.some((obj) => obj.message === '');
-        if (bClearanceIsVerified === 'false' && isEmptyMessage) {
-            return res.status(400).json({ error: 'Please select a reason.' });
-        }
-
         // Check for duplicate messages in request body
         const hasDuplicates = message.some((obj, index) => {
+            if (obj.message.trim() === '') {
+                throw new Error('Please enter a reason.');
+            }
+
             let foundDuplicate = false;
             message.forEach((innerObj, innerIndex) => {
             if (index !== innerIndex && obj.message === innerObj.message) {
@@ -1183,14 +1179,11 @@ const adminUpdateNbi = async (req, res) => {
     const { nClearanceIsVerified, message } = req.body
   
     try {
-        // Validation
-        const isEmptyMessage = message.some((obj) => obj.message === '');
-        if (nClearanceIsVerified === 'false' && isEmptyMessage) {
-            return res.status(400).json({ error: 'Please select a reason.' });
-        }
-
         // Check for duplicate messages in the array
         const hasDuplicates = message.some((obj, index) => {
+            if (obj.message.trim() === '') {
+                throw new Error('Please enter a reason.');
+            }
             let foundDuplicate = false;
             message.forEach((innerObj, innerIndex) => {
                 if (index !== innerIndex && obj.message === innerObj.message) {
