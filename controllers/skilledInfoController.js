@@ -416,6 +416,9 @@ const verifyOTP = async(req, res) =>{
        
         const skilledFindOTP = await SkilledInfo.findOne({ _id: req.skilledInfo._id })
         skilledOTP = skilledFindOTP.otp
+        if (skilledOTP === "") {
+            return res.status(400).json({ error: 'No OTP found. Please request for OTP.' })
+        }
         if (otp !== skilledOTP) {
 
             const otpReset = await SkilledInfo.findOneAndUpdate(
