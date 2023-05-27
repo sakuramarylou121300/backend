@@ -957,16 +957,14 @@ const adminUpdateExperience = async (req, res) => {
     const { expIsVerified, message } = req.body;
   
     try {
-        // Validation
-        if (expIsVerified === 'false') {
-            const isEmptyMessage = message.some((obj) => obj.message.trim() === '');
-            if (isEmptyMessage) {
-              return res.status(400).json({ error: 'Please enter a reason.' });
-            }
-          }
   
         // Check for duplicate messages in request body
         const hasDuplicates = message.some((obj, index) => {
+
+             if (obj.message.trim() === '') {
+                throw new Error('Please enter a message.');
+            }
+
             let foundDuplicate = false;
             message.forEach((innerObj, innerIndex) => {
             if (index !== innerIndex && obj.message === innerObj.message) {
