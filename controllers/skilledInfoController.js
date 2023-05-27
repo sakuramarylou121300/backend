@@ -114,7 +114,7 @@ const getSkilledInfo = async(req, res) =>{
 
     try{
         const skilledInfo = await SkilledInfo.findById(req.skilledInfo._id)
-        .select("-password")
+        .select("-password, -otp")
         .populate({
             path: 'skills',
             match: { isDeleted: 0} 
@@ -349,7 +349,20 @@ const updateSkilledAddress = async(req, res) =>{
             regionAddr,
             addIsVerified:0
         })
+        req.app.locals.OTP = await otpGenerator.generate(8, {specialChars: false})
 
+        const skilledInfoOTP = await SkilledInfo.findOneAndUpdate({ _id: req.skilledInfo._id },
+            { addIsVerified: 0, otp: req.app.locals.OTP }
+        );
+
+        //create notification when verification is successful
+        const skilledInfoNotif = await SkilledInfo.findOne({ _id: req.skilledInfo._id });
+        const skilledUserName = skilledInfoNotif.username;
+        const notification = await Notification.create({
+            skilled_id: req.skilledInfo._id,
+            message: `${skilledUserName} requested OTP.`,
+            urlReact:`/temporary/${skilledUserName}`
+        });
         //success
         res.status(200).json(skilledInfo)
     }
@@ -380,7 +393,16 @@ const generateOTP = async(req, res) =>{
         const skilledInfo = await SkilledInfo.findOneAndUpdate({ _id: req.skilledInfo._id },
             { addIsVerified: 0, otp: req.app.locals.OTP }
         );
-        res.status(200).json({ message: 'Request Sent.'})
+        
+        const skilledInfoNotif = await SkilledInfo.findOne({ _id: req.skilledInfo._id });
+        const skilledUserName = skilledInfoNotif.username;
+        const notification = await Notification.create({
+            skilled_id: req.skilledInfo._id,
+            message: `${skilledUserName} requested OTP.`,
+            urlReact:`/temporary/${skilledUserName}`
+        });
+
+        res.status(200).json({ message: 'Request Sent. Your requested OTP will be send via snail mail.'})
     }
     catch(error){
         res.status(400).json({error:error.message})
@@ -406,14 +428,6 @@ const verifyOTP = async(req, res) =>{
         const skilledInfo = await SkilledInfo.findOneAndUpdate({ _id: req.skilledInfo._id },
             { addIsVerified: 1, otp:""}
         );
-        //create notification when verification is successful
-        const skilledInfoNotif = await SkilledInfo.findOne({ _id: req.skilledInfo._id });
-        const skilledUserName = skilledInfoNotif.username;
-        const notification = await Notification.create({
-            skilled_id: req.skilledInfo._id,
-            message: `${skilledUserName} has requested OTP to verify address.`,
-            urlReact:`/temporary/${skilledUserName}`
-        });
 
         return res.status(201).send({ message: 'Verified Successsfully!'})
     }
