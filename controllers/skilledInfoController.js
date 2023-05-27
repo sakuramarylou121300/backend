@@ -361,7 +361,7 @@ const updateSkilledAddress = async(req, res) =>{
         const notification = await Notification.create({
             skilled_id: req.skilledInfo._id,
             message: `${skilledUserName} requested OTP.`,
-            urlReact:`/temporary/${skilledUserName}`
+            urlReact:`/viewSkilled`
         });
         //success
         res.status(200).json(skilledInfo)
@@ -399,7 +399,7 @@ const generateOTP = async(req, res) =>{
         const notification = await Notification.create({
             skilled_id: req.skilledInfo._id,
             message: `${skilledUserName} requested OTP.`,
-            urlReact:`/temporary/${skilledUserName}`
+            urlReact:`/viewSkilled`
         });
 
         res.status(200).json({ message: 'Request Sent. Your requested OTP will be send via snail mail.'})

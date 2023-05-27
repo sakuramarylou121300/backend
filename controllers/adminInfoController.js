@@ -1016,13 +1016,18 @@ const adminUpdateExperience = async (req, res) => {
         const skilledInfo = await SkilledInfo.findOne({ _id: skilled_id });
         const username = skilledInfo.username;
         const contactNo = skilledInfo.contact;
+
+        //   get the skill name of the skill
+        const skill = expNotif.categorySkill;
+        const adminSkill = await AdminSkill.findOne({ _id: skill });
+        const skillName = adminSkill.skill;
         console.log(contactNo);
   
         // Create a notification after updating creating barangay
         const notification = await Notification.create({
             skilled_id,
             message: messageNotif,
-            urlReact: `/profileSkilled/${username}`,
+            urlReact: `/profileSkilled/${skillName}`,
         });
   
         res.status(200).json({ message: 'Successfully updated.' });
