@@ -49,7 +49,7 @@ router.patch('/delete', requireAuth, deleteSkilledInfo)
 
 // this is for the address
 router.get('/generateOTP', localVariables, requireAuth, generateOTP)
-router.get('/verifyOTP', requireAuth, verifyOTP)
+router.patch('/verifyOTP', requireAuth, verifyOTP)
 
 router.put('/update/account', requireAuth, skilledUpdateSkilledAccount)
 router.put('/update/account/not', requireAuth, skilledUpdateNotVerifiedUsers)
