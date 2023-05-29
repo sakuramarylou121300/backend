@@ -189,7 +189,7 @@ const getAllExpSkill = async(req, res)=>{
         const skilled_id = req.skilledInfo._id
 
         // Find skilled_id document based on username
-        const skillIdDoc = await AdminSkill.find({ 
+        const skillIdDoc = await AdminSkill.findOne({ 
             skill: skill});
             console.log(skillIdDoc)
 
