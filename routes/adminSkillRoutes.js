@@ -4,7 +4,9 @@ const {
     getAllSkill,
     getOneSkill,
     updateSkill,
-    deleteSkill
+    deleteSkill,
+    getAllSkillDeleted,
+    restoreSkill
 } = require('../controllers/adminSkillController')
 
 const adminAuth = require('../middleware/adminAuth')
@@ -20,6 +22,7 @@ router.get('/getAll/skilledSkill', getAllSkill)
 router.get('/getOne/:id', adminAuth, adminControlAdmin, getOneSkill)
 router.put('/update/:id', adminAuth, adminControlAdmin, updateSkill)
 router.patch('/delete/:id', adminAuth, adminControlAdmin, deleteSkill)
-
+router.get('/deleted/:skill', adminAuth, adminControlAdmin, getAllSkillDeleted)
+router.patch('/restore/:id', adminAuth, adminControlAdmin, restoreSkill)
 //export
 module.exports = router

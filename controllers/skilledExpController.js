@@ -189,9 +189,9 @@ const getAllExpSkill = async(req, res)=>{
         const skilled_id = req.skilledInfo._id
 
         // Find skilled_id document based on username
-        const skillIdDoc = await AdminSkill.findOne({ 
-            skill: skill,
-            skilled_id});
+        const skillIdDoc = await AdminSkill.find({ 
+            skill: skill});
+            console.log(skillIdDoc)
 
         // Check if skilled_id exists for the given username
         if (!skillIdDoc) {
@@ -204,7 +204,7 @@ const getAllExpSkill = async(req, res)=>{
             skilled_id, 
             categorySkill: skillIdDoc._id,
             isDeleted: 0,
-            isExpired:{$ne: 1},})
+            isExpired:{$ne: 1}})
         .sort({createdAt: -1})
         .populate('skilled_id')
         .populate({
@@ -213,6 +213,8 @@ const getAllExpSkill = async(req, res)=>{
             select: 'reason',
             options: { lean: true },
         })
+        console.log(skillIdDoc._id)
+        console.log(skilledExp)
         res.status(200).json(skilledExp)
     }
     catch(error){

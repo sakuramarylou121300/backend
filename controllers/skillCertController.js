@@ -149,8 +149,7 @@ const getAllCertSkill = async(req, res)=>{
 
         // Find skilled_id document based on username
         const skillIdDoc = await AdminSkill.findOne({ 
-            skill: skill,
-            skilled_id});
+            skill: skill});
 
         // Check if skilled_id exists for the given username
         if (!skillIdDoc) {

@@ -10,12 +10,22 @@ const createSkill = async(req, res)=>{
         //search if existing
         const skillCheck = await AdminSkill.findOne({
             skill:skill,
-            isDeleted: 0
+            isDeleted:0
         })
 
         if(skillCheck){
             return res.status(400).json({error: "Skill already exists."})
         }
+
+        const skillCheckDeleted = await AdminSkill.findOne({
+            skill:skill,
+            isDeleted:1
+        })
+
+        if(skillCheckDeleted){
+            return res.status(400).json({error: `The skill that you have entered has been deleted. Do you want to restore it?`})
+        }
+
         //create new skill
         const newSkill = new AdminSkill({skill})
         await newSkill.save()
@@ -105,10 +115,45 @@ const deleteSkill = async(req, res)=>{
 
 }
 
+//RESTORE
+const getAllSkillDeleted = async(req, res)=>{
+    try{
+        const { skill } = req.params;
+        const adminSkill = await AdminSkill.find({skill, isDeleted: 1}).sort({skill: 1})
+        res.status(200).json(adminSkill)
+    }
+    catch(err){
+        return res.status(500).json({messg: err.message})
+    }
+}
+
+const restoreSkill = async(req, res)=>{
+    const {id} = req.params
+    
+    //check if id is not existing
+    if(!mongoose.Types.ObjectId.isValid(id)){
+        return res.status(404).json({error: 'Invalid id'})
+    }
+
+    //delete query
+    const adminSkill = await AdminSkill.findOneAndUpdate({_id: id},
+        {isDeleted:0})
+    
+    //check if not existing
+    if (!adminSkill){
+        return res.status(404).json({error: 'Skill not found'})
+    }
+
+    res.status(200).json(adminSkill)
+
+}
+
 module.exports = {
     createSkill,
     getAllSkill,
     getOneSkill,
     updateSkill,
-    deleteSkill
+    deleteSkill,
+    getAllSkillDeleted,
+    restoreSkill
 }

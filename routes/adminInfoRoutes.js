@@ -71,7 +71,9 @@ const{
     getAllSkillTitle,
     getOneTitle,
     updateSkillTitle,
-    deleteTitle
+    deleteTitle,
+    getAllSkillDeleted,
+    restoreSkill
 } = require('../controllers/skillTitleController')
 
 const{
@@ -178,7 +180,8 @@ router.get('/getAll/skillTitle/:skill_id', adminAuth, adminControlSkilled, getAl
 router.get('/getOne/title/:id', adminAuth, adminControlSkilled, getOneTitle)
 router.patch('/update/title/:id', adminAuth, adminControlSkilled, updateSkillTitle)
 router.patch('/delete/title/:id', adminAuth, adminControlSkilled, deleteTitle)
-
+router.get('/deleted/title/:skill_id/:title', adminAuth, adminControlAdmin, getAllSkillDeleted)
+router.patch('/restore/title/:id', adminAuth, adminControlAdmin, restoreSkill)
 //public
 router.get('/getAll/skillTitle/:skill_id', requireAuth, getAllSkillTitle)
 
