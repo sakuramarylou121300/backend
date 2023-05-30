@@ -481,51 +481,51 @@ const adminUpdateSkilled = async(req, res) =>{
 }
 
 const adminDeleteSkilled = async (req, res) => {
-    const { message } = req.body
+    const message = req.body.message;
   
     try {
-      await SkilledInfo.updateOne({ _id: req.params.id }, { $unset: { message: 1 } })
-      const adminInfo = await SkilledInfo.findOneAndUpdate(
-        { _id: req.params.id },
-        {
-            $push: { message },
-            $set: { isDeleted:1 }
-        },
-        { new: true }
-      )
-      //notification
-      const adminSkilledNotif = await SkilledInfo.findOne({ _id: req.params.id })
-    //   .populate('message');
-      const messageIds = adminSkilledNotif.message.map(msg => msg.message)
-      let messageNotif = '';
-      let isDeletedValue;
+        const hasDuplicates = message.some((obj, index) => {
+            if (obj.message.trim() === '') {
+                throw new Error('Please enter a reason.');
+            }
+
+            let foundDuplicate = false;
+            message.forEach((innerObj, innerIndex) => {
+            if (index !== innerIndex && obj.message === innerObj.message) {
+                foundDuplicate = true;
+            }
+            });
+            return foundDuplicate;
+        });
   
-        isDeletedValue = 'deleted';
-        
-       //validation
-       const isEmptyMessage = message.some((obj) => obj.message === "");
-       if (isEmptyMessage) {
-       return res.status(400).json({ error: 'Please select a reason.' });
-       }
-   
-       // Check for duplicate messages in request body
-       const hasDuplicates = message.some((obj, index) => {
-           let foundDuplicate = false;
-           message.forEach((innerObj, innerIndex) => {
-               if (index !== innerIndex && obj.message === innerObj.message) {
-                   foundDuplicate = true;
-               }
-           });
-           return foundDuplicate;
-       });
-       
-       if (hasDuplicates) {
-           return res.status(400).json({ error: 'Please remove repeating reason.' });
-       }
-        const messages = await Promise.all(messageIds.map(async (msgId) => {
-            const msg = await ReasonDeact.findOne({ _id: msgId });
-            return msg.reason;
-        }));
+        if (hasDuplicates) {
+            return res.status(400).json({ error: 'Please remove repeating reason.' });
+        }
+        await SkilledInfo.updateOne({ _id: req.params.id }, { $unset: { message: 1 } })
+        const skilledInfo = await SkilledInfo.findOneAndUpdate(
+            { _id: req.params.id },
+            {
+                $push: { message },
+                $set: { isDeleted:1 }
+            },
+            { new: true }
+        )
+        //notification
+        const adminSkilledNotif = await SkilledInfo.findOne({ _id: req.params.id })
+        .populate('message');
+        console.log(adminSkilledNotif)
+        const messageIds = adminSkilledNotif.message.map(msg => msg.message)
+        let messageNotif = '';
+        let isDeletedValue  = 'deleted';
+            const messages = await Promise.all(
+                messageIds.map(async (msgId) => {
+                    if (msgId) {
+                    const msg = await ReasonDeact.findOne({ _id: msgId });
+                    return msg.reason;
+                    }
+                    return null;
+                })
+            );
             messageNotif = `Your account has been ${isDeletedValue} because of ${messages.join(', ')}.`;
   
     const skilled_id = adminSkilledNotif._id;
