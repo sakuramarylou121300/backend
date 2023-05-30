@@ -20,14 +20,22 @@ const createSkilledNClearance = async(req, res)=>{
             return res.status(400).json({error: 'Please fill in all the blank fields.', emptyFields})
         }
 
-        if (!req.file) {
-            return res.status(400).json({error: 'Please upload your nbi clearance photo.'})
+        //check if the photo field is empty
+        if (!req.files || req.files.length === 0) {
+            return res.status(400).json({error: 'Please upload a photo either local or international NBI clearance.'});
+        }
+
+        //check if the photo is greater than 2
+        if (!req.files || req.files.length >=3) {
+            return res.status(400).json({error: 'Only two photo is allowed either local or international NBI clearance.'});
         }
 
         // Check if file type is supported
         const supportedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
-        if (!supportedTypes.includes(req.file.mimetype)) {
-            return res.status(400).json({error: 'File type not supported. Please upload an image in PNG, JPEG, or JPG format.'})
+        for (let i = 0; i < req.files.length; i++) {
+            if (!supportedTypes.includes(req.files[i].mimetype)) {
+                return res.status(400).json({ error: `File type not supported. Please upload an image in PNG, JPEG, or JPG format. File ${i + 1} is not supported.` });
+            }
         }
 
         // Convert the validUntil date string to a Date object
@@ -50,13 +58,22 @@ const createSkilledNClearance = async(req, res)=>{
             return res.status(400).json({error: "NBI Clearance already exists."})
         }
         //create new skill
-        result = await cloudinary.uploader.upload(req.file.path)
+        let uploadedPhotos = [];
+
+        // Loop through uploaded files and upload to cloudinary
+        for (let file of req.files) {
+            let result = await cloudinary.uploader.upload(file.path);
+            uploadedPhotos.push({ url: result.secure_url, public_id: result.public_id });
+        }
+
+        // Create new SkilledExp object
         let skilledNClearance = new SkilledNClearance({
             nClearanceExp,
-            photo: result.secure_url,     
-            cloudinary_id: result.public_id,
-            skilled_id
-        })
+            skilled_id,
+            photo: uploadedPhotos,
+            cloudinary_id: uploadedPhotos[0].public_id // Use the public ID of the first photo in the array
+        });
+
         await skilledNClearance.save()
 
          // Get the name of the skilled user
@@ -152,14 +169,23 @@ const updateSkilledNClearance  = async(req, res) =>{
     try{ 
         const skilled_id = req.skilledInfo._id
         let skilledNClearance = await SkilledNClearance.findById(req.params.id)  
-        if (!req.file) {
-            return res.status(400).json({error: 'Please upload your nbi clearance photo.'})
+        
+        //check if the photo field is empty
+        if (!req.files || req.files.length === 0) {
+            return res.status(400).json({error: 'Please upload a photo either local or international NBI clearance.'});
+        }
+
+        //check if the photo is greater than 2
+        if (!req.files || req.files.length >=3) {
+            return res.status(400).json({error: 'Only two photo is allowed either local or international NBI clearance.'});
         }
 
         // Check if file type is supported
         const supportedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
-        if (!supportedTypes.includes(req.file.mimetype)) {
-            return res.status(400).json({error: 'File type not supported. Please upload an image in PNG, JPEG, or JPG format.'})
+        for (let i = 0; i < req.files.length; i++) {
+            if (!supportedTypes.includes(req.files[i].mimetype)) {
+                return res.status(400).json({ error: `File type not supported. Please upload an image in PNG, JPEG, or JPG format. File ${i + 1} is not supported.` });
+            }
         }
 
         const trueNbi = await SkilledNClearance.findOne({
@@ -193,20 +219,29 @@ const updateSkilledNClearance  = async(req, res) =>{
             });
         }
 
-        //remove the recent image
-        await cloudinary.uploader.destroy(skilledNClearance.cloudinary_id)
-        //upload the new image
-        let result
-        if(req.file){
-            result = await cloudinary.uploader.upload(req.file.path)
-        }
-        const data = {
+        // remove the recent images
+        await Promise.all(
+            skilledNClearance.photo.map(async (nbiPhoto) => {
+            await cloudinary.uploader.destroy(nbiPhoto.public_id);
+            })
+        );
+  
+        // upload the new images
+        let uploadedPhotos = await Promise.all(
+            req.files.map(async (file) => {
+            let result = await cloudinary.uploader.upload(file.path);
+            return { url: result.secure_url, public_id: result.public_id };
+            })
+        );
+  
+        let data = {
             nClearanceExp: req.body.nClearanceExp || skilledNClearance.nClearanceExp,
-            photo: result?.secure_url || skilledNClearance.photo,
-            cloudinary_id: result?.public_id || skilledNClearance.cloudinary_id,
+            photo: uploadedPhotos.length > 0 ? uploadedPhotos : skilledNClearance.photo,
+            cloudinary_id: uploadedPhotos.length > 0 ? uploadedPhotos[0].public_id : skilledNClearance.cloudinary_id,
             nClearanceIsVerified: "pending",
-            message: ""
-        }
+            message: []
+        };
+
 
         skilledNClearance = await SkilledNClearance.findByIdAndUpdate(req.params.id, 
             data, {new: true})

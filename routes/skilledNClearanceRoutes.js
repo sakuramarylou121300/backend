@@ -14,11 +14,11 @@ const {requireAuth} = require('../middleware/requireAuth')
 //instance of router
 router = express.Router()
 
-router.post('/post', requireAuth, upload.single("photo"), createSkilledNClearance)
+router.post('/post', requireAuth, upload.array("photo"), createSkilledNClearance)
 router.get('/getAll/', requireAuth, getAllSkilledNClearance)
 router.get('/getAll/expired', requireAuth, getAllExpiredNClearance)
 router.get('/getOne/:id', requireAuth, getOneSkilledNClearance)
-router.patch('/update/:id', requireAuth, upload.single("photo"), updateSkilledNClearance)
+router.patch('/update/:id', requireAuth, upload.array("photo"), updateSkilledNClearance)
 router.patch('/delete/:id', requireAuth, deleteSkilledNClearance)
 
 // Error handling middleware

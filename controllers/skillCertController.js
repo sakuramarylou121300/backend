@@ -291,7 +291,7 @@ const updateCertificate = async(req,res)=>{
             photo: result?.secure_url || certificate.photo,
             cloudinary_id: result?.public_id || certificate.cloudinary_id,
             skillIsVerified: "pending",
-            message:""
+            message:[]
         }
 
         certificate = await Certificate.findByIdAndUpdate(req.params.id, 

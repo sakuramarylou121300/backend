@@ -219,7 +219,7 @@ const updateSkilledBClearance  = async(req, res) =>{
             photo: result?.secure_url || skilledBClearance.photo,
             cloudinary_id: result?.public_id || skilledBClearance.cloudinary_id,
             bClearanceIsVerified: "pending",
-            message: ""
+            message: []
         }
 
         skilledBClearance = await SkilledBClearance.findByIdAndUpdate(req.params.id, 

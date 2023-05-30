@@ -11,10 +11,10 @@ const messageSchema = new Schema({
 })
 
 const skilledNClearance = new Schema({
-    photo:{
-        type: String,
-        required: true,
-    },
+    photo: [{
+        url: { type: String, required: true },
+        public_id: { type: String, required: true },
+    }],
     cloudinary_id:{
         type: String
     },

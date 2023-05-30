@@ -357,7 +357,7 @@ const updateExp = async (req, res) => {
             photo: uploadedPhotos.length > 0 ? uploadedPhotos : skilledExp.photo,
             cloudinary_id: uploadedPhotos.length > 0 ? uploadedPhotos[0].public_id : skilledExp.cloudinary_id,
             expIsVerified: "pending",
-            message: ""
+            message: []
         };
   
         const updatedSkilledExp = await SkilledExp.findByIdAndUpdate(
