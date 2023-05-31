@@ -4,6 +4,7 @@ const SkilledInfo = require('../models/skilledInfo')
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
 const validator = require('validator')
+const otpGenerator = require('otp-generator')
 
 //to generate json webtoken
 const clientCreateToken = (_id)=>{
@@ -179,7 +180,6 @@ const updateClientPass = async(req, res) =>{
         res.status(400).json({error:error.message})
     }
 }
-
 //update client info
 const updateClientInfo = async(req, res) =>{
   
@@ -188,11 +188,29 @@ const updateClientInfo = async(req, res) =>{
         //get info
         const {lname,
                 fname,
-                mname} = req.body
+                mname,
+                contact} = req.body
 
         //validation
-        if (!lname || !fname || !mname){
+        if (!lname || !fname || !contact){
             throw Error('Please fill in all the blank fields.')
+        }
+
+        const clientInfoCheck = await ClientInfo.findOne({
+            fname: fname,
+            mname: mname,
+            lname: lname,
+            contact: contact,
+            isDeleted:{$in: [0, 1]}
+        })
+        if(clientInfoCheck){
+            return res.status(400).json({error: "You have entered the same personal information, please try again."})
+        }
+        //check if valid contact no
+        const mobileNumberRegex = /^09\d{9}$|^639\d{9}$/;
+        
+        if (!mobileNumberRegex.test(contact)) {
+            throw new Error('Please check your contact number.');
         }
 
         //update info
@@ -200,7 +218,8 @@ const updateClientInfo = async(req, res) =>{
             {_id: req.clientInfo._id},
             {lname,
             fname,
-            mname})
+            mname,
+            contact})
 
         //success
         res.status(200).json(clientInfo)
@@ -210,7 +229,17 @@ const updateClientInfo = async(req, res) =>{
         res.status(400).json({error:error.message})
     }
 }
+//delete acc
+const deleteClientInfo = async(req, res) =>{
 
+    try{
+        const clientInfo = await ClientInfo.findByIdAndDelete(req.clientInfo._id)
+        res.status(200).json(clientInfo)
+    }
+    catch(error){
+        res.status(400).json({error:error.message})
+    }
+}
 const updateClientAddress = async(req, res) =>{
   
     try{
@@ -243,7 +272,7 @@ const updateClientAddress = async(req, res) =>{
 
         //update info
         const clientInfo = await ClientInfo.findOneAndUpdate(
-            {_id: req.skilledInfo._id},
+            {_id: req.clientInfo._id},
             {houseNo,
             street,
             barangayAddr,
@@ -253,6 +282,13 @@ const updateClientAddress = async(req, res) =>{
             addIsVerified:0
         })
 
+        req.app.locals.OTP = await otpGenerator.generate(8, {specialChars: false})
+
+        const clientInfoAdd = await ClientInfo.findOneAndUpdate({ _id: req.clientInfo._id },
+            { addIsVerified: 0, otp: req.app.locals.OTP }
+        );
+
+
         //success
         res.status(200).json(clientInfo)
     }
@@ -261,18 +297,6 @@ const updateClientAddress = async(req, res) =>{
         res.status(400).json({error:error.message})
     }
 }
-//delete acc
-const deleteClientInfo = async(req, res) =>{
-
-    try{
-        const clientInfo = await ClientInfo.findByIdAndDelete(req.clientInfo._id)
-        res.status(200).json(clientInfo)
-    }
-    catch(error){
-        res.status(400).json({error:error.message})
-    }
-}
-
 const generateOTP = async(req, res) =>{
 
     try{
@@ -281,13 +305,13 @@ const generateOTP = async(req, res) =>{
         const clientInfo = await ClientInfo.findOneAndUpdate({ _id: req.clientInfo._id },
             { addIsVerified: 0, otp: req.app.locals.OTP }
         );
-        res.status(200).json({ message: 'Request Sent.'})
+
+        res.status(200).json({ message: 'Request Sent. Your requested OTP will be send via snail mail.'})
     }
     catch(error){
         res.status(400).json({error:error.message})
     }
 }
-
 const verifyOTP = async(req, res) =>{
 
     try{
@@ -295,6 +319,9 @@ const verifyOTP = async(req, res) =>{
        
         const clientFindOTP = await ClientInfo.findOne({ _id: req.clientInfo._id })
         clientOTP = clientFindOTP.otp
+        if (clientOTP === "") {
+            return res.status(400).json({ error: 'No OTP found. Please request for OTP.' })
+        }
         if (otp !== clientOTP) {
 
             const otpReset = await ClientInfo.findOneAndUpdate(
@@ -314,7 +341,6 @@ const verifyOTP = async(req, res) =>{
         res.status(400).json({error:error.message})
     }
 }
-
 module.exports = {
     clientLogIn,
     clientSignUp,
@@ -322,6 +348,8 @@ module.exports = {
     updateClientUsername,
     updateClientPass,
     updateClientInfo,
+    deleteClientInfo,
     updateClientAddress,
-    deleteClientInfo
+    generateOTP,
+    verifyOTP
 }

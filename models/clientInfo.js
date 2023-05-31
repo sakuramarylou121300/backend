@@ -103,16 +103,6 @@ const clientInfoSchema = new Schema({
 },
 {timestamps: true})
 
-// clientInfoSchema.virtual('skillBarangay', {
-//     ref: 'SkilledBClearance',
-//     localField: '_id',
-//     foreignField: 'skilled_id'
-// });
-// clientInfoSchema.virtual('skillNbi', {
-//     ref: 'SkilledNClearance',
-//     localField: '_id',
-//     foreignField: 'skilled_id'
-// });
 //static sign up method
 //when using this, suggest to use regular function
 clientInfoSchema.statics.signup = async function (
@@ -131,8 +121,8 @@ clientInfoSchema.statics.signup = async function (
 ){
     // await userExists(username);
     //validation
-    if (!username || !password || !lname || !fname || !contact || 
-        !houseNo || !street || !barangayAddr || !cityAddr || !provinceAddr || !regionAddr){
+    if (!username || !password || !lname || !fname || !contact || !street || !barangayAddr 
+        || !cityAddr || !provinceAddr || !regionAddr){
         throw Error('Please fill in all the blank fields.')
     }
 

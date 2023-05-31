@@ -6,7 +6,7 @@ const {
     updateContact,
     deleteContact
 } = require('../controllers/clientContactController')
-const clientRequireAuth = require('../middleware/clientRequireAuth')
+const {clientRequireAuth} = require('../middleware/clientRequireAuth')
 
 //instance of router
 router = express.Router()

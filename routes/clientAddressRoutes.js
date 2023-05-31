@@ -6,7 +6,7 @@ const {
     updateAddress,
     deleteAddress
 } = require('../controllers/clientAddressController')
-const clientRequireAuth = require('../middleware/clientRequireAuth')
+const {clientRequireAuth} = require('../middleware/clientRequireAuth')
 
 //instance of router
 router = express.Router()
