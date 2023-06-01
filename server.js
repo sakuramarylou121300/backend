@@ -37,6 +37,8 @@ const skilledBillRoutes = require('./routes/skilledBillRoutes')
 
 //CLIENT
 const clientInfoRoutes = require('./routes/clientInfoRoutes')
+const clientBClearanceRoutes = require('./routes/clientBClearanceRoutes')
+const clientNClearanceRoutes = require('./routes/clientNClearanceRoutes')
 const clientContactRoutes = require('./routes/clientContactRoutes')
 const clientAddressRoutes = require('./routes/clientAddressRoutes')
 const jobRoutes = require('./routes/jobRoutes')
@@ -111,6 +113,8 @@ app.use('/api/skilledBill', skilledBillRoutes)
 
 //CLIENT
 app.use('/api/clientInfo', clientInfoRoutes)
+app.use('/api/clientBClearance', clientBClearanceRoutes)
+app.use('/api/clientNClearance', clientNClearanceRoutes)
 app.use('/api/clientContact', clientContactRoutes)
 app.use('/api/clientAddress', clientAddressRoutes)
 app.use('/api/jobs', jobRoutes)
