@@ -78,6 +78,14 @@ const getClientInfo = async(req, res) =>{
     try{
         const clientInfo = await ClientInfo.findById(req.clientInfo._id)
         .select("-password")
+        .populate({
+            path: 'clientBarangay',
+            match: { isDeleted: 0} 
+        })
+        .populate({
+            path: 'clientNbi',
+            match: { isDeleted: 0} 
+        })
         res.status(200).json(clientInfo)
     }
     catch(error){

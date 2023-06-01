@@ -19,6 +19,10 @@ const{
     adminGetOneSkilled,
     adminUpdateSkilled,
     adminDeleteSkilled,
+    adminGetAllClient,
+    adminGetOneClient,
+    adminUpdateClient,
+    adminDeleteClient,
     adminGetAllSkill,
     adminGetAllExpSkilledDetail,
     adminGetAllCertSkilledDetail,
@@ -48,7 +52,7 @@ const{
     adminUpdateSkilledBill,
     adminUpdateSkilledAccount,
     adminUpdateSkilledAccountNot, 
-    adminEditSkilledAddress,
+    adminEditSkilledAddress
 } = require('../controllers/adminInfoController')
 
 const{
@@ -209,6 +213,11 @@ router.get('/getOne/Nbi/:id', adminAuth, adminControlSkilled, getOneSkilledNClea
 router.patch('/update/Nbi/:id', adminAuth, adminControlSkilled, adminUpdateNbi)
 router.patch('/delete/Nbi/:id', adminAuth, adminControlSkilled, deleteSkilledNClearance)
 
+//CLIENT INFO
+router.get('/getAll/Client', adminAuth, adminControlSkilled, adminGetAllClient)
+router.get('/getOne/Client/:id', adminAuth, adminControlSkilled, adminGetOneClient)
+router.patch('/update/Client/:id', adminAuth, adminControlSkilled, adminUpdateClient)
+router.patch('/delete/Client/:id', adminAuth, adminControlSkilled, adminDeleteClient)
 //NOTIFICATION
 router.get('/getAll/Notification/', adminAuth, getAllNotification)
 router.patch('/delete/Notification/:id', adminAuth, adminControlSkilled, deleteNotification)

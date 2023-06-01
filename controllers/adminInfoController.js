@@ -1,9 +1,12 @@
 const AdminInfo = require('../models/adminInfo')   
 const SkilledInfo = require('../models/skilledInfo')
+const ClientInfo = require('../models/clientInfo')
 const Experience = require('../models/skilledExp')
 const Certificate = require('../models/skillCert')
 const Barangay = require('../models/skilledBClearance')
+const ClientBarangay = require('../models/clientBClearance')
 const Nbi = require('../models/skilledNClearance')
+const ClientNbi = require('../models/clientNClearance')
 const Skill = require('../models/skill')
 const AdminSkill = require('../models/adminSkill')
 const Notification = require('../models/skilledNotification')
@@ -405,7 +408,7 @@ const deleteAdminInfo = async(req, res) =>{
         res.status(400).json({error:error.message})
     }
 }
-//DEPENDING ON THE ROLE OF THE ADMIN
+//DEPENDING ON THE ROLE OF THE ADMIN SKILLED
 const adminGetAllSkilled = async(req, res)=>{
 
     try{
@@ -541,7 +544,128 @@ const adminDeleteSkilled = async (req, res) => {
       }
 }
 
-//SORT BY RECENTLY ADDED
+//DEPENDING ON THE ROLE OF THE ADMIN CLIENT
+const adminGetAllClient = async(req, res)=>{
+
+    try{
+        //get all query
+        const clientInfo = await ClientInfo.find({isDeleted: 0}).sort({createdAt: -1})
+        .select("-password")
+        .populate({
+            path: 'clientBarangay',
+            match: { isDeleted: 0} 
+        })
+        .populate({
+            path: 'clientNbi',
+            match: { isDeleted: 0} 
+        })
+        res.status(200).json(clientInfo)
+    }
+    catch(error){
+        res.status(404).json({error: error.message})
+    }  
+}
+const adminGetOneClient = async(req, res)=>{
+    const {id} = req.params  
+
+     //check if id is not existing
+     if(!mongoose.Types.ObjectId.isValid(id)){
+        return res.status(404).json({error: 'Invalid id'})
+    }
+
+    //find query
+    const clientInfo = await ClientInfo.findById({_id: id})
+
+    //check if not existing
+    if (!clientInfo){
+        return res.status(404).json({error: 'Client not found'})
+    }
+
+    res.status(200).json(clientInfo)   
+
+}
+const adminUpdateClient = async(req, res) =>{
+    const {id} = req.params    
+
+    //check if id is not existing
+    if(!mongoose.Types.ObjectId.isValid(id)){
+        return res.status(404).json({error: 'Invalid id'})
+    }
+
+     //delete query
+     const clientInfo = await ClientInfo.findOneAndUpdate({_id: id},{
+         ...req.body //get new value
+     })
+    
+     //check if not existing
+     if (!clientInfo){
+        return res.status(404).json({error: 'Client not found'})
+    }
+
+    res.status(200).json(clientInfo)
+}
+const adminDeleteClient = async (req, res) => {
+    // const message = req.body.message;
+  
+    try {
+        // const hasDuplicates = message.some((obj, index) => {
+        //     if (obj.message.trim() === '') {
+        //         throw new Error('Please enter a reason.');
+        //     }
+
+        //     let foundDuplicate = false;
+        //     message.forEach((innerObj, innerIndex) => {
+        //     if (index !== innerIndex && obj.message === innerObj.message) {
+        //         foundDuplicate = true;
+        //     }
+        //     });
+        //     return foundDuplicate;
+        // });
+  
+        // if (hasDuplicates) {
+        //     return res.status(400).json({ error: 'Please remove repeating reason.' });
+        // }
+        // await SkilledInfo.updateOne({ _id: req.params.id }, { $unset: { message: 1 } })
+        const clientInfo = await ClientInfo.findOneAndUpdate(
+            { _id: req.params.id },
+            {
+                // $push: { message },
+                $set: { isDeleted:1 }
+            },
+            { new: true }
+        )
+        //notification
+    //     const adminSkilledNotif = await SkilledInfo.findOne({ _id: req.params.id })
+    //     .populate('message');
+    //     console.log(adminSkilledNotif)
+    //     const messageIds = adminSkilledNotif.message.map(msg => msg.message)
+    //     let messageNotif = '';
+    //     let isDeletedValue  = 'deleted';
+    //         const messages = await Promise.all(
+    //             messageIds.map(async (msgId) => {
+    //                 if (msgId) {
+    //                 const msg = await ReasonDeact.findOne({ _id: msgId });
+    //                 return msg.reason;
+    //                 }
+    //                 return null;
+    //             })
+    //         );
+    //         messageNotif = `Your account has been ${isDeletedValue} because of ${messages.join(', ')}.`;
+  
+    // const skilled_id = adminSkilledNotif._id;
+    // // Create a notification after updating creating barangay
+    // const notification = await Notification.create({
+    //     skilled_id,
+    //     message: messageNotif,
+    //     urlReact:`/temporary`
+    // });
+      res.status(200).json({ message: 'Skilled Worker deactivated.'})
+      } catch (error) {
+          res.status(400).json({ error: error.message })
+      }
+}
+
+//SORT BY RECENTLY ADDED SKILLED
 const adminGetAllSkill = async(req, res)=>{
 
     try{
@@ -717,6 +841,84 @@ const adminGetAllNClearanceSkilledDetail = async(req, res)=>{
     }  
 }
 
+//SORT BY RECENTLY ADDED CLIENT
+const adminGetAllBClearanceClientDetail = async(req, res)=>{
+
+    try{
+        //get all query
+        const clientInfo = await ClientInfo
+        .find({idIsVerified: 0, isDeleted: 0, 
+        })
+        .select("-password")
+        .populate({
+            path: 'clientBarangay',
+            match: { isDeleted: 0},
+            options: { sort: { createdAt: -1 } } 
+        })
+        .lean() // Convert Mongoose Document to JS object
+        //count each skilled info skillCert unread
+        const clientInfoWithCountsAndLatestBarangayTimes  = clientInfo.map(info => {
+            const count = info.clientBarangay.filter(barangay => barangay.isRead === 0).length;
+            const latestBarangayTime = info.clientBarangay.length > 0 ? info.clientBarangay[0].createdAt : new Date(0);
+            return {...info, count, latestBarangayTime};
+        });
+      
+          const clientInfoSorted = clientInfoWithCountsAndLatestBarangayTimes.sort((a, b) => {
+            if (b.latestBarangayTime.getTime() - a.latestBarangayTime.getTime() !== 0) {
+              // sort by the latest skillCert createdAt time    
+              return b.latestBarangayTime - a.latestBarangayTime;
+            } else {
+              // if the latest skillCert createdAt time is the same,
+              // sort by the overall updatedAt time of the skilledInfo
+              return b.updatedAt - a.updatedAt;
+            }
+          });
+          
+        res.status(200).json(clientInfoSorted);     
+    }
+    catch(error){
+        res.status(404).json({error: error.message})
+    }  
+}
+const adminGetAllNClearanceClientDetail = async(req, res)=>{
+
+    try{
+        //get all query
+        const clientInfo = await ClientInfo
+        .find({idIsVerified: 0, isDeleted: 0, 
+        })
+        .select("-password")
+        .populate({
+            path: 'clientNbi',
+            match: { isDeleted: 0},
+            options: { sort: { createdAt: -1 } } 
+        })
+        .lean() // Convert Mongoose Document to JS object
+        //count each skilled info skillCert unread
+        const clientInfoWithCountsAndLatestNbiTimes  = clientInfo.map(info => {
+            const count = info.clientNbi.filter(nbi => nbi.isRead === 0).length;
+            const latestNbiTime = info.clientNbi.length > 0 ? info.clientNbi[0].createdAt : new Date(0);
+            return {...info, count, latestNbiTime};
+        });
+      
+          const clientInfoSorted = clientInfoWithCountsAndLatestNbiTimes.sort((a, b) => {
+            if (b.latestNbiTime.getTime() - a.latestNbiTime.getTime() !== 0) {
+              // sort by the latest skillCert createdAt time    
+              return b.latestNbiTime - a.latestNbiTime;
+            } else {
+              // if the latest skillCert createdAt time is the same,
+              // sort by the overall updatedAt time of the skilledInfo
+              return b.updatedAt - a.updatedAt;
+            }
+          });
+          
+        res.status(200).json(clientInfoSorted);     
+    }
+    catch(error){
+        res.status(404).json({error: error.message})
+    }  
+}
+
 //USERNAME GET ALL
 const adminGetAllSkilledExpDetail = async(req, res)=>{
     // const skilled_id = req.params.skilled_id;
@@ -871,6 +1073,86 @@ const adminGetAllSkilledNbiDetail = async(req, res)=>{
             {$set: { isRead: 1 } });
         var currentDate = new Date();//date today
         await Nbi.updateMany({ nClearanceExp: {$lt:currentDate} }, 
+            {$set: 
+                { nClearanceIsVerified: "false", isExpired: 1 } });
+        
+        res.status(200).json(nbi)
+    }
+    catch(error){
+        res.status(404).json({error: error.message})
+    }  
+}
+
+//USERNAME GET ALL CLIENT
+const adminGetAllClientBarangayDetail = async(req, res)=>{
+    const username = req.params.username;
+    try{
+        // Find skilled_id document based on username
+        const clientIdDoc = await ClientInfo.findOne({ username: username });
+
+        // Check if skilled_id exists for the given username
+        if (!clientIdDoc) {
+        return res.status(404).json({ error: 'Client not found' });
+        }
+        //get all query
+        const barangay = await ClientBarangay.find({
+            client_id: clientIdDoc._id,
+            isExpired:{$ne: 1}, 
+            isDeleted: 0})
+        .sort({updatedAt: -1})
+        .populate('skilled_id')
+        // .populate({
+        //     path: 'message.message',
+        //     model: 'Reason',
+        //     select: 'reason',
+        //     options: { lean: true },
+        // })
+        await ClientBarangay.updateMany({ 
+            client_id: clientIdDoc._id,
+            isRead:0 }, 
+            {$set: { isRead: 1 } });
+        
+        var currentDate = new Date();//date today
+        await ClientBarangay.updateMany({ bClearanceExp: {$lt:currentDate} }, 
+            {$set: 
+                { bClearanceIsVerified: "false", isExpired: 1 } });
+        
+        res.status(200).json(barangay)
+    }
+    catch(error){
+        res.status(404).json({error: error.message})
+    }  
+}
+
+const adminGetAllClientNbiDetail = async(req, res)=>{
+    const username = req.params.username;
+    try{
+        // Find skilled_id document based on username
+        const  clientIdDoc = await ClientInfo.findOne({ username: username });
+
+        // Check if skilled_id exists for the given username
+        if (!clientIdDoc) {
+        return res.status(404).json({ error: 'Client not found' });
+        }
+        //get all query
+        const nbi = await ClientNbi.find({
+            client_id: clientIdDoc._id,
+            isExpired:{$ne: 1}, 
+            isDeleted: 0})
+        .sort({updatedAt: -1})
+        .populate('client_id')
+        // .populate({
+        //     path: 'message.message',
+        //     model: 'Reason',
+        //     select: 'reason',
+        //     options: { lean: true },
+        // })
+        await Nbi.updateMany({ 
+            client_id: clientIdDoc._id,
+            isRead:0 }, 
+            {$set: { isRead: 1 } });
+        var currentDate = new Date();//date today
+        await ClientNbi.updateMany({ nClearanceExp: {$lt:currentDate} }, 
             {$set: 
                 { nClearanceIsVerified: "false", isExpired: 1 } });
         
@@ -1587,6 +1869,10 @@ module.exports = {
     adminGetOneSkilled,
     adminUpdateSkilled,
     adminDeleteSkilled,
+    adminGetAllClient,
+    adminGetOneClient,
+    adminUpdateClient,
+    adminDeleteClient,
     adminGetAllSkill,
     adminGetAllSkilledBill,
     adminGetAllExpSkilledDetail,

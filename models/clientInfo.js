@@ -103,6 +103,16 @@ const clientInfoSchema = new Schema({
 },
 {timestamps: true})
 
+clientInfoSchema.virtual('clientBarangay', {
+    ref: 'ClientBClearance',
+    localField: '_id',
+    foreignField: 'client_id'
+});
+clientInfoSchema.virtual('clientNbi', {
+    ref: 'ClientNClearance',
+    localField: '_id',
+    foreignField: 'client_id'
+});
 //static sign up method
 //when using this, suggest to use regular function
 clientInfoSchema.statics.signup = async function (
