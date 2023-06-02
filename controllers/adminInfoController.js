@@ -1737,6 +1737,25 @@ const adminGetAllSkilledDeact = async(req, res)=>{
         res.status(404).json({error: error.message})
     }  
 }
+const adminGetAllClientDeact = async(req, res)=>{
+
+    try{
+        //this is to find skill for specific user
+        //get all query
+        const clientInfo = await ClientInfo.find({isDeleted: 1})
+        .sort({updatedAt: -1})
+        .populate({
+            path: 'message.message',
+            model: 'ReasonDeact',
+            select: 'reason',
+            options: { lean: true },
+        })
+        res.status(200).json(clientInfo)
+    }
+    catch(error){
+        res.status(404).json({error: error.message})
+    }  
+}
 const adminGetAllSkilledCertDetailExpired = async(req, res)=>{
     const username = req.params.username;
     try{
@@ -1797,6 +1816,51 @@ const adminGetAllSkilledNbiDetailExpired = async(req, res)=>{
             isExpired:1, 
             isDeleted: 0}).sort({updatedAt: 1})
         .populate('skilled_id')
+        res.status(200).json(nbi)
+    }
+    catch(error){
+        res.status(404).json({error: error.message})
+    }  
+}
+//CLIENT EXP
+const adminGetAllClientBarangayDetailExpired = async(req, res)=>{
+    const username = req.params.username;
+    try{
+        // Find skilled_id document based on username
+        const clientIdDoc = await ClientInfo.findOne({ username: username });
+
+        // Check if skilled_id exists for the given username
+        if (!clientIdDoc) {
+        return res.status(404).json({ error: 'Client not found' });
+        }
+        //get all query
+        const barangay = await ClientBarangay.find({
+            client_id: clientIdDoc._id,
+            isExpired:1, 
+            isDeleted: 0}).sort({updatedAt: 1})
+        .populate('client_id')
+        res.status(200).json(barangay)
+    }
+    catch(error){
+        res.status(404).json({error: error.message})
+    }  
+}
+const adminGetAllClientNbiDetailExpired = async(req, res)=>{
+    const username = req.params.username;
+    try{
+        // Find skilled_id document based on username
+        const clientIdDoc = await ClientInfo.findOne({ username: username });
+
+        // Check if skilled_id exists for the given username
+        if (!clientIdDoc) {
+        return res.status(404).json({ error: 'Client not found' });
+        }
+        //get all query
+        const nbi = await ClientNbi.find({
+            client_id: clientIdDoc._id,
+            isExpired:1, 
+            isDeleted: 0}).sort({updatedAt: 1})
+        .populate('client_id')
         res.status(200).json(nbi)
     }
     catch(error){
@@ -1871,7 +1935,6 @@ const adminGetAllSkilledBarangayDeleted= async(req, res)=>{
         res.status(404).json({error: error.message})
     }  
 }
-
 const adminGetAllSkilledNbiDeleted = async(req, res)=>{
     const username = req.params.username;
     try{
@@ -1887,6 +1950,49 @@ const adminGetAllSkilledNbiDeleted = async(req, res)=>{
             skilled_id: skilledIdDoc._id,
             isDeleted: 1}).sort({updatedAt: 1})
         .populate('skilled_id')
+        res.status(200).json(nbi)
+    }
+    catch(error){
+        res.status(404).json({error: error.message})
+    }  
+}
+//CLIENT DELETED
+const adminGetAllClientBarangayDeleted= async(req, res)=>{
+    const username = req.params.username;
+    try{
+        // Find skilled_id document based on username
+        const clientIdDoc = await ClientInfo.findOne({ username: username });
+
+        // Check if skilled_id exists for the given username
+        if (!clientIdDoc) {
+        return res.status(404).json({ error: 'Client not found' });
+        }
+        //get all query
+        const barangay = await ClientBarangay.find({
+            client_id: clientIdDoc._id,
+            isDeleted: 1}).sort({updatedAt: 1})
+        .populate('client_id')
+        res.status(200).json(barangay)
+    }
+    catch(error){
+        res.status(404).json({error: error.message})
+    }  
+}
+const adminGetAllClientNbiDeleted = async(req, res)=>{
+    const username = req.params.username;
+    try{
+        // Find skilled_id document based on username
+        const clientIdDoc = await ClientInfo.findOne({ username: username });
+
+        // Check if skilled_id exists for the given username
+        if (!clientIdDoc) {
+        return res.status(404).json({ error: 'Client not found' });
+        }
+        //get all query
+        const nbi = await ClientNbi.find({
+            client_id: clientIdDoc._id,
+            isDeleted: 1}).sort({updatedAt: 1})
+        .populate('client_id')
         res.status(200).json(nbi)
     }
     catch(error){
@@ -2045,13 +2151,18 @@ module.exports = {
     adminUpdateNbiClient,
     updateExpIsRead,
     adminGetAllSkilledDeact,
+    adminGetAllClientDeact,
     adminGetAllSkilledCertDetailExpired,
     adminGetAllSkilledBarangayDetailExpired,
     adminGetAllSkilledNbiDetailExpired,
+    adminGetAllClientBarangayDetailExpired,
+    adminGetAllClientNbiDetailExpired,
     adminGetAllSkilledExpDeleted,
     adminGetAllSkilledCertDeleted,
     adminGetAllSkilledBarangayDeleted,
     adminGetAllSkilledNbiDeleted,
+    adminGetAllClientBarangayDeleted,
+    adminGetAllClientNbiDeleted,
     adminGetAllClientBarangayDetail,
     adminGetAllClientNbiDetail,
     reactivateSkilledInfo,

@@ -424,7 +424,8 @@ const getAllSkillCertTitle= async(req, res)=>{
         console.log(skillIdDoc)
         //get all query
         const title = await Title.find({
-            skill_id: skillIdDoc.skillName
+            skill_id: skillIdDoc.skillName,
+            isDeleted: 0
         })
         // .sort({updatedAt: 1})
 

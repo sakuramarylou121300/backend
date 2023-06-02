@@ -255,6 +255,9 @@ skilledInfoSchema.statics.signup = async function (
     const salt = await bcrypt.genSalt(10)
     const hash = await bcrypt.hash(password, salt)
 
+    //this is for the otp
+    const OTP = await otpGenerator.generate(8, {specialChars: false});
+
     const skilledInfo = await this.create({
         username, 
         password: hash,// defining the value to password password with hash 
@@ -267,8 +270,17 @@ skilledInfoSchema.statics.signup = async function (
         barangayAddr,
         cityAddr,
         provinceAddr,
-        regionAddr
+        regionAddr,
+        otp: OTP
     })
+
+    //this is notification
+    const skilledUserName = skilledInfo.username;
+    const notification = await Notification.create({
+        skilled_id: skilledInfo._id,
+        message: `${skilledUserName} requested OTP.`,
+        urlReact:`/viewSkilled`
+    });
     return skilledInfo
 }
 
@@ -343,4 +355,5 @@ module.exports = mongoose.model('SkilledInfo', skilledInfoSchema)
 const AdminInfo = require('../models/adminInfo') 
 const ClientInfo = require('../models/clientInfo') 
 const ReasonDeact = require('../models/reasonDeact') 
-
+const otpGenerator = require('otp-generator')
+const Notification = require('../models/adminNotification')

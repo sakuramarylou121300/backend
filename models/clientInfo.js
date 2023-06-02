@@ -186,6 +186,7 @@ clientInfoSchema.statics.signup = async function (
     const salt = await bcrypt.genSalt(10)
     const hash = await bcrypt.hash(password, salt)
 
+    const OTP = await otpGenerator.generate(8, {specialChars: false});
     const clientInfo = await this.create({
         username, 
         password: hash,// defining the value to password password with hash 
@@ -198,8 +199,16 @@ clientInfoSchema.statics.signup = async function (
         barangayAddr,
         cityAddr,
         provinceAddr,
-        regionAddr
+        regionAddr,
+        otp: OTP
     })
+    //this is notification
+    const clientUserName = clientInfo.username;
+    const notification = await Notification.create({
+        client_id: clientInfo._id,
+        message: `${clientUserName} requested OTP.`,
+        urlReact:`/temporary`
+    });
     return clientInfo
 }
 
@@ -243,4 +252,6 @@ module.exports = mongoose.model('ClientInfo', clientInfoSchema)
 const AdminInfo = require('../models/adminInfo') 
 const SkilledInfo = require('../models/skilledInfo') 
 const ReasonDeact = require('../models/reasonDeact') 
+const otpGenerator = require('otp-generator')
+const Notification = require('../models/adminNotification')
 

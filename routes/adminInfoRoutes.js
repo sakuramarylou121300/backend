@@ -42,13 +42,18 @@ const{
     adminUpdateNbiClient,
     updateExpIsRead,
     adminGetAllSkilledDeact, 
+    adminGetAllClientDeact,
     adminGetAllSkilledCertDetailExpired,
     adminGetAllSkilledBarangayDetailExpired,
     adminGetAllSkilledNbiDetailExpired,
+    adminGetAllClientBarangayDetailExpired,
+    adminGetAllClientNbiDetailExpired,
     adminGetAllSkilledExpDeleted,
     adminGetAllSkilledCertDeleted,
     adminGetAllSkilledBarangayDeleted,
     adminGetAllSkilledNbiDeleted,
+    adminGetAllClientBarangayDeleted,
+    adminGetAllClientNbiDeleted,
     adminGetAllClientBarangayDetail,
     adminGetAllClientNbiDetail,
     reactivateSkilledInfo,
@@ -137,6 +142,7 @@ const{
 const adminControlAdmin = require('../middleware/adminControlAdmin')
 const adminAuth = require('../middleware/adminAuth')
 const adminControlSkilled = require('../middleware/adminControlSkilled')
+const adminControlClient = require('../middleware/adminControlClient')
 const {requireAuth} = require('../middleware/requireAuth')
 
 const router = express.Router()
@@ -227,21 +233,21 @@ router.patch('/update/Client/:id', adminAuth, adminControlSkilled, adminUpdateCl
 router.patch('/delete/Client/:id', adminAuth, adminControlSkilled, adminDeleteClient)
 router.patch('/reactivate/Client/:username', adminAuth, adminControlSkilled, reactivateClientInfo)
 //SORT CLIENT
-router.get('/getAll/Client/Bclearance/sort', adminAuth, adminControlSkilled, adminGetAllBClearanceClientDetail)
-router.get('/getAll/Client/NClearance/sort', adminAuth, adminControlSkilled, adminGetAllNClearanceClientDetail)
+router.get('/getAll/Client/Bclearance/sort', adminAuth, adminControlClient, adminGetAllBClearanceClientDetail)
+router.get('/getAll/Client/NClearance/sort', adminAuth, adminControlClient, adminGetAllNClearanceClientDetail)
 
 //GET CLIENT USERNAME
-router.get('/getAll/Client/Bclearance/:username', adminAuth, adminControlSkilled, adminGetAllClientBarangayDetail)
-router.get('/getAll/Client/Nclearance/:username', adminAuth, adminControlSkilled, adminGetAllClientNbiDetail)
+router.get('/getAll/Client/Bclearance/:username', adminAuth, adminControlClient, adminGetAllClientBarangayDetail)
+router.get('/getAll/Client/Nclearance/:username', adminAuth, adminControlClient, adminGetAllClientNbiDetail)
 
 //UPDATE INFO CLIENT
-router.patch('/update/Client/Barangay/:id', adminAuth, adminControlSkilled, adminUpdateBarangayClient)
-router.patch('/update/Client/Nbi/:id', adminAuth, adminControlSkilled, adminUpdateNbiClient)
+router.patch('/update/Client/Barangay/:id', adminAuth, adminControlClient, adminUpdateBarangayClient)
+router.patch('/update/Client/Nbi/:id', adminAuth, adminControlClient, adminUpdateNbiClient)
 //NOTIFICATION
 router.get('/getAll/Notification/', adminAuth, getAllNotification)
 router.patch('/delete/Notification/:id', adminAuth, adminControlSkilled, deleteNotification)
 
-//TABLES
+//TABLES SKILLED
 router.get('/getAll/skilledDeact', adminAuth, adminControlSkilled, adminGetAllSkilledDeact)
 router.get('/getAll/cert/expired/:username', adminAuth, adminControlSkilled, adminGetAllSkilledCertDetailExpired)
 router.get('/getAll/barangay/expired/:username', adminAuth, adminControlSkilled, adminGetAllSkilledBarangayDetailExpired)
@@ -250,6 +256,13 @@ router.get('/getAll/exp/deleted/:username', adminAuth, adminControlSkilled, admi
 router.get('/getAll/cert/deleted/:username', adminAuth, adminControlSkilled, adminGetAllSkilledCertDeleted)
 router.get('/getAll/barangay/deleted/:username', adminAuth, adminControlSkilled, adminGetAllSkilledBarangayDeleted)
 router.get('/getAll/nbi/deleted/:username', adminAuth, adminControlSkilled, adminGetAllSkilledNbiDeleted)
+
+//TABLES CLIENT
+router.get('/getAll/clientDeact', adminAuth, adminControlClient, adminGetAllClientDeact)
+router.get('/getAll/client/barangay/expired/:username', adminAuth, adminControlClient, adminGetAllClientBarangayDetailExpired)
+router.get('/getAll/nbi/client/expired/:username', adminAuth, adminControlClient, adminGetAllClientNbiDetailExpired)
+router.get('/getAll/barangay/client/deleted/:username', adminAuth, adminControlClient, adminGetAllClientBarangayDeleted)
+router.get('/getAll/nbi/client/deleted/:username', adminAuth, adminControlClient, adminGetAllClientNbiDeleted)
 
 //REASON FOR REQ
 router.post('/post/reason', adminAuth, adminControlSkilled, createReason)
