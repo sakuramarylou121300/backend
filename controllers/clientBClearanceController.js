@@ -104,12 +104,12 @@ const getAllClientBClearance = async(req, res)=>{
             isDeleted: 0,
             isExpired:{$ne: 1}})
         .sort({updatedAt:-1})
-        // .populate({
-        //     path: 'message.message',
-        //     model: 'Reason',
-        //     select: 'reason',
-        //     options: { lean: true },
-        // })
+        .populate({
+            path: 'message.message',
+            model: 'Reason',
+            select: 'reason',
+            options: { lean: true },
+        })
         var currentDate = new Date();//date today
         await ClientBClearance.updateMany({ bClearanceExp: {$lt:currentDate}}, 
             {$set: 

@@ -225,6 +225,18 @@ router.get('/getAll/Client', adminAuth, adminControlSkilled, adminGetAllClient)
 router.get('/getOne/Client/:id', adminAuth, adminControlSkilled, adminGetOneClient)
 router.patch('/update/Client/:id', adminAuth, adminControlSkilled, adminUpdateClient)
 router.patch('/delete/Client/:id', adminAuth, adminControlSkilled, adminDeleteClient)
+router.patch('/reactivate/Client/:username', adminAuth, adminControlSkilled, reactivateClientInfo)
+//SORT CLIENT
+router.get('/getAll/Client/Bclearance/sort', adminAuth, adminControlSkilled, adminGetAllBClearanceClientDetail)
+router.get('/getAll/Client/NClearance/sort', adminAuth, adminControlSkilled, adminGetAllNClearanceClientDetail)
+
+//GET CLIENT USERNAME
+router.get('/getAll/Client/Bclearance/:username', adminAuth, adminControlSkilled, adminGetAllClientBarangayDetail)
+router.get('/getAll/Client/Nclearance/:username', adminAuth, adminControlSkilled, adminGetAllClientNbiDetail)
+
+//UPDATE INFO CLIENT
+router.patch('/update/Client/Barangay/:id', adminAuth, adminControlSkilled, adminUpdateBarangayClient)
+router.patch('/update/Client/Nbi/:id', adminAuth, adminControlSkilled, adminUpdateNbiClient)
 //NOTIFICATION
 router.get('/getAll/Notification/', adminAuth, getAllNotification)
 router.patch('/delete/Notification/:id', adminAuth, adminControlSkilled, deleteNotification)

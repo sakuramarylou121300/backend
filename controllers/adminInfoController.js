@@ -605,31 +605,31 @@ const adminUpdateClient = async(req, res) =>{
     res.status(200).json(clientInfo)
 }
 const adminDeleteClient = async (req, res) => {
-    // const message = req.body.message;
+    const message = req.body.message;
   
     try {
-        // const hasDuplicates = message.some((obj, index) => {
-        //     if (obj.message.trim() === '') {
-        //         throw new Error('Please enter a reason.');
-        //     }
+        const hasDuplicates = message.some((obj, index) => {
+            if (obj.message.trim() === '') {
+                throw new Error('Please enter a reason.');
+            }
 
-        //     let foundDuplicate = false;
-        //     message.forEach((innerObj, innerIndex) => {
-        //     if (index !== innerIndex && obj.message === innerObj.message) {
-        //         foundDuplicate = true;
-        //     }
-        //     });
-        //     return foundDuplicate;
-        // });
+            let foundDuplicate = false;
+            message.forEach((innerObj, innerIndex) => {
+            if (index !== innerIndex && obj.message === innerObj.message) {
+                foundDuplicate = true;
+            }
+            });
+            return foundDuplicate;
+        });
   
-        // if (hasDuplicates) {
-        //     return res.status(400).json({ error: 'Please remove repeating reason.' });
-        // }
-        // await SkilledInfo.updateOne({ _id: req.params.id }, { $unset: { message: 1 } })
+        if (hasDuplicates) {
+            return res.status(400).json({ error: 'Please remove repeating reason.' });
+        }
+        await ClientInfo.updateOne({ _id: req.params.id }, { $unset: { message: 1 } })
         const clientInfo = await ClientInfo.findOneAndUpdate(
             { _id: req.params.id },
             {
-                // $push: { message },
+                $push: { message },
                 $set: { isDeleted:1 }
             },
             { new: true }
@@ -659,7 +659,7 @@ const adminDeleteClient = async (req, res) => {
     //     message: messageNotif,
     //     urlReact:`/temporary`
     // });
-      res.status(200).json({ message: 'Skilled Worker deactivated.'})
+      res.status(200).json({ message: 'Client deactivated.'})
       } catch (error) {
           res.status(400).json({ error: error.message })
       }
@@ -1100,13 +1100,13 @@ const adminGetAllClientBarangayDetail = async(req, res)=>{
             isExpired:{$ne: 1}, 
             isDeleted: 0})
         .sort({updatedAt: -1})
-        .populate('skilled_id')
-        // .populate({
-        //     path: 'message.message',
-        //     model: 'Reason',
-        //     select: 'reason',
-        //     options: { lean: true },
-        // })
+        .populate('client_id')
+        .populate({
+            path: 'message.message',
+            model: 'Reason',
+            select: 'reason',
+            options: { lean: true },
+        })
         await ClientBarangay.updateMany({ 
             client_id: clientIdDoc._id,
             isRead:0 }, 
@@ -1141,12 +1141,12 @@ const adminGetAllClientNbiDetail = async(req, res)=>{
             isDeleted: 0})
         .sort({updatedAt: -1})
         .populate('client_id')
-        // .populate({
-        //     path: 'message.message',
-        //     model: 'Reason',
-        //     select: 'reason',
-        //     options: { lean: true },
-        // })
+        .populate({
+            path: 'message.message',
+            model: 'Reason',
+            select: 'reason',
+            options: { lean: true },
+        })
         await Nbi.updateMany({ 
             client_id: clientIdDoc._id,
             isRead:0 }, 
@@ -1535,30 +1535,30 @@ const adminUpdateBarangayClient = async (req, res) => {
     const { bClearanceIsVerified, message } = req.body
   
     try {
-        // // Check for duplicate messages in request body
-        // const hasDuplicates = message.some((obj, index) => {
-        //     if (obj.message.trim() === '') {
-        //         throw new Error('Please enter a reason.');
-        //     }
+        // Check for duplicate messages in request body
+        const hasDuplicates = message.some((obj, index) => {
+            if (obj.message.trim() === '') {
+                throw new Error('Please enter a reason.');
+            }
 
-        //     let foundDuplicate = false;
-        //     message.forEach((innerObj, innerIndex) => {
-        //     if (index !== innerIndex && obj.message === innerObj.message) {
-        //         foundDuplicate = true;
-        //     }
-        //     });
-        //     return foundDuplicate;
-        // });
+            let foundDuplicate = false;
+            message.forEach((innerObj, innerIndex) => {
+            if (index !== innerIndex && obj.message === innerObj.message) {
+                foundDuplicate = true;
+            }
+            });
+            return foundDuplicate;
+        });
   
-        // if (hasDuplicates) {
-        //     return res.status(400).json({ error: 'Please remove repeating reason.' });
-        // }
+        if (hasDuplicates) {
+            return res.status(400).json({ error: 'Please remove repeating reason.' });
+        }
 
-        // await ClientBarangay.updateOne({ _id: req.params.id }, { $unset: { message: 1 } })
+        await ClientBarangay.updateOne({ _id: req.params.id }, { $unset: { message: 1 } })
         const clientBarangay = await ClientBarangay.findOneAndUpdate(
             { _id: req.params.id },
             {
-                // $push: { message },
+                $push: { message },
                 $set: { bClearanceIsVerified }
             },
             { new: true }
@@ -1605,28 +1605,28 @@ const adminUpdateNbiClient = async (req, res) => {
   
     try {
         // Check for duplicate messages in the array
-        // const hasDuplicates = message.some((obj, index) => {
-        //     if (obj.message.trim() === '') {
-        //         throw new Error('Please enter a reason.');
-        //     }
-        //     let foundDuplicate = false;
-        //     message.forEach((innerObj, innerIndex) => {
-        //         if (index !== innerIndex && obj.message === innerObj.message) {
-        //             foundDuplicate = true;
-        //         }
-        //     });
-        //     return foundDuplicate;
-        // });
+        const hasDuplicates = message.some((obj, index) => {
+            if (obj.message.trim() === '') {
+                throw new Error('Please enter a reason.');
+            }
+            let foundDuplicate = false;
+            message.forEach((innerObj, innerIndex) => {
+                if (index !== innerIndex && obj.message === innerObj.message) {
+                    foundDuplicate = true;
+                }
+            });
+            return foundDuplicate;
+        });
         
-        // if (hasDuplicates) {
-        //     return res.status(400).json({ error: 'Please remove repeating reason.' });
-        // }
+        if (hasDuplicates) {
+            return res.status(400).json({ error: 'Please remove repeating reason.' });
+        }
 
-    //   await ClientNbi.updateOne({ _id: req.params.id }, { $unset: { message: 1 } })
+      await ClientNbi.updateOne({ _id: req.params.id }, { $unset: { message: 1 } })
       const nbi = await ClientNbi.findOneAndUpdate(
         { _id: req.params.id },
         {
-            // $push: { message },
+            $push: { message },
             $set: { nClearanceIsVerified }
         },
         { new: true }
