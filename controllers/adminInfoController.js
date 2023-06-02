@@ -1162,7 +1162,7 @@ const adminGetAllClientNbiDetail = async(req, res)=>{
         res.status(404).json({error: error.message})
     }  
 }
-//UPDATE INFO
+//UPDATE INFO SKILLED
 // const adminUpdateExperience = async (req, res) => {
 //   const { expIsVerified, message } = req.body
 
@@ -1530,6 +1530,144 @@ const adminUpdateNbi = async (req, res) => {
       }
 }
 
+//UPDATED INFO CLIENT
+const adminUpdateBarangayClient = async (req, res) => {
+    const { bClearanceIsVerified, message } = req.body
+  
+    try {
+        // // Check for duplicate messages in request body
+        // const hasDuplicates = message.some((obj, index) => {
+        //     if (obj.message.trim() === '') {
+        //         throw new Error('Please enter a reason.');
+        //     }
+
+        //     let foundDuplicate = false;
+        //     message.forEach((innerObj, innerIndex) => {
+        //     if (index !== innerIndex && obj.message === innerObj.message) {
+        //         foundDuplicate = true;
+        //     }
+        //     });
+        //     return foundDuplicate;
+        // });
+  
+        // if (hasDuplicates) {
+        //     return res.status(400).json({ error: 'Please remove repeating reason.' });
+        // }
+
+        // await ClientBarangay.updateOne({ _id: req.params.id }, { $unset: { message: 1 } })
+        const clientBarangay = await ClientBarangay.findOneAndUpdate(
+            { _id: req.params.id },
+            {
+                // $push: { message },
+                $set: { bClearanceIsVerified }
+            },
+            { new: true }
+        )
+    //     //notification
+    //     const brgyNotif = await ClientBarangay.findOne({ _id: req.params.id })
+    //     .populate('message');
+    //     const messageIds = brgyNotif.message.map(msg => msg.message)
+    //     let messageNotif = '';
+    //     let isVerified = brgyNotif.bClearanceIsVerified;
+    //     let bClearanceIsVerifiedValue;
+  
+    // if (isVerified === 'true') {
+    //     bClearanceIsVerifiedValue = 'approved';
+    //     messageNotif = `Your barangay clearance has been ${bClearanceIsVerifiedValue}.`;
+    // } else if (isVerified === 'false') {
+    //     bClearanceIsVerifiedValue = 'disapproved';
+       
+    //     const messages = await Promise.all(messageIds.map(async (msgId) => {
+    //         const msg = await Reason.findOne({ _id: msgId });
+    //         return msg.reason;
+    //     }));
+    //         messageNotif = `Your barangay clearance has been ${bClearanceIsVerifiedValue}. Please update your uploaded barangay clearance. Your barangay clearance has ${messages.join(', ')}.`;
+    //   }
+  
+    // const skilled_id = brgyNotif.skilled_id;
+    // const skilledInfo = await SkilledInfo.findOne({ _id: skilled_id });
+    // const username = skilledInfo.username;
+    // const contactNo = skilledInfo.contact;
+    // // Create a notification after updating creating barangay
+    // const notification = await Notification.create({
+    //     skilled_id,
+    //     message: messageNotif,
+    //     urlReact:`/profileSkilled`
+    // });
+      res.status(200).json({ message: 'Successfully updated.'})
+      } catch (error) {
+          res.status(400).json({ error: error.message })
+      }
+}
+
+const adminUpdateNbiClient = async (req, res) => {
+    const { nClearanceIsVerified, message } = req.body
+  
+    try {
+        // Check for duplicate messages in the array
+        // const hasDuplicates = message.some((obj, index) => {
+        //     if (obj.message.trim() === '') {
+        //         throw new Error('Please enter a reason.');
+        //     }
+        //     let foundDuplicate = false;
+        //     message.forEach((innerObj, innerIndex) => {
+        //         if (index !== innerIndex && obj.message === innerObj.message) {
+        //             foundDuplicate = true;
+        //         }
+        //     });
+        //     return foundDuplicate;
+        // });
+        
+        // if (hasDuplicates) {
+        //     return res.status(400).json({ error: 'Please remove repeating reason.' });
+        // }
+
+    //   await ClientNbi.updateOne({ _id: req.params.id }, { $unset: { message: 1 } })
+      const nbi = await ClientNbi.findOneAndUpdate(
+        { _id: req.params.id },
+        {
+            // $push: { message },
+            $set: { nClearanceIsVerified }
+        },
+        { new: true }
+      )
+      //notification
+    //   const nbiNotif = await Nbi.findOne({ _id: req.params.id })
+    //   .populate('message');
+    //   const messageIds = nbiNotif.message.map(msg => msg.message)
+    //   let messageNotif = '';
+    //   let isVerified = nbiNotif.nClearanceIsVerified;
+    //   let nClearanceIsVerifiedValue;
+  
+    // if (isVerified === 'true') {
+    //     nClearanceIsVerifiedValue = 'approved';
+    //     messageNotif = `Your nbi clearance has been ${nClearanceIsVerifiedValue}.`;
+    // } else if (isVerified === 'false') {
+    //     nClearanceIsVerifiedValue = 'disapproved';
+      
+    //     const messages = await Promise.all(messageIds.map(async (msgId) => {
+    //         const msg = await Reason.findOne({ _id: msgId });
+    //         return msg.reason;
+    //     }));
+    //         messageNotif = `Your nbi clearance has been ${nClearanceIsVerifiedValue}. Please update your uploaded nbi clearance. Your nbi clearance has ${messages.join(', ')}.`;
+    //   }
+  
+    // const skilled_id = nbiNotif.skilled_id;
+    // const skilledInfo = await SkilledInfo.findOne({ _id: skilled_id });
+    // const username = skilledInfo.username;
+    // const contactNo = skilledInfo.contact;
+    // // Create a notification after updating creating barangay
+    // const notification = await Notification.create({
+    //     skilled_id,
+    //     message: messageNotif,
+    //     urlReact:`/profileSkilled`
+    // });
+        res.status(200).json({ message: 'Successfully updated.'})
+      } catch (error) {
+          res.status(400).json({ error: error.message })
+      }
+}
+
 const reactivateSkilledInfo = async(req, res) =>{
     const {username} = req.params 
     try{
@@ -1537,6 +1675,18 @@ const reactivateSkilledInfo = async(req, res) =>{
         const skilledInfo = await SkilledInfo.findOneAndUpdate({username:username},
             {isDeleted:0})
         res.status(200).json({ message: 'Skilled Worker Reactivated.'})
+    }
+    catch(error){
+        res.status(400).json({error:error.message})
+    }
+}
+const reactivateClientInfo = async(req, res) =>{
+    const {username} = req.params 
+    try{
+        // await ClientInfo.updateOne({username:username}, { $unset: { message: 1 } })
+        const clientInfo = await ClientInfo.findOneAndUpdate({username:username},
+            {isDeleted:0})
+        res.status(200).json({ message: 'Client Reactivated.'})
     }
     catch(error){
         res.status(400).json({error:error.message})
@@ -1884,10 +2034,14 @@ module.exports = {
     adminGetAllSkilledBarangayDetail,
     adminGetAllSkilledNbiDetail,
     adminGetAllSkilledBillDetail,
+    adminGetAllBClearanceClientDetail,
+    adminGetAllNClearanceClientDetail,
     adminUpdateExperience,
     adminUpdateCertificate,
     adminUpdateBarangay,
     adminUpdateNbi,
+    adminUpdateBarangayClient,
+    adminUpdateNbiClient,
     updateExpIsRead,
     adminGetAllSkilledDeact,
     adminGetAllSkilledCertDetailExpired,
@@ -1897,7 +2051,10 @@ module.exports = {
     adminGetAllSkilledCertDeleted,
     adminGetAllSkilledBarangayDeleted,
     adminGetAllSkilledNbiDeleted,
+    adminGetAllClientBarangayDetail,
+    adminGetAllClientNbiDetail,
     reactivateSkilledInfo,
+    reactivateClientInfo,
     adminEditSkilledBill,
     adminUpdateSkilledBill,
     adminUpdateSkilledAccount,
