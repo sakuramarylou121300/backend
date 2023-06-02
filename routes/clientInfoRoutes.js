@@ -14,6 +14,12 @@ const{
     verifyOTP
 } = require('../controllers/clientInfoController')
 
+const{
+    getAllNotification,
+    deleteNotification 
+} = require('../controllers/clientNotificationController')
+
+
 const {clientRequireAuth,localVariables} = require('../middleware/clientRequireAuth')
 const { updateAddress } = require('../controllers/skilledInfoController')
 
@@ -29,5 +35,7 @@ router.patch('/update/address', clientRequireAuth, updateClientAddress)
 router.get('/generateOTP', localVariables, clientRequireAuth, generateOTP)
 router.patch('/verifyOTP', clientRequireAuth, verifyOTP)
 
-
+//notification
+router.get('/getAll/notification', clientRequireAuth, getAllNotification)
+router.patch('/delete/notification/:id', clientRequireAuth, deleteNotification)
 module.exports = router

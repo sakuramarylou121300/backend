@@ -59,9 +59,9 @@ const createClientBClearance = async(req, res)=>{
         })
         await clientBClearance.save()
 
-        // // Get the name of the client user
-        // const clientInfo = await ClientInfo.findOne({ _id: client_id });
-        // const clientUserName = clientInfo.username;
+        // Get the name of the client user
+        const clientInfo = await ClientInfo.findOne({ _id: client_id });
+        const clientUserName = clientInfo.username;
 
         // const adminInfos = await AdminInfo.find({}).populate({
         //     path: 'roleCapabality',
@@ -80,13 +80,13 @@ const createClientBClearance = async(req, res)=>{
         //         console.log(`Message sent to ${phoneNumber}`);
         // }
         
-        // // Create a notification after successfully creating new skills
-        // const notification = await Notification.create({
-        //     client_id,
-        //     message: `${clientUserName} has added new barangay clearance.`,
-        //     // url: `https://samplekasawapp.onrender.com/api/admin/getOne/Barangay/${clientBClearance._id}`,
-        //     urlReact:`/viewclient/brgyClearance/${clientUserName}`
-        // });
+        // Create a notification after successfully creating new skills
+        const notification = await Notification.create({
+            client_id,
+            message: `${clientUserName} has added new barangay clearance.`,
+            // url: `https://samplekasawapp.onrender.com/api/admin/getOne/Barangay/${clientBClearance._id}`,
+            urlReact:`/temporary/${clientUserName}`
+        });
         res.status(200).json({ message: 'Successfully added.'})
     }
     catch(error){
@@ -226,18 +226,17 @@ const updateClientBClearance  = async(req, res) =>{
             data, {new: true})
 
         //this is for the notification
-        // const clientInfo = await clientInfo.findOne({ _id: client_id }); 
-        // const clientUserName = clientInfo.username;
+        const clientInfo = await ClientInfo.findOne({ _id: client_id }); 
+        const clientUserName = clientInfo.username;
     
-        // // Create a notification after successfully creating new skills
-        // const notification = await Notification.create({
-        //     client_id,
-        //     message: `${clientUserName} updated barangay clerance.`,
-        //     url: `https://samplekasawapp.onrender.com/api/admin/getOne/Barangay/${clientBClearance._id}`,
-        //     urlReact:`/viewclient/brgyClearance/${clientUserName}`
+        // Create a notification after successfully creating new skills
+        const notification = await Notification.create({
+            client_id,
+            message: `${clientUserName} updated barangay clerance.`,
+            url: `https://samplekasawapp.onrender.com/api/admin/getOne/Barangay/${clientBClearance._id}`,
+            urlReact:`/temporary/${clientUserName}`
         
-        // });
-        // console.log(notification)
+        });
 
         res.json({ message: 'Successfully updated.'})
     }catch(error){

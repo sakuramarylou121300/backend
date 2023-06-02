@@ -2,10 +2,10 @@ const mongoose = require('mongoose')
 
 const Schema = mongoose.Schema  
 
-const adminNotificationSchema = new Schema({
+const clientNotificationSchema = new Schema({
     message:{
         type: String,
-        required: true,
+        default: ''
     },
     // url:{
     //     type: String,
@@ -15,6 +15,11 @@ const adminNotificationSchema = new Schema({
         type: String,
         required: true,
     },
+    client_id:{
+        type: mongoose.Schema.Types.ObjectId,
+        required: true,
+        ref: 'ClientInfo'
+    }, 
     isRead:{
         type: Number,
         default: 0,
@@ -22,15 +27,7 @@ const adminNotificationSchema = new Schema({
     isDeleted:{
         type: Number,
         default: 0,
-    },
-    skilled_id:{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'SkilledInfo'
-    }, 
-    client_id:{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'ClientInfo'
-    }, 
+    }
 },{timestamps: true})
 
-module.exports = mongoose.model('AdminNotification',adminNotificationSchema)
+module.exports = mongoose.model('ClientNotification',clientNotificationSchema)

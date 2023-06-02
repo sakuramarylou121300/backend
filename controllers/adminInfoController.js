@@ -10,6 +10,7 @@ const ClientNbi = require('../models/clientNClearance')
 const Skill = require('../models/skill')
 const AdminSkill = require('../models/adminSkill')
 const Notification = require('../models/skilledNotification')
+const ClientNotification = require('../models/clientNotification')
 const Reason = require('../models/reason')
 const ReasonDeact = require('../models/reasonDeact')
 const SkilledBill = require('../models/skilledBill')
@@ -1563,37 +1564,37 @@ const adminUpdateBarangayClient = async (req, res) => {
             },
             { new: true }
         )
-    //     //notification
-    //     const brgyNotif = await ClientBarangay.findOne({ _id: req.params.id })
-    //     .populate('message');
-    //     const messageIds = brgyNotif.message.map(msg => msg.message)
-    //     let messageNotif = '';
-    //     let isVerified = brgyNotif.bClearanceIsVerified;
-    //     let bClearanceIsVerifiedValue;
+        //notification
+        const brgyNotif = await ClientBarangay.findOne({ _id: req.params.id })
+        .populate('message');
+        const messageIds = brgyNotif.message.map(msg => msg.message)
+        let messageNotif = '';
+        let isVerified = brgyNotif.bClearanceIsVerified;
+        let bClearanceIsVerifiedValue;
   
-    // if (isVerified === 'true') {
-    //     bClearanceIsVerifiedValue = 'approved';
-    //     messageNotif = `Your barangay clearance has been ${bClearanceIsVerifiedValue}.`;
-    // } else if (isVerified === 'false') {
-    //     bClearanceIsVerifiedValue = 'disapproved';
+    if (isVerified === 'true') {
+        bClearanceIsVerifiedValue = 'approved';
+        messageNotif = `Your barangay clearance has been ${bClearanceIsVerifiedValue}.`;
+    } else if (isVerified === 'false') {
+        bClearanceIsVerifiedValue = 'disapproved';
        
-    //     const messages = await Promise.all(messageIds.map(async (msgId) => {
-    //         const msg = await Reason.findOne({ _id: msgId });
-    //         return msg.reason;
-    //     }));
-    //         messageNotif = `Your barangay clearance has been ${bClearanceIsVerifiedValue}. Please update your uploaded barangay clearance. Your barangay clearance has ${messages.join(', ')}.`;
-    //   }
+        const messages = await Promise.all(messageIds.map(async (msgId) => {
+            const msg = await Reason.findOne({ _id: msgId });
+            return msg.reason;
+        }));
+            messageNotif = `Your barangay clearance has been ${bClearanceIsVerifiedValue}. Please update your uploaded barangay clearance. Your barangay clearance has ${messages.join(', ')}.`;
+      }
   
-    // const skilled_id = brgyNotif.skilled_id;
-    // const skilledInfo = await SkilledInfo.findOne({ _id: skilled_id });
-    // const username = skilledInfo.username;
-    // const contactNo = skilledInfo.contact;
-    // // Create a notification after updating creating barangay
-    // const notification = await Notification.create({
-    //     skilled_id,
-    //     message: messageNotif,
-    //     urlReact:`/profileSkilled`
-    // });
+    const client_id = brgyNotif.client_id;
+    const clientInfo = await ClientInfo.findOne({ _id: client_id });
+    const username = clientInfo.username;
+    const contactNo = clientInfo.contact;
+    // Create a notification after updating creating barangay
+    const notification = await ClientNotification.create({
+        client_id,
+        message: messageNotif,
+        urlReact:`/profileClient`
+    });
       res.status(200).json({ message: 'Successfully updated.'})
       } catch (error) {
           res.status(400).json({ error: error.message })
@@ -1632,36 +1633,36 @@ const adminUpdateNbiClient = async (req, res) => {
         { new: true }
       )
       //notification
-    //   const nbiNotif = await Nbi.findOne({ _id: req.params.id })
-    //   .populate('message');
-    //   const messageIds = nbiNotif.message.map(msg => msg.message)
-    //   let messageNotif = '';
-    //   let isVerified = nbiNotif.nClearanceIsVerified;
-    //   let nClearanceIsVerifiedValue;
+      const nbiNotif = await ClientNbi.findOne({ _id: req.params.id })
+      .populate('message');
+      const messageIds = nbiNotif.message.map(msg => msg.message)
+      let messageNotif = '';
+      let isVerified = nbiNotif.nClearanceIsVerified;
+      let nClearanceIsVerifiedValue;
   
-    // if (isVerified === 'true') {
-    //     nClearanceIsVerifiedValue = 'approved';
-    //     messageNotif = `Your nbi clearance has been ${nClearanceIsVerifiedValue}.`;
-    // } else if (isVerified === 'false') {
-    //     nClearanceIsVerifiedValue = 'disapproved';
+    if (isVerified === 'true') {
+        nClearanceIsVerifiedValue = 'approved';
+        messageNotif = `Your nbi clearance has been ${nClearanceIsVerifiedValue}.`;
+    } else if (isVerified === 'false') {
+        nClearanceIsVerifiedValue = 'disapproved';
       
-    //     const messages = await Promise.all(messageIds.map(async (msgId) => {
-    //         const msg = await Reason.findOne({ _id: msgId });
-    //         return msg.reason;
-    //     }));
-    //         messageNotif = `Your nbi clearance has been ${nClearanceIsVerifiedValue}. Please update your uploaded nbi clearance. Your nbi clearance has ${messages.join(', ')}.`;
-    //   }
+        const messages = await Promise.all(messageIds.map(async (msgId) => {
+            const msg = await Reason.findOne({ _id: msgId });
+            return msg.reason;
+        }));
+            messageNotif = `Your nbi clearance has been ${nClearanceIsVerifiedValue}. Please update your uploaded nbi clearance. Your nbi clearance has ${messages.join(', ')}.`;
+      }
   
-    // const skilled_id = nbiNotif.skilled_id;
-    // const skilledInfo = await SkilledInfo.findOne({ _id: skilled_id });
-    // const username = skilledInfo.username;
-    // const contactNo = skilledInfo.contact;
-    // // Create a notification after updating creating barangay
-    // const notification = await Notification.create({
-    //     skilled_id,
-    //     message: messageNotif,
-    //     urlReact:`/profileSkilled`
-    // });
+    const client_id = nbiNotif.client_id;
+    const clientInfo = await ClientInfo.findOne({ _id: client_id });
+    const username = clientInfo.username;
+    const contactNo = clientInfo.contact;
+    // Create a notification after updating creating barangay
+    const notification = await ClientNotification.create({
+        client_id,
+        message: messageNotif,
+        urlReact:`/profileClient`
+    });
         res.status(200).json({ message: 'Successfully updated.'})
       } catch (error) {
           res.status(400).json({ error: error.message })

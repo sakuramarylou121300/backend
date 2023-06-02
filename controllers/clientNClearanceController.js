@@ -76,18 +76,17 @@ const createClientNClearance = async(req, res)=>{
 
         await clientNClearance.save()
 
-        //  // Get the name of the client user
-        //  const clientInfo = await clientInfo.findOne({ _id: client_id });
-        //  const clientUserName = clientInfo.username;
+         // Get the name of the client user
+         const clientInfo = await ClientInfo.findOne({ _id: client_id });
+         const clientUserName = clientInfo.username;
  
-        //  // Create a notification after successfully creating new nbi
-        //  const notification = await Notification.create({
-        //      client_id,
-        //      message: `${clientUserName} has added new nbi clearance.`,
-        //     //  url: `https://samplekasawapp.onrender.com/api/admin/getOne/Barangay/${clientNClearance._id}`,
-        //      urlReact:`/viewclient/nbiClearance/${clientUserName}`
-        //  });
-        //  console.log(notification)
+        // Create a notification after successfully creating new nbi
+        const notification = await Notification.create({
+            client_id,
+            message: `${clientUserName} has added new nbi clearance.`,
+        //  url: `https://samplekasawapp.onrender.com/api/admin/getOne/Barangay/${clientNClearance._id}`,
+            urlReact:`/temporary/${clientUserName}`
+        });
 
         res.status(200).json({ message: 'Successfully added.'})
     }
@@ -246,16 +245,16 @@ const updateClientNClearance  = async(req, res) =>{
         clientNClearance = await ClientNClearance.findByIdAndUpdate(req.params.id, 
             data, {new: true})
 
-        //     //this is for the notification
-        // const clientInfo = await clientInfo.findOne({ _id: client_id }); 
-        // const clientUserName = clientInfo.username;
+            //this is for the notification
+        const clientInfo = await ClientInfo.findOne({ _id: client_id }); 
+        const clientUserName = clientInfo.username;
     
-        // const notification = await Notification.create({
-        //     client_id,
-        //     message: `${clientUserName} updated nbi clerance.`,
-        //     // url: `https://samplekasawapp.onrender.com/api/admin/getOne/Barangay/${clientBClearance._id}`,
-        //     urlReact:`/viewclient/nbiClearance/${clientUserName}`
-        // });
+        const notification = await Notification.create({
+            client_id,
+            message: `${clientUserName} updated nbi clerance.`,
+            // url: `https://samplekasawapp.onrender.com/api/admin/getOne/Barangay/${clientBClearance._id}`,
+            urlReact:`/temporary/${clientUserName}`
+        });
 
         res.json({ message: 'Successfully updated.'})
     }
