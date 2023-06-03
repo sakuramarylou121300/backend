@@ -278,7 +278,7 @@ router.get('/getOne/reasonDeact/:id', adminAuth, adminControlSkilled, getOneReas
 router.patch('/update/reasonDeact/:id', adminAuth, adminControlSkilled, updateReasonDeact)
 router.patch('/delete/reasonDeact/:id', adminAuth, adminControlSkilled, deleteReasonDeact)
 
-
+//NOT YET
 router.get('/getAll/skilledBill', adminAuth, adminControlSkilled, adminGetAllSkilledBill)
 router.get('/getAll/skilledBill/detail', adminAuth, adminControlSkilled, adminGetAllSkilledBillDetail)
 router.get('/getOne/skilledBill/:id', adminAuth, adminControlSkilled, getOneSkilledBill)

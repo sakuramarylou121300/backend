@@ -573,8 +573,6 @@ const skilledUpdateBill = async(req, res) =>{
     }
 }
 
-
- 
 //push address
 const pushAddress = async(req,res) =>{
     try{

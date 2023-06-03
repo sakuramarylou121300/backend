@@ -11,7 +11,15 @@ const{
     deleteClientInfo,
     updateClientAddress,
     generateOTP,
-    verifyOTP
+    verifyOTP,
+    getClientSkilledCreatedAtDesc,
+    getClientSkilledCreatedAtAsc,
+    getClientSkilledUserNameDesc,
+    getClientSkilledUserNameAsc,
+    getClientSkilledFNameDesc,
+    getClientSkilledFNameAsc,
+    getClientSkilledLNameDesc,
+    getClientSkilledLNameAsc
 } = require('../controllers/clientInfoController')
 
 const{
@@ -34,6 +42,16 @@ router.delete('/delete', clientRequireAuth, deleteClientInfo)
 router.patch('/update/address', clientRequireAuth, updateClientAddress)
 router.get('/generateOTP', localVariables, clientRequireAuth, generateOTP)
 router.patch('/verifyOTP', clientRequireAuth, verifyOTP)
+
+//FILTERING
+router.get('/skilled/createdAt/desc', clientRequireAuth, getClientSkilledCreatedAtDesc)
+router.get('/skilled/createdAt/asc', clientRequireAuth, getClientSkilledCreatedAtAsc)
+router.get('/skilled/username/desc', clientRequireAuth, getClientSkilledUserNameDesc)
+router.get('/skilled/username/asc', clientRequireAuth, getClientSkilledUserNameAsc)
+router.get('/skilled/fname/desc', clientRequireAuth, getClientSkilledFNameDesc)
+router.get('/skilled/fname/asc', clientRequireAuth, getClientSkilledFNameAsc)
+router.get('/skilled/lname/desc', clientRequireAuth, getClientSkilledLNameDesc)
+router.get('/skilled/lname/asc', clientRequireAuth, getClientSkilledLNameAsc)
 
 //notification
 router.get('/getAll/notification', clientRequireAuth, getAllNotification)

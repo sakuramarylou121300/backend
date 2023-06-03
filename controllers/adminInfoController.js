@@ -1999,6 +1999,7 @@ const adminGetAllClientNbiDeleted = async(req, res)=>{
         res.status(404).json({error: error.message})
     }  
 }
+
 //THIS IS NOT OFFICIAL
 const adminGetAllSkilledBill = async(req, res)=>{
 

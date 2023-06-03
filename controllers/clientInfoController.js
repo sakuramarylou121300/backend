@@ -349,6 +349,112 @@ const verifyOTP = async(req, res) =>{
         res.status(400).json({error:error.message})
     }
 }
+
+//FILTERING
+const getClientSkilledCreatedAtDesc = async(req, res) =>{
+
+    try{
+        const skilleInfo = await SkilledInfo
+        .find({userIsVerified: 1, isDeleted:0})
+        .sort({createdAt: -1})
+        .select("-password")
+        res.status(200).json(skilleInfo)
+    }
+    catch(error){
+        res.status(400).json({error:error.message})
+    }
+}
+const getClientSkilledCreatedAtAsc = async(req, res) =>{
+
+    try{
+        const skilleInfo = await SkilledInfo
+        .find({userIsVerified: 1, isDeleted:0})
+        .sort({createdAt: 1})
+        .select("-password")
+        res.status(200).json(skilleInfo)
+    }
+    catch(error){
+        res.status(400).json({error:error.message})
+    }
+}
+const getClientSkilledUserNameDesc = async(req, res) =>{
+
+    try{
+        const skilleInfo = await SkilledInfo
+        .find({userIsVerified: 1, isDeleted:0})
+        .sort({username: -1})
+        .select("-password")
+        res.status(200).json(skilleInfo)
+    }
+    catch(error){
+        res.status(400).json({error:error.message})
+    }
+}
+const getClientSkilledUserNameAsc = async(req, res) =>{
+
+    try{
+        const skilleInfo = await SkilledInfo
+        .find({userIsVerified: 1, isDeleted:0})
+        .sort({username: 1})
+        .select("-password")
+        res.status(200).json(skilleInfo)
+    }
+    catch(error){
+        res.status(400).json({error:error.message})
+    }
+}
+const getClientSkilledFNameDesc = async(req, res) =>{
+
+    try{
+        const skilleInfo = await SkilledInfo
+        .find({userIsVerified: 1, isDeleted:0})
+        .sort({fname: -1})
+        .select("-password")
+        res.status(200).json(skilleInfo)
+    }
+    catch(error){
+        res.status(400).json({error:error.message})
+    }
+}
+const getClientSkilledFNameAsc = async(req, res) =>{
+
+    try{
+        const skilleInfo = await SkilledInfo
+        .find({userIsVerified: 1, isDeleted:0})
+        .sort({fname: 1})
+        .select("-password")
+        res.status(200).json(skilleInfo)
+    }
+    catch(error){
+        res.status(400).json({error:error.message})
+    }
+}
+const getClientSkilledLNameDesc = async(req, res) =>{
+
+    try{
+        const skilleInfo = await SkilledInfo
+        .find({userIsVerified: 1, isDeleted:0})
+        .sort({lname: -1})
+        .select("-password")
+        res.status(200).json(skilleInfo)
+    }
+    catch(error){
+        res.status(400).json({error:error.message})
+    }
+}
+const getClientSkilledLNameAsc = async(req, res) =>{
+
+    try{
+        const skilleInfo = await SkilledInfo
+        .find({userIsVerified: 1, isDeleted:0})
+        .sort({lname: 1})
+        .select("-password")
+        res.status(200).json(skilleInfo)
+    }
+    catch(error){
+        res.status(400).json({error:error.message})
+    }
+}
 module.exports = {
     clientLogIn,
     clientSignUp,
@@ -359,5 +465,13 @@ module.exports = {
     deleteClientInfo,
     updateClientAddress,
     generateOTP,
-    verifyOTP
+    verifyOTP,
+    getClientSkilledCreatedAtDesc,
+    getClientSkilledCreatedAtAsc,
+    getClientSkilledUserNameDesc,
+    getClientSkilledUserNameAsc,
+    getClientSkilledFNameDesc,
+    getClientSkilledFNameAsc,
+    getClientSkilledLNameDesc,
+    getClientSkilledLNameAsc
 }
