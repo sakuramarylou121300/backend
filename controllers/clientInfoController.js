@@ -1,6 +1,7 @@
 const ClientInfo = require('../models/clientInfo')
 const AdminInfo = require('../models/adminInfo')    
-const SkilledInfo = require('../models/skilledInfo')    
+const SkilledInfo = require('../models/skilledInfo')  
+const AdminSkill = require('../models/adminSkill')      
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
 const validator = require('validator')
@@ -455,6 +456,34 @@ const getClientSkilledLNameAsc = async(req, res) =>{
         res.status(400).json({error:error.message})
     }
 }
+
+//get skilled worker with skill
+const getClientSkilledSkillCreatedAtDesc = async (req, res) => {
+    try {
+        const skillId = req.params._id
+        console.log('Skill ID:', skillId);
+        
+        //get all the skilled worker and get their skill
+        const skilledInfo = await SkilledInfo.find()
+        .populate({
+            path: 'skills',
+            match: { isDeleted: 0} 
+        })
+        // console.log(skilledInfo)
+
+        //get all the skill registered to the admin
+        const skillIdDoc = await AdminSkill.findOne
+        ({skillId});
+        console.log('Skill Document:', skillIdDoc);
+
+        const skilledWorkersWithSkill = skilledInfo.filter((worker) =>
+            worker.skills.some((skill) => skill.skillName === skillId)
+        );
+        return res.status(200).json(skilledWorkersWithSkill);
+    } catch (err) {
+        return res.status(500).json({ message: err.toString() });
+    }
+};
 module.exports = {
     clientLogIn,
     clientSignUp,
@@ -473,5 +502,6 @@ module.exports = {
     getClientSkilledFNameDesc,
     getClientSkilledFNameAsc,
     getClientSkilledLNameDesc,
-    getClientSkilledLNameAsc
+    getClientSkilledLNameAsc,
+    getClientSkilledSkillCreatedAtDesc
 }

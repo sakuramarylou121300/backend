@@ -19,7 +19,8 @@ const{
     getClientSkilledFNameDesc,
     getClientSkilledFNameAsc,
     getClientSkilledLNameDesc,
-    getClientSkilledLNameAsc
+    getClientSkilledLNameAsc,
+    getClientSkilledSkillCreatedAtDesc
 } = require('../controllers/clientInfoController')
 
 const{
@@ -52,6 +53,7 @@ router.get('/skilled/fname/desc', clientRequireAuth, getClientSkilledFNameDesc)
 router.get('/skilled/fname/asc', clientRequireAuth, getClientSkilledFNameAsc)
 router.get('/skilled/lname/desc', clientRequireAuth, getClientSkilledLNameDesc)
 router.get('/skilled/lname/asc', clientRequireAuth, getClientSkilledLNameAsc)
+router.get('/skilled/skill/:_id', clientRequireAuth, getClientSkilledSkillCreatedAtDesc)
 
 //notification
 router.get('/getAll/notification', clientRequireAuth, getAllNotification)
