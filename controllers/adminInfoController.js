@@ -1717,7 +1717,7 @@ const updateExpIsRead = async(req, res) =>{
 }
 
 //TABLES
-//list of deleted account for admin]
+//list of deleted account for admin
 const adminGetAllSkilledDeact = async(req, res)=>{
 
     try{

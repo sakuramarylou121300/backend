@@ -12,6 +12,17 @@ const{
     updateClientAddress,
     generateOTP,
     verifyOTP,
+   
+} = require('../controllers/clientInfoController')
+
+//client notification 
+const{
+    getAllNotification,
+    deleteNotification 
+} = require('../controllers/clientNotificationController')
+
+//filtering skilled worker
+const{
     getClientSkilledCreatedAtDesc,
     getClientSkilledCreatedAtAsc,
     getClientSkilledUserNameDesc,
@@ -23,14 +34,12 @@ const{
     getClientSkilledSkillCreatedAtDesc,
     getClientSkilledSkillCreatedAtAsc,
     getClientSkilledSkillUsernameAsc,
-    getClientSkilledSkillUsernameDesc
-} = require('../controllers/clientInfoController')
+    getClientSkilledSkillUsernameDesc,
+    getFilterSkilled,
+    getFilterSkilledSkillDesc,
+    getFilterSkilledSkillAsc
 
-const{
-    getAllNotification,
-    deleteNotification 
-} = require('../controllers/clientNotificationController')
-
+} = require('../controllers/clientFilterSkilledController')
 
 const {clientRequireAuth,localVariables} = require('../middleware/clientRequireAuth')
 const { updateAddress } = require('../controllers/skilledInfoController')
@@ -47,6 +56,10 @@ router.patch('/update/address', clientRequireAuth, updateClientAddress)
 router.get('/generateOTP', localVariables, clientRequireAuth, generateOTP)
 router.patch('/verifyOTP', clientRequireAuth, verifyOTP)
 
+//notification
+router.get('/getAll/notification', clientRequireAuth, getAllNotification)
+router.patch('/delete/notification/:id', clientRequireAuth, deleteNotification)
+
 //FILTERING
 router.get('/skilled/createdAt/desc', clientRequireAuth, getClientSkilledCreatedAtDesc)
 router.get('/skilled/createdAt/asc', clientRequireAuth, getClientSkilledCreatedAtAsc)
@@ -61,7 +74,9 @@ router.get('/skilled/skill/asc/:_id', clientRequireAuth, getClientSkilledSkillCr
 router.get('/skilled/skill/username/asc/:_id', clientRequireAuth, getClientSkilledSkillUsernameAsc)
 router.get('/skilled/skill/username/desc/:_id', clientRequireAuth, getClientSkilledSkillUsernameDesc)
 
-//notification
-router.get('/getAll/notification', clientRequireAuth, getAllNotification)
-router.patch('/delete/notification/:id', clientRequireAuth, deleteNotification)
+//final filtering
+router.get('/filter/skilled', clientRequireAuth, getFilterSkilled)
+router.get('/filter/skilled/skill/desc/:_id', clientRequireAuth, getFilterSkilledSkillDesc)
+router.get('/filter/skilled/skill/asc/:_id', clientRequireAuth, getFilterSkilledSkillAsc)
+
 module.exports = router
