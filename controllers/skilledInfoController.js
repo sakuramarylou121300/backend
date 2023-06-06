@@ -116,8 +116,12 @@ const getSkilledInfo = async(req, res) =>{
         const skilledInfo = await SkilledInfo.findById(req.skilledInfo._id)
         .select("-password, -otp")
         .populate({
-            path: 'skills',
-            match: { isDeleted: 0} 
+            path: "skills",
+            match: { isDeleted: 0 },
+            populate: {
+              path: "skillName",
+              select: "skill", // Assuming 'skill' is the field in 'AdminSkill' model that holds the skill name
+            },
         })
         .populate({
             path: 'skillExp',

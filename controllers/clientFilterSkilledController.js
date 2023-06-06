@@ -283,6 +283,14 @@ const getFilterSkilled = async(req, res) =>{
         .find({userIsVerified: 0, isDeleted:0})
         .sort({createdAt: -1})
         .select("-password")
+        .populate({
+            path: "skills",
+            match: { isDeleted: 0 },
+            populate: {
+              path: "skillName",
+              select: "skill", // Assuming 'skill' is the field in 'AdminSkill' model that holds the skill name
+            },
+        })
         res.status(200).json(skilleInfo)
     }
     catch(error){
@@ -299,11 +307,11 @@ const getFilterSkilledSkillDesc = async (req, res) => {
 
         // Get all the skilled workers and their skills
         const skilledInfo = await SkilledInfo.find()
-            .populate({
-                path: 'skills',
-                match: { isDeleted: 0 } 
-            });
-
+        .populate({
+            path: 'skills',
+            match: { isDeleted: 0 } 
+        });
+        
         // Get all the skills registered to the admin
         const skillIdDoc = await AdminSkill.findOne({ skillId });
 
@@ -341,17 +349,15 @@ const getFilterSkilledSkillDesc = async (req, res) => {
         skilledWorkersWithSkill.sort((a, b) => {
             const latestSkillA = a.skills
                 .filter((skill) => skill.skillName === skillId)
-                .reduce((latest, skill) => {
-                    return skill.createdAt > latest.createdAt ? skill : latest;
-                }, { createdAt: new Date(0) });
-
+                .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt))
+                .pop();
+    
             const latestSkillB = b.skills
                 .filter((skill) => skill.skillName === skillId)
-                .reduce((latest, skill) => {
-                    return skill.createdAt > latest.createdAt ? skill : latest;
-                }, { createdAt: new Date(0) });
-
-            return latestSkillB.createdAt - latestSkillA.createdAt;
+                .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt))
+                .pop();
+    
+            return new Date(latestSkillA.createdAt) - new Date(latestSkillB.createdAt);
         });
 
         // Create a new array with the required properties, including the address
@@ -399,10 +405,10 @@ const getFilterSkilledSkillAsc = async (req, res) => {
 
         // Get all the skilled workers and their skills
         const skilledInfo = await SkilledInfo.find()
-            .populate({
-                path: 'skills',
-                match: { isDeleted: 0 } 
-            });
+        .populate({
+            path: 'skills',
+            match: { isDeleted: 0 } 
+        });
 
         // Get all the skills registered to the admin
         const skillIdDoc = await AdminSkill.findOne({ skillId });
