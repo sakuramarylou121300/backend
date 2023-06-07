@@ -1,280 +1,14 @@
 const ClientInfo = require('../models/clientInfo')
 const AdminInfo = require('../models/adminInfo')    
 const SkilledInfo = require('../models/skilledInfo')  
-const AdminSkill = require('../models/adminSkill')      
+const AdminSkill = require('../models/adminSkill')   
+const Skill = require('../models/skill') 
+const Certificate = require('../models/skillCert')
+const Experience = require('../models/skilledExp')  
 const jwt = require('jsonwebtoken')
+const mongoose = require('mongoose')
 
-//FILTERING
-const getClientSkilledCreatedAtDesc = async(req, res) =>{
-
-    try{
-        const skilleInfo = await SkilledInfo
-        .find({userIsVerified: 1, isDeleted:0})
-        .sort({createdAt: -1})
-        .select("-password")
-        res.status(200).json(skilleInfo)
-    }
-    catch(error){
-        res.status(400).json({error:error.message})
-    }
-}
-const getClientSkilledCreatedAtAsc = async(req, res) =>{
-
-    try{
-        const skilleInfo = await SkilledInfo
-        .find({userIsVerified: 1, isDeleted:0})
-        .sort({createdAt: 1})
-        .select("-password")
-        res.status(200).json(skilleInfo)
-    }
-    catch(error){
-        res.status(400).json({error:error.message})
-    }
-}
-const getClientSkilledUserNameDesc = async(req, res) =>{
-
-    try{
-        const skilleInfo = await SkilledInfo
-        .find({userIsVerified: 1, isDeleted:0})
-        .sort({username: -1})
-        .select("-password")
-        res.status(200).json(skilleInfo)
-    }
-    catch(error){
-        res.status(400).json({error:error.message})
-    }
-}
-const getClientSkilledUserNameAsc = async(req, res) =>{
-
-    try{
-        const skilleInfo = await SkilledInfo
-        .find({userIsVerified: 1, isDeleted:0})
-        .sort({username: 1})
-        .select("-password")
-        res.status(200).json(skilleInfo)
-    }
-    catch(error){
-        res.status(400).json({error:error.message})
-    }
-}
-const getClientSkilledFNameDesc = async(req, res) =>{
-
-    try{
-        const skilleInfo = await SkilledInfo
-        .find({userIsVerified: 1, isDeleted:0})
-        .sort({fname: -1})
-        .select("-password")
-        res.status(200).json(skilleInfo)
-    }
-    catch(error){
-        res.status(400).json({error:error.message})
-    }
-}
-const getClientSkilledFNameAsc = async(req, res) =>{
-
-    try{
-        const skilleInfo = await SkilledInfo
-        .find({userIsVerified: 1, isDeleted:0})
-        .sort({fname: 1})
-        .select("-password")
-        res.status(200).json(skilleInfo)
-    }
-    catch(error){
-        res.status(400).json({error:error.message})
-    }
-}
-const getClientSkilledLNameDesc = async(req, res) =>{
-
-    try{
-        const skilleInfo = await SkilledInfo
-        .find({userIsVerified: 1, isDeleted:0})
-        .sort({lname: -1})
-        .select("-password")
-        res.status(200).json(skilleInfo)
-    }
-    catch(error){
-        res.status(400).json({error:error.message})
-    }
-}
-const getClientSkilledLNameAsc = async(req, res) =>{
-
-    try{
-        const skilleInfo = await SkilledInfo
-        .find({userIsVerified: 1, isDeleted:0})
-        .sort({lname: 1})
-        .select("-password")
-        res.status(200).json(skilleInfo)
-    }
-    catch(error){
-        res.status(400).json({error:error.message})
-    }
-}
-
-//get skilled worker with latest registered skill
-const getClientSkilledSkillCreatedAtDesc = async (req, res) => {
-    try {
-        const skillId = req.params._id
-
-        //get all the skilled worker and get their skill
-        const skilledInfo = await SkilledInfo.find()
-        .populate({
-        path: 'skills',
-        match: { isDeleted: 0} 
-    })
-
-    //get all the skill registered to the admin
-    const skillIdDoc = await AdminSkill.findOne
-    ({skillId});
-
-    const skilledWorkersWithSkill = skilledInfo.filter((worker) =>
-        worker.skills.some((skill) => skill.skillName === skillId)
-    );
-
-    if(skilledWorkersWithSkill.length === 0){
-        return res.status(400).json({ error: 'No skilled worker availabe to this skill yet.' })
-    }
-
-    // Sort the skilled workers by the latest skill's createdAt in descending order final
-    skilledWorkersWithSkill.sort((a, b) => {
-        const latestSkillA = a.skills
-            .filter((skill) => skill.skillName === skillId)
-            .reduce((latest, skill) => {
-                return skill.createdAt > latest.createdAt ? skill : latest;
-            }, { createdAt: new Date(0) });
-
-        const latestSkillB = b.skills
-            .filter((skill) => skill.skillName === skillId)
-            .reduce((latest, skill) => {
-                return skill.createdAt > latest.createdAt ? skill : latest;
-            }, { createdAt: new Date(0) });
-
-        return latestSkillB.createdAt - latestSkillA.createdAt;
-    });
-    
-    return res.status(200).json(skilledWorkersWithSkill);
-    } catch (err) {
-    return res.status(500).json({ message: err.toString() });
-    }
-};
-
-const getClientSkilledSkillCreatedAtAsc = async (req, res) => {
-    try {
-        const skillId = req.params._id
-
-        //get all the skilled worker and get their skill
-        const skilledInfo = await SkilledInfo.find()
-        .populate({
-        path: 'skills',
-        match: { isDeleted: 0} 
-    })
-
-    //get all the skill registered to the admin
-    const skillIdDoc = await AdminSkill.findOne
-    ({skillId});
-
-    const skilledWorkersWithSkill = skilledInfo.filter((worker) =>
-        worker.skills.some((skill) => skill.skillName === skillId)
-    );
-
-    if(skilledWorkersWithSkill.length === 0){
-        return res.status(400).json({ error: 'No skilled worker availabe to this skill yet.' })
-    }
-
-    // Sort the skilled workers by the latest skill's createdAt in ascending order
-    skilledWorkersWithSkill.sort((a, b) => {
-        const latestSkillA = a.skills
-            .filter((skill) => skill.skillName === skillId)
-            .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt))
-            .pop();
-
-        const latestSkillB = b.skills
-            .filter((skill) => skill.skillName === skillId)
-            .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt))
-            .pop();
-
-        return new Date(latestSkillA.createdAt) - new Date(latestSkillB.createdAt);
-    });
-
-    return res.status(200).json(skilledWorkersWithSkill);
-    } catch (err) {
-    return res.status(500).json({ message: err.toString() });
-    }
-};
-
-//get all skilled with skill acc to their username
-const getClientSkilledSkillUsernameAsc = async (req, res) => {
-    try {
-        const skillId = req.params._id
-
-        //get all the skilled worker and get their skill
-        const skilledInfo = await SkilledInfo.find()
-        .populate({
-        path: 'skills',
-        match: { isDeleted: 0} 
-    })
-
-    //get all the skill registered to the admin
-    const skillIdDoc = await AdminSkill.findOne
-    ({skillId});
-
-    const skilledWorkersWithSkill = skilledInfo.filter((worker) =>
-        worker.skills.some((skill) => skill.skillName === skillId)
-    );
-
-    if(skilledWorkersWithSkill.length === 0){
-        return res.status(400).json({ error: 'No skilled worker availabe to this skill yet.' })
-    }
-
-    // Sort the skilled workers by username in ascending order
-    skilledWorkersWithSkill.sort((a, b) => {
-        const usernameA = a.username.toLowerCase();
-        const usernameB = b.username.toLowerCase();
-        return usernameA.localeCompare(usernameB);
-    });
-
-    return res.status(200).json(skilledWorkersWithSkill);
-    } catch (err) {
-    return res.status(500).json({ message: err.toString() });
-    }
-};
-
-const getClientSkilledSkillUsernameDesc = async (req, res) => {
-    try {
-        const skillId = req.params._id
-
-        //get all the skilled worker and get their skill
-        const skilledInfo = await SkilledInfo.find()
-        .populate({
-        path: 'skills',
-        match: { isDeleted: 0} 
-    })
-
-    //get all the skill registered to the admin
-    const skillIdDoc = await AdminSkill.findOne
-    ({skillId});
-
-    const skilledWorkersWithSkill = skilledInfo.filter((worker) =>
-        worker.skills.some((skill) => skill.skillName === skillId)
-    );
-
-    if(skilledWorkersWithSkill.length === 0){
-        return res.status(400).json({ error: 'No skilled worker availabe to this skill yet.' })
-    }
-
-    // Sort the skilled workers by username in descending order
-    skilledWorkersWithSkill.sort((a, b) => {
-        const usernameA = a.username.toLowerCase();
-        const usernameB = b.username.toLowerCase();
-        return usernameB.localeCompare(usernameA);
-    });
-
-    return res.status(200).json(skilledWorkersWithSkill);
-    } catch (err) {
-    return res.status(500).json({ message: err.toString() });
-    }
-};
-
-//FINAL FILTERING
+//FINAL ALL FILTERING
 //this is the default, get all skilled worker sort by latest registered
 const getFilterSkilled = async(req, res) =>{
 
@@ -511,20 +245,116 @@ const getFilterSkilledSkillAsc = async (req, res) => {
         return res.status(500).json({ message: err.toString() });
     }
 };
+
+//ALL GET ONE
+//get one skilled worker, get skilled worker info
+const getClientSkilledInfo = async(req, res)=>{
+    const {id} = req.params  
+
+     //check if id is not existing
+     if(!mongoose.Types.ObjectId.isValid(id)){
+        return res.status(404).json({error: 'Invalid id'})
+    }
+
+    //find query
+    const skilledInfo = await SkilledInfo.findById({_id: id})
+
+    //check if not existing
+    if (!skilledInfo){
+        return res.status(404).json({error: 'Skilled Worker not found'})
+    }
+
+    res.status(200).json(skilledInfo)   
+}
+//get one skilled worker, get skilled worker skills
+const getClientSkilledSkill = async(req, res)=>{
+    const _id = req.params._id//this is for the skille worker _id
+
+    //find skill worker first
+    const skilledInfo = await SkilledInfo.findOne({_id: _id})
+    //check if not existing
+    if (!skilledInfo){
+        return res.status(404).json({error: 'Skilled Worker not found'})
+    }
+
+    const skilledWorkerSkill = await Skill
+    .find({
+        skilled_id: skilledInfo._id, 
+        isDeleted: 0})
+    .populate('skillName')
+    .populate('skilled_id')
+
+    res.status(200).json(skilledWorkerSkill)   
+}
+//get one skilled worker, get skilled worker cert
+const getClientSkilledCert = async(req, res)=>{ 
+
+    try{
+        const skilledWorkerId  = req.params._id//this is to get the _id of skilled worker first
+        const skillName  = req.params.skillName //this is to get the skill from AdminSkill
+
+       //find skill worker first
+        const skilledInfo = await SkilledInfo.findOne({_id: skilledWorkerId })
+        //check if not existing
+        if (!skilledInfo){
+            return res.status(404).json({error: 'Skilled Worker not found'})
+        }
+        // Find skilled_id document based on username
+        const skillIdDoc = await AdminSkill.findOne({
+            skill: skillName});
+
+        const skillCert = await Certificate
+        .find({
+            skilled_id: skilledInfo._id, 
+            categorySkill: skillIdDoc._id,
+            isDeleted: 0,
+            isExpired:{$ne: 1},})
+        .populate('categorySkill')
+        .populate('skilled_id')
+        .sort({createdAt: -1})
+        res.status(200).json(skillCert)
+    }
+    catch(error){
+        res.status(404).json({error: error.message})
+    }  
+} 
+//get one skilled worker, get skilled worker exp
+const getClientSkilledExp = async(req, res)=>{ 
+
+    try{
+        const skilledWorkerId  = req.params._id//this is to get the _id of skilled worker first
+        const skillName  = req.params.skillName //this is to get the skill from AdminSkill
+
+       //find skill worker first
+        const skilledInfo = await SkilledInfo.findOne({_id: skilledWorkerId })
+        //check if not existing
+        if (!skilledInfo){
+            return res.status(404).json({error: 'Skilled Worker not found'})
+        }
+        // Find skilled_id document based on username
+        const skillIdDoc = await AdminSkill.findOne({
+            skill: skillName});
+
+        const skilledExp = await Experience
+        .find({
+            skilled_id: skilledInfo._id, 
+            categorySkill: skillIdDoc._id,
+            isDeleted: 0})
+        .populate('categorySkill')
+        .populate('skilled_id')
+        .sort({createdAt: -1})
+        res.status(200).json(skilledExp)
+    }
+    catch(error){
+        res.status(404).json({error: error.message})
+    }  
+} 
 module.exports = {
-    getClientSkilledCreatedAtDesc,
-    getClientSkilledCreatedAtAsc,
-    getClientSkilledUserNameDesc,
-    getClientSkilledUserNameAsc,
-    getClientSkilledFNameDesc,
-    getClientSkilledFNameAsc,
-    getClientSkilledLNameDesc,
-    getClientSkilledLNameAsc,
-    getClientSkilledSkillCreatedAtDesc,
-    getClientSkilledSkillCreatedAtAsc,
-    getClientSkilledSkillUsernameAsc,
-    getClientSkilledSkillUsernameDesc,
     getFilterSkilled,
     getFilterSkilledSkillDesc,
-    getFilterSkilledSkillAsc
+    getFilterSkilledSkillAsc,
+    getClientSkilledInfo,
+    getClientSkilledSkill,
+    getClientSkilledCert,
+    getClientSkilledExp
 }
