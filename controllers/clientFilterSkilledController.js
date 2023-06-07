@@ -307,18 +307,28 @@ const getFilterSkilledSkillDesc = async (req, res) => {
 
         // Get all the skilled workers and their skills
         const skilledInfo = await SkilledInfo.find()
+        // .populate({
+        //     path: 'skills',
+        //     match: { isDeleted: 0 } 
+        // });
         .populate({
-            path: 'skills',
-            match: { isDeleted: 0 } 
-        });
+            path: "skills",
+            match: { isDeleted: 0 },
+            populate: {
+              path: "skillName",
+              select: "skill", // Assuming 'skill' is the field in 'AdminSkill' model that holds the skill name
+            },
+        })
         
         // Get all the skills registered to the admin
         const skillIdDoc = await AdminSkill.findOne({ skillId });
 
         // Filter skilled workers with the specified skill and province (if provided)
         let skilledWorkersWithSkill = skilledInfo.filter((worker) =>
-            worker.skills.some((skill) => skill.skillName === skillId)
+            worker.skills.some((skill) => skill.skillName && skill.skillName._id.toString() === skillId)
         );
+      
+
 
         if (province) {
             skilledWorkersWithSkill = skilledWorkersWithSkill.filter((worker) =>
@@ -346,19 +356,22 @@ const getFilterSkilledSkillDesc = async (req, res) => {
         }
 
         // Sort the skilled workers by the latest skill's createdAt in descending order
+        // Sort the skilled workers by the latest skill's createdAt in descending order
         skilledWorkersWithSkill.sort((a, b) => {
-            const latestSkillA = a.skills
-                .filter((skill) => skill.skillName === skillId)
-                .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt))
-                .pop();
-    
-            const latestSkillB = b.skills
-                .filter((skill) => skill.skillName === skillId)
-                .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt))
-                .pop();
-    
-            return new Date(latestSkillA.createdAt) - new Date(latestSkillB.createdAt);
+        const latestSkillA = a.skills
+            .filter((skill) => skill.skillName && skill.skillName._id.toString() === skillId)
+            .sort((a, b) => new Date(b?.createdAt) - new Date(a?.createdAt))
+            .pop();
+        
+        const latestSkillB = b.skills
+            .filter((skill) => skill.skillName && skill.skillName._id.toString() === skillId)
+            .sort((a, b) => new Date(b?.createdAt) - new Date(a?.createdAt))
+            .pop();
+        
+        return new Date(latestSkillB?.createdAt) - new Date(latestSkillA?.createdAt);
         });
+          
+
 
         // Create a new array with the required properties, including the address
         const filteredWorkers = skilledWorkersWithSkill.map((worker) => ({
@@ -406,16 +419,20 @@ const getFilterSkilledSkillAsc = async (req, res) => {
         // Get all the skilled workers and their skills
         const skilledInfo = await SkilledInfo.find()
         .populate({
-            path: 'skills',
-            match: { isDeleted: 0 } 
-        });
+            path: "skills",
+            match: { isDeleted: 0 },
+            populate: {
+              path: "skillName",
+              select: "skill", // Assuming 'skill' is the field in 'AdminSkill' model that holds the skill name
+            },
+        })
 
         // Get all the skills registered to the admin
         const skillIdDoc = await AdminSkill.findOne({ skillId });
 
         // Filter skilled workers with the specified skill and province (if provided)
         let skilledWorkersWithSkill = skilledInfo.filter((worker) =>
-            worker.skills.some((skill) => skill.skillName === skillId)
+            worker.skills.some((skill) => skill.skillName && skill.skillName._id.toString() === skillId)
         );
 
         if (province) {
@@ -444,19 +461,21 @@ const getFilterSkilledSkillAsc = async (req, res) => {
         }
 
         // Sort the skilled workers by the latest skill's createdAt in descending order
+        // Sort the skilled workers by the latest skill's createdAt in ascending order
         skilledWorkersWithSkill.sort((a, b) => {
             const latestSkillA = a.skills
-                .filter((skill) => skill.skillName === skillId)
-                .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt))
-                .pop();
-    
+              .filter((skill) => skill.skillName && skill.skillName._id.toString() === skillId)
+              .sort((a, b) => new Date(a?.createdAt) - new Date(b?.createdAt))
+              .shift();
+          
             const latestSkillB = b.skills
-                .filter((skill) => skill.skillName === skillId)
-                .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt))
-                .pop();
-    
-            return new Date(latestSkillA.createdAt) - new Date(latestSkillB.createdAt);
-        });
+              .filter((skill) => skill.skillName && skill.skillName._id.toString() === skillId)
+              .sort((a, b) => new Date(a?.createdAt) - new Date(b?.createdAt))
+              .shift();
+          
+            return new Date(latestSkillA?.createdAt) - new Date(latestSkillB?.createdAt);
+          });
+          
 
         // Create a new array with the required properties, including the address
         const filteredWorkers = skilledWorkersWithSkill.map((worker) => ({
