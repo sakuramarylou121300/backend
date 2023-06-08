@@ -8,29 +8,57 @@ const Experience = require('../models/skilledExp')
 const jwt = require('jsonwebtoken')
 const mongoose = require('mongoose')
 
-//FINAL ALL FILTERING
-//this is the default, get all skilled worker sort by latest registered
-const getFilterSkilled = async(req, res) =>{
+//FINAL FILTERING
+const getFilterSkilled = async (req, res) => {
+    try {
+        const skilledInfo = await SkilledInfo.find({ userIsVerified: {$in: [0, 1]}, isDeleted: 0 })
+            .sort({ createdAt: -1 })
+            .select("-password")
+            .populate("skillBarangay")
+            .populate("skillNbi");
+  
+        if (skilledInfo) {
+            const updatedSkilledInfo = skilledInfo.map((skilled) => {
+            if (
+                skilled.addIsVerified === 1 &&
+                skilled.skillBarangay.some((brgy) => brgy.bClearanceIsVerified === "true") &&
+                skilled.skillNbi.some((nbi) => nbi.nClearanceIsVerified === "true")
+            ) {
+                return SkilledInfo.findByIdAndUpdate(skilled._id, { $set: { userIsVerified: 1 } }, { new: true });
+            } else if (
+                skilled.addIsVerified === 0 ||
+                skilled.skillBarangay.some((brgy) => brgy.bClearanceIsVerified === "true") ||
+                skilled.skillNbi.some((nbi) => nbi.nClearanceIsVerified === "true")
+            ) {
+                return SkilledInfo.findByIdAndUpdate(skilled._id, { $set: { userIsVerified: 0 } }, { new: true });
+            } else {
+                return skilled;
+            }
+            });
+  
+        const updatedSkilledInfoResults = await Promise.all(updatedSkilledInfo);
 
-    try{
-        const skilleInfo = await SkilledInfo
-        .find({userIsVerified: 0, isDeleted:0})
-        .sort({createdAt: -1})
+        const skilledInfoUpdated = await SkilledInfo.find({ userIsVerified: 1, isDeleted: 0 })
+        .sort({ createdAt: -1 })
         .select("-password")
         .populate({
-            path: "skills",
-            match: { isDeleted: 0 },
-            populate: {
-              path: "skillName",
-              select: "skill", // Assuming 'skill' is the field in 'AdminSkill' model that holds the skill name
-            },
+        path: "skills",
+        match: { isDeleted: 0 },
+        populate: {
+            path: "skillName",
+            select: "skill",
+        },
         })
-        res.status(200).json(skilleInfo)
+  
+        res.status(200).json(skilledInfoUpdated);
+      } else {
+        return res.status(404).json({ message: "Skilled worker not found" });
+      }
+    } catch (error) {
+      res.status(400).json({ error: error.message });
     }
-    catch(error){
-        res.status(400).json({error:error.message})
-    }
-}
+};
+
 //on click skill, then get skilled worker sort by latest skilled worker in the skill, address dynamic
 const getFilterSkilledSkillDesc = async (req, res) => {
     try {
@@ -39,12 +67,35 @@ const getFilterSkilledSkillDesc = async (req, res) => {
         const city = req.query.cityAddr;
         const barangay = req.query.barangayAddr;
 
+         const skilledInfoToVer = await SkilledInfo.find({ userIsVerified: {$in: [0, 1]}, isDeleted: 0 })
+            .sort({ createdAt: -1 })
+            .select("-password")
+            .populate("skillBarangay")
+            .populate("skillNbi");
+  
+        if (skilledInfoToVer) {
+            const updatedSkilledInfo = skilledInfoToVer.map((skilled) => {
+            if (
+                skilled.addIsVerified === 1 &&
+                skilled.skillBarangay.some((brgy) => brgy.bClearanceIsVerified === "true") &&
+                skilled.skillNbi.some((nbi) => nbi.nClearanceIsVerified === "true")
+            ) {
+                return SkilledInfo.findByIdAndUpdate(skilled._id, { $set: { userIsVerified: 1 } }, { new: true });
+            } else if (
+                skilled.addIsVerified === 0 ||
+                skilled.skillBarangay.some((brgy) => brgy.bClearanceIsVerified === "true") ||
+                skilled.skillNbi.some((nbi) => nbi.nClearanceIsVerified === "true")
+            ) {
+                return SkilledInfo.findByIdAndUpdate(skilled._id, { $set: { userIsVerified: 0 } }, { new: true });
+            } else {
+                return skilled;
+            }
+            });
+  
+        const updatedSkilledInfoResults = await Promise.all(updatedSkilledInfo);
+
         // Get all the skilled workers and their skills
-        const skilledInfo = await SkilledInfo.find()
-        // .populate({
-        //     path: 'skills',
-        //     match: { isDeleted: 0 } 
-        // });
+        const skilledInfo = await SkilledInfo.find({ userIsVerified: 1, isDeleted: 0 })
         .populate({
             path: "skills",
             match: { isDeleted: 0 },
@@ -61,9 +112,6 @@ const getFilterSkilledSkillDesc = async (req, res) => {
         let skilledWorkersWithSkill = skilledInfo.filter((worker) =>
             worker.skills.some((skill) => skill.skillName && skill.skillName._id.toString() === skillId)
         );
-      
-
-
         if (province) {
             skilledWorkersWithSkill = skilledWorkersWithSkill.filter((worker) =>
                 worker.provinceAddr.toLowerCase() === province.toLowerCase()
@@ -137,8 +185,11 @@ const getFilterSkilledSkillDesc = async (req, res) => {
         }));
 
         return res.status(200).json(filteredWorkers);
-    } catch (err) {
-        return res.status(500).json({ message: err.toString() });
+    } else {
+        return res.status(404).json({ message: "Skilled worker not found" });
+      }
+    } catch (error) {
+      res.status(400).json({ error: error.message });
     }
 };
 
@@ -150,8 +201,35 @@ const getFilterSkilledSkillAsc = async (req, res) => {
         const city = req.query.cityAddr;
         const barangay = req.query.barangayAddr;
 
+        const skilledInfoToVer = await SkilledInfo.find({ userIsVerified: {$in: [0, 1]}, isDeleted: 0 })
+            .sort({ createdAt: -1 })
+            .select("-password")
+            .populate("skillBarangay")
+            .populate("skillNbi");
+  
+        if (skilledInfoToVer) {
+            const updatedSkilledInfo = skilledInfoToVer.map((skilled) => {
+            if (
+                skilled.addIsVerified === 1 &&
+                skilled.skillBarangay.some((brgy) => brgy.bClearanceIsVerified === "true") &&
+                skilled.skillNbi.some((nbi) => nbi.nClearanceIsVerified === "true")
+            ) {
+                return SkilledInfo.findByIdAndUpdate(skilled._id, { $set: { userIsVerified: 1 } }, { new: true });
+            } else if (
+                skilled.addIsVerified === 0 ||
+                skilled.skillBarangay.some((brgy) => brgy.bClearanceIsVerified === "true") ||
+                skilled.skillNbi.some((nbi) => nbi.nClearanceIsVerified === "true")
+            ) {
+                return SkilledInfo.findByIdAndUpdate(skilled._id, { $set: { userIsVerified: 0 } }, { new: true });
+            } else {
+                return skilled;
+            }
+            });
+  
+        const updatedSkilledInfoResults = await Promise.all(updatedSkilledInfo);
+
         // Get all the skilled workers and their skills
-        const skilledInfo = await SkilledInfo.find()
+        const skilledInfo = await SkilledInfo.find({ userIsVerified: 1, isDeleted: 0 })
         .populate({
             path: "skills",
             match: { isDeleted: 0 },
@@ -193,8 +271,6 @@ const getFilterSkilledSkillAsc = async (req, res) => {
         if (skilledWorkersWithSkill.length === 0) {
             return res.status(400).json({ error: 'No skilled worker available for this skill and province yet.' });
         }
-
-        // Sort the skilled workers by the latest skill's createdAt in descending order
         // Sort the skilled workers by the latest skill's createdAt in ascending order
         skilledWorkersWithSkill.sort((a, b) => {
             const latestSkillA = a.skills
@@ -241,8 +317,11 @@ const getFilterSkilledSkillAsc = async (req, res) => {
         }));
 
         return res.status(200).json(filteredWorkers);
-    } catch (err) {
-        return res.status(500).json({ message: err.toString() });
+    } else {
+        return res.status(404).json({ message: "Skilled worker not found" });
+      }
+    } catch (error) {
+      res.status(400).json({ error: error.message });
     }
 };
 
