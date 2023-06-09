@@ -5,12 +5,28 @@ const AdminSkill = require('../models/adminSkill')
 const Skill = require('../models/skill') 
 const Certificate = require('../models/skillCert')
 const Experience = require('../models/skilledExp')  
+const SkilledBClearance = require('../models/skilledBClearance') //for CRUD of skill (admin)
+const SkilledNClearance = require('../models/skilledNClearance') //for CRUD of skill (admin)
+
 const jwt = require('jsonwebtoken')
 const mongoose = require('mongoose')
 
 //FINAL FILTERING
 const getFilterSkilled = async (req, res) => {
     try {
+        //update all expired bclearance
+        var currentDate = new Date();//date today
+        await SkilledBClearance.updateMany({ bClearanceExp: {$lt:currentDate}}, 
+            {$set: 
+                { bClearanceIsVerified: "false", isExpired: 1 } });
+
+        //update all expired nclearance
+        var currentDate = new Date();//date today
+        await SkilledNClearance.updateMany({ nClearanceExp: {$lt:currentDate} }, 
+            {$set: 
+                { nClearanceIsVerified: "false", isExpired: 1 } });
+        
+
         const skilledInfo = await SkilledInfo.find({ userIsVerified: {$in: [0, 1]}, isDeleted: 0 })
             .sort({ createdAt: -1 })
             .select("-password")
@@ -27,8 +43,8 @@ const getFilterSkilled = async (req, res) => {
                 return SkilledInfo.findByIdAndUpdate(skilled._id, { $set: { userIsVerified: 1 } }, { new: true });
             } else if (
                 skilled.addIsVerified === 0 ||
-                skilled.skillBarangay.some((brgy) => brgy.bClearanceIsVerified === "true") ||
-                skilled.skillNbi.some((nbi) => nbi.nClearanceIsVerified === "true")
+                skilled.skillBarangay.some((brgy) => brgy.bClearanceIsVerified === "false") ||
+                skilled.skillNbi.some((nbi) => nbi.nClearanceIsVerified === "false")
             ) {
                 return SkilledInfo.findByIdAndUpdate(skilled._id, { $set: { userIsVerified: 0 } }, { new: true });
             } else {
@@ -67,11 +83,23 @@ const getFilterSkilledSkillDesc = async (req, res) => {
         const city = req.query.cityAddr;
         const barangay = req.query.barangayAddr;
 
-         const skilledInfoToVer = await SkilledInfo.find({ userIsVerified: {$in: [0, 1]}, isDeleted: 0 })
-            .sort({ createdAt: -1 })
-            .select("-password")
-            .populate("skillBarangay")
-            .populate("skillNbi");
+         //update all expired bclearance
+         var currentDate = new Date();//date today
+         await SkilledBClearance.updateMany({ bClearanceExp: {$lt:currentDate}}, 
+             {$set: 
+                 { bClearanceIsVerified: "false", isExpired: 1 } });
+ 
+         //update all expired nclearance
+         var currentDate = new Date();//date today
+         await SkilledNClearance.updateMany({ nClearanceExp: {$lt:currentDate} }, 
+             {$set: 
+                 { nClearanceIsVerified: "false", isExpired: 1 } });
+         
+        const skilledInfoToVer = await SkilledInfo.find({ userIsVerified: {$in: [0, 1]}, isDeleted: 0 })
+        .sort({ createdAt: -1 })
+        .select("-password")
+        .populate("skillBarangay")
+        .populate("skillNbi");
   
         if (skilledInfoToVer) {
             const updatedSkilledInfo = skilledInfoToVer.map((skilled) => {
@@ -83,8 +111,8 @@ const getFilterSkilledSkillDesc = async (req, res) => {
                 return SkilledInfo.findByIdAndUpdate(skilled._id, { $set: { userIsVerified: 1 } }, { new: true });
             } else if (
                 skilled.addIsVerified === 0 ||
-                skilled.skillBarangay.some((brgy) => brgy.bClearanceIsVerified === "true") ||
-                skilled.skillNbi.some((nbi) => nbi.nClearanceIsVerified === "true")
+                skilled.skillBarangay.some((brgy) => brgy.bClearanceIsVerified === "false") ||
+                skilled.skillNbi.some((nbi) => nbi.nClearanceIsVerified === "false")
             ) {
                 return SkilledInfo.findByIdAndUpdate(skilled._id, { $set: { userIsVerified: 0 } }, { new: true });
             } else {
@@ -200,6 +228,17 @@ const getFilterSkilledSkillAsc = async (req, res) => {
         const province = req.query.provinceAddr; // Get the province from the query parameter
         const city = req.query.cityAddr;
         const barangay = req.query.barangayAddr;
+        //update all expired bclearance
+        var currentDate = new Date();//date today
+        await SkilledBClearance.updateMany({ bClearanceExp: {$lt:currentDate}}, 
+            {$set: 
+                { bClearanceIsVerified: "false", isExpired: 1 } });
+
+        //update all expired nclearance
+        var currentDate = new Date();//date today
+        await SkilledNClearance.updateMany({ nClearanceExp: {$lt:currentDate} }, 
+            {$set: 
+                { nClearanceIsVerified: "false", isExpired: 1 } });
 
         const skilledInfoToVer = await SkilledInfo.find({ userIsVerified: {$in: [0, 1]}, isDeleted: 0 })
             .sort({ createdAt: -1 })
@@ -217,8 +256,8 @@ const getFilterSkilledSkillAsc = async (req, res) => {
                 return SkilledInfo.findByIdAndUpdate(skilled._id, { $set: { userIsVerified: 1 } }, { new: true });
             } else if (
                 skilled.addIsVerified === 0 ||
-                skilled.skillBarangay.some((brgy) => brgy.bClearanceIsVerified === "true") ||
-                skilled.skillNbi.some((nbi) => nbi.nClearanceIsVerified === "true")
+                skilled.skillBarangay.some((brgy) => brgy.bClearanceIsVerified === "false") ||
+                skilled.skillNbi.some((nbi) => nbi.nClearanceIsVerified === "false")
             ) {
                 return SkilledInfo.findByIdAndUpdate(skilled._id, { $set: { userIsVerified: 0 } }, { new: true });
             } else {
