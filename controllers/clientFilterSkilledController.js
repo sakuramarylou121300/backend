@@ -449,14 +449,14 @@ const getClientSkilledExp = async(req, res)=>{
         if (!skilledInfo){
             return res.status(404).json({error: 'Skilled Worker not found'})
         }
-        // Find skilled_id document based on username
-        const skillIdDoc = await AdminSkill.findOne({
-            skill: skillName});
+        // const skillIdDoc = await AdminSkill.findOne({
+        //     skill: skillName});
 
         const skilledExp = await Experience
         .find({
             skilled_id: skilledInfo._id, 
-            categorySkill: skillIdDoc._id,
+            // categorySkill: skillIdDoc._id,
+            expIsVerified: "true",
             isDeleted: 0})
         .populate('categorySkill')
         .populate('skilled_id')
