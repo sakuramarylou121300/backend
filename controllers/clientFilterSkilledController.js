@@ -449,6 +449,7 @@ const getClientSkilledExp = async(req, res)=>{
         if (!skilledInfo){
             return res.status(404).json({error: 'Skilled Worker not found'})
         }
+        // Find skilled_id document based on username
         // const skillIdDoc = await AdminSkill.findOne({
         //     skill: skillName});
 
