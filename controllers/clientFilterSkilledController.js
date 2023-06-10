@@ -7,7 +7,6 @@ const Certificate = require('../models/skillCert')
 const Experience = require('../models/skilledExp')  
 const SkilledBClearance = require('../models/skilledBClearance') //for CRUD of skill (admin)
 const SkilledNClearance = require('../models/skilledNClearance') //for CRUD of skill (admin)
-
 const jwt = require('jsonwebtoken')
 const mongoose = require('mongoose')
 
@@ -74,7 +73,7 @@ const getFilterSkilled = async (req, res) => {
       res.status(400).json({ error: error.message });
     }
 };
-
+    
 //on click skill, then get skilled worker sort by latest skilled worker in the skill, address dynamic
 const getFilterSkilledSkillDesc = async (req, res) => {
     try {
@@ -417,14 +416,15 @@ const getClientSkilledCert = async(req, res)=>{
         if (!skilledInfo){
             return res.status(404).json({error: 'Skilled Worker not found'})
         }
-        // Find skilled_id document based on username
-        const skillIdDoc = await AdminSkill.findOne({
-            skill: skillName});
+        // // Find skilled_id document based on username
+        // const skillIdDoc = await AdminSkill.findOne({
+        //     skill: skillName});
 
         const skillCert = await Certificate
         .find({
             skilled_id: skilledInfo._id, 
-            categorySkill: skillIdDoc._id,
+            // categorySkill: skillIdDoc._id,
+            skillIsVerified: "true",
             isDeleted: 0,
             isExpired:{$ne: 1},})
         .populate('categorySkill')

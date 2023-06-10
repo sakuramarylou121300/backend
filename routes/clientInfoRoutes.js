@@ -58,7 +58,7 @@ router.get('/filter/skilled/skill/asc/:_id', clientRequireAuth, getFilterSkilled
 //all get one
 router.get('/getOne/skilledInfo/:id', clientRequireAuth, getClientSkilledInfo)
 router.get('/getOne/skilledInfo/skill/:_id', clientRequireAuth, getClientSkilledSkill)
-router.get('/getOne/skilledInfo/skillCert/:_id/:skillName', clientRequireAuth, getClientSkilledCert)
+router.get('/getOne/skilledInfo/skillCert/:_id', clientRequireAuth, getClientSkilledCert)
 router.get('/getOne/skilledInfo/skilledExp/:_id/:skillName', clientRequireAuth, getClientSkilledExp)
 
 module.exports = router
