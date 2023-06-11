@@ -34,7 +34,8 @@ const{
 
 //get all skill for client
 const {
-    getAllSkill
+    getAllSkill,
+    getOneSkill
 } = require('../controllers/adminSkillController')
 
 //authentication
@@ -69,4 +70,6 @@ router.get('/getOne/skilledInfo/skilledExp/:_id', clientRequireAuth, getClientSk
 
 //get all skill
 router.get('/getAll/client/skilledskill', clientRequireAuth, getAllSkill)
+router.get('/getOne/client/skilledskill/:id', clientRequireAuth, getOneSkill)
+
 module.exports = router
