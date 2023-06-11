@@ -25,7 +25,12 @@ const getFilterSkilled = async (req, res) => {
             {$set: 
                 { nClearanceIsVerified: "false", isExpired: 1 } });
         
-
+        //update all certificate
+        var currentDate = new Date();//date today
+        await Certificate.updateMany({ validUntil: {$lt:currentDate} }, 
+            {$set: 
+                { skillIsVerified: "false", isExpired: 1 } });
+        
         const skilledInfo = await SkilledInfo.find({ userIsVerified: {$in: [0, 1]}, isDeleted: 0 })
             .sort({ createdAt: -1 })
             .select("-password")
@@ -42,8 +47,8 @@ const getFilterSkilled = async (req, res) => {
                 return SkilledInfo.findByIdAndUpdate(skilled._id, { $set: { userIsVerified: 1 } }, { new: true });
             } else if (
                 skilled.addIsVerified === 0 ||
-                skilled.skillBarangay.some((brgy) => brgy.bClearanceIsVerified === "false") ||
-                skilled.skillNbi.some((nbi) => nbi.nClearanceIsVerified === "false")
+                skilled.skillBarangay.every((brgy) => brgy.bClearanceIsVerified === "false" || brgy.bClearanceIsVerified === "pending") ||
+                skilled.skillNbi.every((nbi) => nbi.nClearanceIsVerified === "false" || nbi.nClearanceIsVerified === "pending" )
             ) {
                 return SkilledInfo.findByIdAndUpdate(skilled._id, { $set: { userIsVerified: 0 } }, { new: true });
             } else {
@@ -93,7 +98,13 @@ const getFilterSkilledSkillDesc = async (req, res) => {
          await SkilledNClearance.updateMany({ nClearanceExp: {$lt:currentDate} }, 
              {$set: 
                  { nClearanceIsVerified: "false", isExpired: 1 } });
-         
+        
+        //update all certificate
+        var currentDate = new Date();//date today
+        await Certificate.updateMany({ validUntil: {$lt:currentDate} }, 
+            {$set: 
+                { skillIsVerified: "false", isExpired: 1 } });
+            
         const skilledInfoToVer = await SkilledInfo.find({ userIsVerified: {$in: [0, 1]}, isDeleted: 0 })
         .sort({ createdAt: -1 })
         .select("-password")
@@ -110,8 +121,8 @@ const getFilterSkilledSkillDesc = async (req, res) => {
                 return SkilledInfo.findByIdAndUpdate(skilled._id, { $set: { userIsVerified: 1 } }, { new: true });
             } else if (
                 skilled.addIsVerified === 0 ||
-                skilled.skillBarangay.some((brgy) => brgy.bClearanceIsVerified === "false") ||
-                skilled.skillNbi.some((nbi) => nbi.nClearanceIsVerified === "false")
+                skilled.skillBarangay.every((brgy) => brgy.bClearanceIsVerified === "false" || brgy.bClearanceIsVerified === "pending") ||
+                skilled.skillNbi.every((nbi) => nbi.nClearanceIsVerified === "false" || nbi.nClearanceIsVerified === "pending")
             ) {
                 return SkilledInfo.findByIdAndUpdate(skilled._id, { $set: { userIsVerified: 0 } }, { new: true });
             } else {
@@ -238,6 +249,12 @@ const getFilterSkilledSkillAsc = async (req, res) => {
         await SkilledNClearance.updateMany({ nClearanceExp: {$lt:currentDate} }, 
             {$set: 
                 { nClearanceIsVerified: "false", isExpired: 1 } });
+        
+        //update all certificate
+        var currentDate = new Date();//date today
+        await Certificate.updateMany({ validUntil: {$lt:currentDate} }, 
+            {$set: 
+                { skillIsVerified: "false", isExpired: 1 } });
 
         const skilledInfoToVer = await SkilledInfo.find({ userIsVerified: {$in: [0, 1]}, isDeleted: 0 })
             .sort({ createdAt: -1 })
@@ -255,8 +272,8 @@ const getFilterSkilledSkillAsc = async (req, res) => {
                 return SkilledInfo.findByIdAndUpdate(skilled._id, { $set: { userIsVerified: 1 } }, { new: true });
             } else if (
                 skilled.addIsVerified === 0 ||
-                skilled.skillBarangay.some((brgy) => brgy.bClearanceIsVerified === "false") ||
-                skilled.skillNbi.some((nbi) => nbi.nClearanceIsVerified === "false")
+                skilled.skillBarangay.every((brgy) => brgy.bClearanceIsVerified === "false" || brgy.bClearanceIsVerified === "pending") ||
+                skilled.skillNbi.every((nbi) => nbi.nClearanceIsVerified === "false" || nbi.nClearanceIsVerified === "pending")
             ) {
                 return SkilledInfo.findByIdAndUpdate(skilled._id, { $set: { userIsVerified: 0 } }, { new: true });
             } else {

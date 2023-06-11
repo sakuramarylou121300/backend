@@ -32,6 +32,12 @@ const{
     getClientSkilledExp
 } = require('../controllers/clientFilterSkilledController')
 
+//get all skill for client
+const {
+    getAllSkill
+} = require('../controllers/adminSkillController')
+
+//authentication
 const {clientRequireAuth,localVariables} = require('../middleware/clientRequireAuth')
 const { updateAddress } = require('../controllers/skilledInfoController')
 
@@ -61,4 +67,6 @@ router.get('/getOne/skilledInfo/skill/:_id', clientRequireAuth, getClientSkilled
 router.get('/getOne/skilledInfo/skillCert/:_id', clientRequireAuth, getClientSkilledCert)
 router.get('/getOne/skilledInfo/skilledExp/:_id', clientRequireAuth, getClientSkilledExp)
 
+//get all skill
+router.get('/getAll/client/skilledskill', clientRequireAuth, getAllSkill)
 module.exports = router
