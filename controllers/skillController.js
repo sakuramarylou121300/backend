@@ -2,6 +2,8 @@ const Skill = require('../models/skill')
 const SkilledInfo = require('../models/skilledInfo')
 const Notification = require('../models/adminNotification')
 const AdminInfo = require('../models/adminInfo')
+const ClientInfo = require('../models/clientInfo')
+
 const mongoose = require('mongoose')
 
 const createSkills = async(req, res)=>{ 
@@ -191,11 +193,132 @@ const deleteSkill = async(req, res)=>{
 
 }
 
+//this is for the rating
+// const rating = async(req, res)=>{
+//     // const {_id} = req.clientInfo //to get who rate the skille worker
+//     const _id = req.clientInfo._id;
+//     const {star, skill_id, comment} = req.body
+
+//     try{
+//         const skill = await Skill.findById(skill_id);
+
+//         //find if client already rated the product
+//         let alreadyRated = skill.ratings.find((client_id)=>client_id.postedby.toString()=== _id.toString()
+//         )   
+//         if(alreadyRated){
+//             const updateRating = await Skill.updateOne(
+//                 {
+//                     ratings:{$elemMatch: alreadyRated },
+//                 },
+//                 {
+//                     $set:{"ratings.$.star":star, "ratings.$.comment":comment}
+//                 },{
+//                     new: true
+//                 })
+//                 // res.json(updateRating)
+//         }else{
+//             const rateSkill = await Skill.findByIdAndUpdate(
+//                 skill_id, {
+//                     $push:{
+//                         ratings:{
+//                             star:star,
+//                             comment: comment,
+//                             postedby: _id,
+//                         }
+//                     }
+//                 }, {new: true}
+//             )
+//             // res.json(rateSkill)
+//             }
+            
+//         //this is to get all ratings
+//         const getAllRatings = await Skill.findById(skill_id)
+//         let totalRating = getAllRatings.ratings.length;
+//         //find the sum of arrray from totalRating with the use of reduce 
+//         let ratingSum = getAllRatings.ratings.map((item)=>item.star)
+//         .reduce((prev, curr)=>prev + curr, 0)
+//         //sum divided by the number of posted rating
+//         let actualRating = Math.round(ratingSum/totalRating)
+//         let finalSkillRate = await Skill.findByIdAndUpdate(skill_id, {
+//             totalrating: actualRating
+//         }, {new: true
+//         })
+//         res.json(finalSkillRate)
+//     }
+//     catch(error){
+//         throw new Error(error)
+//     }
+// }
+const rating = async (req, res) => {
+    const _id = req.clientInfo._id;
+    const { star, comment } = req.body;
+    const skill_id = req.params.skill_id; // Retrieve skill_id from params
+    try {
+        const skill = await Skill.findById(skill_id);
+
+        // Find if client already rated the product
+        let alreadyRated = skill.ratings.find(
+        (client_id) => client_id.postedby.toString() === _id.toString()
+        );
+
+        if (alreadyRated) {
+        const updateRating = await Skill.updateOne(
+            {
+                ratings: { $elemMatch: alreadyRated },
+            },
+            {
+                $set: { "ratings.$.star": star, "ratings.$.comment": comment },
+            },
+            {
+                new: true,
+            }
+        );
+        // res.json(updateRating)
+        } else {
+        const rateSkill = await Skill.findByIdAndUpdate(
+            skill_id,
+            {
+            $push: {
+                ratings: {
+                star: star,
+                comment: comment,
+                postedby: _id,
+                },
+            },
+            },
+            { new: true }
+        );
+        // res.json(rateSkill)
+        }
+
+        // This is to get all ratings
+        const getAllRatings = await Skill.findById(skill_id);
+        let totalRating = getAllRatings.ratings.length;
+        // Find the sum of the array from totalRating with the use of reduce
+        let ratingSum = getAllRatings.ratings
+        .map((item) => item.star)
+        .reduce((prev, curr) => prev + curr, 0);
+        // Sum divided by the number of posted ratings
+        let actualRating = Math.round(ratingSum / totalRating);
+        let finalSkillRate = await Skill.findByIdAndUpdate(
+        skill_id,
+        {
+            totalrating: actualRating,
+        },
+        { new: true }
+        );
+        res.json(finalSkillRate);
+    } catch (error) {
+        throw new Error(error);
+    }
+    };
+
 module.exports = {
     createSkills,
     createSkill,
     getAllSkill,
     getOneSkill,
     updateSkill,
-    deleteSkill
+    deleteSkill,
+    rating
 }
