@@ -1,4 +1,6 @@
 const express = require('express')
+const cloudinary = require("../utils/cloudinary")
+const upload = require("../utils/multer")
 const {
     createSkills,
     createSkill, 
@@ -6,7 +8,11 @@ const {
     getOneSkill,
     updateSkill,
     deleteSkill,
-    rating
+    rating,
+    createClientComment,
+    getAllClientComment,
+    updateClientComment,
+    deleteClientComment
 } = require('../controllers/skillController')
 const {requireAuth} = require('../middleware/requireAuth')
 const {clientRequireAuth} = require('../middleware/clientRequireAuth')
@@ -23,6 +29,11 @@ router.patch('/delete/:id', requireAuth, deleteSkill)
 
 //this is for the rating
 router.patch('/rating/:skill_id', clientRequireAuth, rating)
+//this is for the comment
+router.post('/post/comment/:skill_id', upload.array("photo"), clientRequireAuth, createClientComment)
+router.get('/getAll/comment/:skill_id', clientRequireAuth, getAllClientComment)
+router.patch('/update/comment/:skill_id', clientRequireAuth, updateClientComment)
+router.patch('/delete/comment/:id', clientRequireAuth, deleteClientComment)
 
 //export
 module.exports = router

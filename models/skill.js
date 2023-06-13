@@ -12,7 +12,6 @@ const skillSchema = new Schema({
     ratings: [
         {
             star: Number,
-            comment: String,
             //this is the client who rate the skill of the skilled worker
             postedby: { type: mongoose.Schema.Types.ObjectId, ref: "ClientInfo" },
         },
