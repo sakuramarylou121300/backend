@@ -11,6 +11,7 @@ const {
     rating,
     createClientComment,
     getAllClientComment,
+    getAllClientOneComment,
     updateClientComment,
     deleteClientComment
 } = require('../controllers/skillController')
@@ -32,7 +33,8 @@ router.patch('/rating/:skill_id', clientRequireAuth, rating)
 //this is for the comment
 router.post('/post/comment/:skill_id', upload.array("photo"), clientRequireAuth, createClientComment)
 router.get('/getAll/comment/:skill_id', clientRequireAuth, getAllClientComment)
-router.patch('/update/comment/:skill_id', clientRequireAuth, updateClientComment)
+router.get('/getAll/clientone/comment', clientRequireAuth, getAllClientOneComment)
+router.patch('/update/comment/:id', upload.array("photo"), clientRequireAuth, updateClientComment)
 router.patch('/delete/comment/:id', clientRequireAuth, deleteClientComment)
 
 //export

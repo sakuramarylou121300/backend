@@ -97,6 +97,15 @@ const getAllSkill = async(req, res)=>{
         const skill = await Skill.find({skilled_id, isDeleted: 0}).sort({createdAt: -1})
         .populate('skillName')
         .populate('skilled_id')
+        .populate('comments')
+        .populate({
+            path: "comments",
+            match: { isDeleted: 0 },
+            populate: {
+              path: "skill_id",
+              select: "skillName", // Assuming 'skill' is the field in 'AdminSkill' model that holds the skill name
+            },
+        })
         
         res.status(200).json(skill)
     }
@@ -267,6 +276,13 @@ const createClientComment = async (req, res) => {
 
     try {
 
+        //check if the star is empty else click cancel
+        let emptyFields = []
+
+        if(star === 0){
+            return res.status(400).json({error: 'Please select your rate before submitting.'});
+        }
+
         //get the photo then push first 
         let uploadedPhotos = [];
 
@@ -275,14 +291,6 @@ const createClientComment = async (req, res) => {
             let result = await cloudinary.uploader.upload(file.path);
             uploadedPhotos.push({ url: result.secure_url, public_id: result.public_id });
         }
-        
-        // // Create the comment
-        // const clientComment = await ClientComment.create({
-        // comment,
-        // client_id,
-        // skill_id: skill_id,
-        // star: star,
-        // });
 
         let clientComment = new ClientComment({
             comment,
@@ -300,12 +308,13 @@ const createClientComment = async (req, res) => {
         const ratingsSum = comments.reduce((sum, comment) => sum + comment.star, 0);
         const totalRatings = comments.length;
         const averageRating = totalRatings > 0 ? ratingsSum / totalRatings : 0;
+        const roundedRating = Number(averageRating.toFixed(1)); // Round off to one decimal place
 
         //this is to update the skill
         let finalSkillRate = await Skill.findByIdAndUpdate(
             skill_id,
             {
-                totalrating: averageRating,
+                totalrating: roundedRating,
             },
             { new: true }
         );
@@ -315,7 +324,8 @@ const createClientComment = async (req, res) => {
         res.status(404).json({ error: error.message });
     }
 };
-  
+
+//this is for all the user
 const getAllClientComment = async(req, res)=>{
 
     try{
@@ -333,72 +343,90 @@ const getAllClientComment = async(req, res)=>{
         res.status(404).json({error: error.message})
     }  
 }
+//this is for specific client only
+const getAllClientOneComment = async(req, res)=>{
+
+    try{
+        //this is to find skill for specific user
+        const skill_id = req.params.skill_id;
+        const client_id = req.clientInfo._id;
+        //get all query
+        const clientComment = await ClientComment
+        .find({client_id, isDeleted: 0})
+        .sort({createdAt: -1})
+        .populate('skill_id')
+        .populate('client_id')
+        
+        res.status(200).json(clientComment)
+    }
+    catch(error){
+        res.status(404).json({error: error.message})
+    }  
+}
 
 const updateClientComment = async (req, res) => {
-    const skill_id = req.params.skill_id; // Retrieve skill_id from params
+    // const skill_id = req.params.skill_id; // Retrieve skill_id from params
     // const { star, comment } = req.body;
     const client_id = req.clientInfo._id;
   
     // Check if the skill_id is valid
-    if (!mongoose.Types.ObjectId.isValid(skill_id)) {
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
       return res.status(404).json({ error: 'Invalid id' });
     }
-  
-    // Check for empty fields
-    let emptyFields = [];
-  
-    if (!comment) {
-      emptyFields.push('comment');
-    }
-    if (!star) {
-      emptyFields.push('star');
-    }
-  
-    // Send error message if there are empty fields
-    if (emptyFields.length > 0) {
-      return res.status(400).json({ error: 'Please fill in all the blank fields.', emptyFields });
-    }
-  
-    if (comment === '') {
-      return res.status(400).json({ message: 'Please enter your comment.' });
-    }
-  
-    if (star === 0) {
-      return res.status(400).json({ message: 'Please rate the skilled worker.' });
+   
+    if (req.body.star === 0) {
+      return res.status(400).json({ message: 'Please select your skill before submitting.' });
     }
   
     try {
-        // Find the comment and check if it belongs to the logged-in client
-        const clientComment = await ClientComment.findOne({
-            _id: skill_id,
-            client_id: client_id
-        });
-  
-        // If comment not found or doesn't belong to the client, return error
-        if (!clientComment) {
-            return res.status(404).json({ error: 'Comment not found or you cannot update other clients\' feedback.' });
-        }
+
+        let clientComment = await ClientComment.findById(req.params.id);
   
         // Get the previous rating value
         const previousRating = clientComment.star;
-    
+  
+        // remove the recent images
+        if (clientComment.photo) {
+            await Promise.all(
+                clientComment.photo.map(async (clientPhoto) => {
+                await cloudinary.uploader.destroy(clientPhoto.public_id);
+                })
+            );
+        }
+
+        // upload the new images
+        let uploadedPhotos = await Promise.all(
+            req.files.map(async (file) => {
+            let result = await cloudinary.uploader.upload(file.path);
+            return { url: result.secure_url, public_id: result.public_id };
+            })
+        );
+
+        let data = {
+            star: req.body.star || clientComment.star,
+            comment: req.body.comment || clientComment.comment,
+            photo: uploadedPhotos.length > 0 ? uploadedPhotos : skilledExp.photo,
+            cloudinary_id: uploadedPhotos.length > 0 ? uploadedPhotos[0].public_id : skilledExp.cloudinary_id,
+        };
+
         // Update the comment
-        const updatedClientComment = await ClientComment.findOneAndUpdate(
-            { _id: skill_id, client_id: client_id },
-            { $set: { comment, star } },
+        const updatedClientComment = await ClientComment.findByIdAndUpdate(
+            req.params.id,
+            data,
             { new: true }
         );
-  
+          
         // Recalculate the total rating for the corresponding skill
         const comments = await ClientComment.find({ skill_id: updatedClientComment.skill_id, isDeleted: 0 }).lean();
         const ratingsSum = comments.reduce((sum, comment) => sum + comment.star, 0);
         const totalRatings = comments.length;
         const averageRating = totalRatings > 0 ? ratingsSum / totalRatings : 0;
-    
+        const roundedRating = Number(averageRating.toFixed(1)); // Round off to one decimal place
+
         // Update the skill's total rating
         const updatedSkill = await Skill.findByIdAndUpdate(
             updatedClientComment.skill_id,
-            { totalrating: averageRating },
+            { totalrating: roundedRating },
             { new: true }
         );
   
@@ -407,8 +435,7 @@ const updateClientComment = async (req, res) => {
     } catch (error) {
       res.status(404).json({ error: error.message });
     }
-  };
-  
+};
   
 const deleteClientComment = async(req, res)=>{
     const {id} = req.params
@@ -419,7 +446,7 @@ const deleteClientComment = async(req, res)=>{
     }
 
     //delete query
-    const comment = await ClientComment.findOneAndUpdate({_id: id},
+    const comment = await ClientComment.findOneAndUpdate({_id:id},
         {isDeleted:1})
     
     //check if not existing
@@ -428,15 +455,16 @@ const deleteClientComment = async(req, res)=>{
     }
 
     // Recalculate the total rating for the corresponding skill
-    const comments = await ClientComment.find({ skill_id: updatedClientComment.skill_id, isDeleted: 0 }).lean();
+    const comments = await ClientComment.find({ skill_id: comment.skill_id, isDeleted: 0 }).lean();
     const ratingsSum = comments.reduce((sum, comment) => sum + comment.star, 0);
     const totalRatings = comments.length;
     const averageRating = totalRatings > 0 ? ratingsSum / totalRatings : 0;
+    const roundedRating = Number(averageRating.toFixed(1)); // Round off to one decimal place
 
     // Update the skill's total rating
     const updatedSkill = await Skill.findByIdAndUpdate(
         comment.skill_id,
-        { totalrating: averageRating },
+        { totalrating: roundedRating },
         { new: true }
     );
 
@@ -453,6 +481,7 @@ module.exports = {
     rating, 
     createClientComment,
     getAllClientComment,
+    getAllClientOneComment,
     deleteClientComment,
     updateClientComment
 }
