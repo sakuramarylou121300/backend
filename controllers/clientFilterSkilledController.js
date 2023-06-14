@@ -531,6 +531,7 @@ const getFilterSkilledSkillTopRate = async (req, res) => {
 const getFilterSkilledSkill = async (req, res) => {
     try {
         const skillId = req.params._id;
+        const region = req.query.regionAddr;
         const province = req.query.provinceAddr; // Get the province from the query parameter
         const city = req.query.cityAddr;
         const barangay = req.query.barangayAddr;
@@ -599,14 +600,21 @@ const getFilterSkilledSkill = async (req, res) => {
         let skilledWorkersWithSkill = skilledInfo.filter((worker) =>
             worker.skills.some((skill) => skill.skillName && skill.skillName._id.toString() === skillId)
         );
+        if (region) {
+                skilledWorkersWithSkill = skilledWorkersWithSkill.filter((worker) =>
+                worker.regionAddr.toLowerCase() === region.toLowerCase() 
+            );
+        }
         if (province) {
             skilledWorkersWithSkill = skilledWorkersWithSkill.filter((worker) =>
+                worker.regionAddr.toLowerCase() === region.toLowerCase() &&
                 worker.provinceAddr.toLowerCase() === province.toLowerCase()
             );
         }
 
         if (city) {
             skilledWorkersWithSkill = skilledWorkersWithSkill.filter((worker) =>
+                worker.regionAddr.toLowerCase() === region.toLowerCase() &&    
                 worker.provinceAddr.toLowerCase() === province.toLowerCase() &&
                 worker.cityAddr.toLowerCase() === city.toLowerCase()
             );
@@ -614,6 +622,7 @@ const getFilterSkilledSkill = async (req, res) => {
         
         if (barangay) {
             skilledWorkersWithSkill = skilledWorkersWithSkill.filter((worker) =>
+                worker.regionAddr.toLowerCase() === region.toLowerCase() &&
                 worker.provinceAddr.toLowerCase() === province.toLowerCase() &&
                 worker.cityAddr.toLowerCase() === city.toLowerCase() &&
                 worker.barangayAddr.toLowerCase() === barangay.toLowerCase()
@@ -626,9 +635,6 @@ const getFilterSkilledSkill = async (req, res) => {
 
         // Sort the skilled workers based on the 'sort' parameter
         switch (sort) {
-            case 'earliest':
-                skilledWorkersWithSkill.sort((a, b) => new Date(a?.createdAt) - new Date(b?.createdAt));
-                break;
             case 'latest':
                 skilledWorkersWithSkill.sort((a, b) => new Date(b?.createdAt) - new Date(a?.createdAt));
                 break;
@@ -651,7 +657,7 @@ const getFilterSkilledSkill = async (req, res) => {
             break;
                   
             default:
-                return res.status(400).json({ error: 'Invalid sort parameter' });
+                skilledWorkersWithSkill.sort((a, b) => new Date(a?.createdAt) - new Date(b?.createdAt));
         }
 
         // ... remaining code ...
