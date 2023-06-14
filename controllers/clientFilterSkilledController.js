@@ -630,7 +630,7 @@ const getFilterSkilledSkill = async (req, res) => {
         }
 
         if (skilledWorkersWithSkill.length === 0) {
-            return res.status(400).json({ error: 'No skilled worker available for this skill and province yet.' });
+            return res.status(400).json({ error: 'No skilled worker available.' });
         }
 
         // Sort the skilled workers based on the 'sort' parameter
