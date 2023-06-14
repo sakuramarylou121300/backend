@@ -27,6 +27,7 @@ const{
     getFilterSkilledSkillDesc,
     getFilterSkilledSkillAsc,
     getFilterSkilledSkillTopRate,
+    getFilterSkilledSkill,
     getClientSkilledInfo,
     getClientSkilledSkill,
     getClientSkilledCert,
@@ -64,7 +65,7 @@ router.get('/filter/skilled', clientRequireAuth, getFilterSkilled)
 router.get('/filter/skilled/skill/desc/:_id', clientRequireAuth, getFilterSkilledSkillDesc)
 router.get('/filter/skilled/skill/asc/:_id', clientRequireAuth, getFilterSkilledSkillAsc)
 router.get('/filter/skilled/skill/toprate/:_id', clientRequireAuth, getFilterSkilledSkillTopRate)
-
+router.get('/filter/skilled/:_id', getFilterSkilledSkill);
 //all get one
 router.get('/getOne/skilledInfo/:id', clientRequireAuth, getClientSkilledInfo)
 router.get('/getOne/skilledInfo/skill/:_id', clientRequireAuth, getClientSkilledSkill)

@@ -528,6 +528,168 @@ const getFilterSkilledSkillTopRate = async (req, res) => {
     }
 };
 
+const getFilterSkilledSkill = async (req, res) => {
+    try {
+        const skillId = req.params._id;
+        const province = req.query.provinceAddr; // Get the province from the query parameter
+        const city = req.query.cityAddr;
+        const barangay = req.query.barangayAddr;
+        const sort = req.query.sort; // Get the sort parameter (values: 'earliest', 'latest', 'topRate')
+
+         //update all expired bclearance
+         var currentDate = new Date();//date today
+         await SkilledBClearance.updateMany({ bClearanceExp: {$lt:currentDate}}, 
+             {$set: 
+                 { bClearanceIsVerified: "false", isExpired: 1 } });
+ 
+         //update all expired nclearance
+         var currentDate = new Date();//date today
+         await SkilledNClearance.updateMany({ nClearanceExp: {$lt:currentDate} }, 
+             {$set: 
+                 { nClearanceIsVerified: "false", isExpired: 1 } });
+        
+        //update all certificate
+        var currentDate = new Date();//date today
+        await Certificate.updateMany({ validUntil: {$lt:currentDate} }, 
+            {$set: 
+                { skillIsVerified: "false", isExpired: 1 } });
+            
+        const skilledInfoToVer = await SkilledInfo.find({ userIsVerified: {$in: [0, 1]}, isDeleted: 0 })
+        .sort({ createdAt: -1 })
+        .select("-password")
+        .populate("skillBarangay")
+        .populate("skillNbi");
+  
+        if (skilledInfoToVer) {
+            const updatedSkilledInfo = skilledInfoToVer.map((skilled) => {
+            if (
+                skilled.addIsVerified === 1 &&
+                skilled.skillBarangay.some((brgy) => brgy.bClearanceIsVerified === "true") &&
+                skilled.skillNbi.some((nbi) => nbi.nClearanceIsVerified === "true")
+            ) {
+                return SkilledInfo.findByIdAndUpdate(skilled._id, { $set: { userIsVerified: 1 } }, { new: true });
+            } else if (
+                skilled.addIsVerified === 0 ||
+                skilled.skillBarangay.every((brgy) => brgy.bClearanceIsVerified === "false" || brgy.bClearanceIsVerified === "pending") ||
+                skilled.skillNbi.every((nbi) => nbi.nClearanceIsVerified === "false" || nbi.nClearanceIsVerified === "pending")
+            ) {
+                return SkilledInfo.findByIdAndUpdate(skilled._id, { $set: { userIsVerified: 0 } }, { new: true });
+            } else {
+                return skilled;
+            }
+            });
+  
+        const updatedSkilledInfoResults = await Promise.all(updatedSkilledInfo);
+
+        // Get all the skilled workers and their skills
+        const skilledInfo = await SkilledInfo.find({ userIsVerified: 1, isDeleted: 0 })
+        .populate({
+            path: "skills",
+            match: { isDeleted: 0 },
+            populate: {
+              path: "skillName",
+              select: "skill", // Assuming 'skill' is the field in 'AdminSkill' model that holds the skill name
+            },
+        })
+        
+        // Get all the skills registered to the admin
+        const skillIdDoc = await AdminSkill.findOne({ skillId });
+
+        // Filter skilled workers with the specified skill and province (if provided)
+        let skilledWorkersWithSkill = skilledInfo.filter((worker) =>
+            worker.skills.some((skill) => skill.skillName && skill.skillName._id.toString() === skillId)
+        );
+        if (province) {
+            skilledWorkersWithSkill = skilledWorkersWithSkill.filter((worker) =>
+                worker.provinceAddr.toLowerCase() === province.toLowerCase()
+            );
+        }
+
+        if (city) {
+            skilledWorkersWithSkill = skilledWorkersWithSkill.filter((worker) =>
+                worker.provinceAddr.toLowerCase() === province.toLowerCase() &&
+                worker.cityAddr.toLowerCase() === city.toLowerCase()
+            );
+        }
+        
+        if (barangay) {
+            skilledWorkersWithSkill = skilledWorkersWithSkill.filter((worker) =>
+                worker.provinceAddr.toLowerCase() === province.toLowerCase() &&
+                worker.cityAddr.toLowerCase() === city.toLowerCase() &&
+                worker.barangayAddr.toLowerCase() === barangay.toLowerCase()
+            );
+        }
+
+        if (skilledWorkersWithSkill.length === 0) {
+            return res.status(400).json({ error: 'No skilled worker available for this skill and province yet.' });
+        }
+
+        // Sort the skilled workers based on the 'sort' parameter
+        switch (sort) {
+            case 'earliest':
+                skilledWorkersWithSkill.sort((a, b) => new Date(a?.createdAt) - new Date(b?.createdAt));
+                break;
+            case 'latest':
+                skilledWorkersWithSkill.sort((a, b) => new Date(b?.createdAt) - new Date(a?.createdAt));
+                break;
+            case 'topRate':
+                            // Sort the skilled workers by the skill with the highest total rating
+            skilledWorkersWithSkill.sort((a, b) => {
+            const skillA = a.skills.find(
+                (skill) => skill.skillName && skill.skillName._id.toString() === skillId
+            );
+            const skillB = b.skills.find(
+                (skill) => skill.skillName && skill.skillName._id.toString() === skillId
+            );
+
+            const totalRatingA = skillA ? parseFloat(skillA.totalrating) : 0;
+            const totalRatingB = skillB ? parseFloat(skillB.totalrating) : 0;
+
+            return totalRatingB - totalRatingA;
+            });
+
+            break;
+                  
+            default:
+                return res.status(400).json({ error: 'Invalid sort parameter' });
+        }
+
+        // ... remaining code ...
+        // Create a new array with the required properties, including the address
+        const filteredWorkers = skilledWorkersWithSkill.map((worker) => ({
+            _id: worker._id,
+            username: worker.username,
+            password: worker.password,
+            lname: worker.lname,
+            fname: worker.fname,
+            mname: worker.mname,
+            contact: worker.contact,
+            houseNo: worker.houseNo,
+            street: worker.street,
+            barangayAddr: worker.barangayAddr,
+            cityAddr: worker.cityAddr,
+            provinceAddr: worker.provinceAddr,
+            regionAddr: worker.regionAddr,
+            addIsVerified: worker.addIsVerified,
+            otp: worker.otp,
+            idIsVerified: worker.idIsVerified,
+            userIsVerified: worker.userIsVerified,
+            isDeleted: worker.isDeleted,
+            skilledDeact: worker.skilledDeact,
+            message: worker.message,
+            createdAt: worker.createdAt,
+            updatedAt: worker.updatedAt,
+            __v: worker.__v,
+            skills: worker.skills.filter((skill) => skill.skillName && skill.skillName._id.toString() === skillId),
+            id: worker.id
+        }));
+        return res.status(200).json(filteredWorkers);
+    }} catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+};
+
+
 //ALL GET ONE
 //get one skilled worker, get skilled worker info
 const getClientSkilledInfo = async(req, res)=>{
@@ -638,6 +800,7 @@ module.exports = {
     getFilterSkilledSkillDesc,
     getFilterSkilledSkillAsc,
     getFilterSkilledSkillTopRate,
+    getFilterSkilledSkill,
     getClientSkilledInfo,
     getClientSkilledSkill,
     getClientSkilledCert,
