@@ -26,6 +26,7 @@ const{
     getFilterSkilled,
     getFilterSkilledSkillDesc,
     getFilterSkilledSkillAsc,
+    getFilterSkilledSkillTopRate,
     getClientSkilledInfo,
     getClientSkilledSkill,
     getClientSkilledCert,
@@ -62,6 +63,8 @@ router.patch('/delete/notification/:id', clientRequireAuth, deleteNotification)
 router.get('/filter/skilled', clientRequireAuth, getFilterSkilled)
 router.get('/filter/skilled/skill/desc/:_id', clientRequireAuth, getFilterSkilledSkillDesc)
 router.get('/filter/skilled/skill/asc/:_id', clientRequireAuth, getFilterSkilledSkillAsc)
+router.get('/filter/skilled/skill/toprate/:_id', clientRequireAuth, getFilterSkilledSkillTopRate)
+
 //all get one
 router.get('/getOne/skilledInfo/:id', clientRequireAuth, getClientSkilledInfo)
 router.get('/getOne/skilledInfo/skill/:_id', clientRequireAuth, getClientSkilledSkill)
