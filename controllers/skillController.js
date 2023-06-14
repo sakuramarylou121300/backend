@@ -4,6 +4,8 @@ const Notification = require('../models/adminNotification')
 const AdminInfo = require('../models/adminInfo')
 const ClientInfo = require('../models/clientInfo')
 const ClientComment = require('../models/clientComment')
+const SkilledNotification = require('../models/skilledNotification')
+
 const cloudinary = require("../utils/cloudinary")
 const upload = require("../utils/multer") 
 const mongoose = require('mongoose')
@@ -125,6 +127,7 @@ const getOneSkill = async(req, res)=>{
 
     //find query
     const skill = await Skill.findById({_id: id})
+    .populate('skillName')
 
     //check if not existing
     if (!skill){
@@ -318,6 +321,20 @@ const createClientComment = async (req, res) => {
             },
             { new: true }
         );
+
+        //this is for the notification
+        // Get the name of the skilled user
+        const clientInfo = await ClientInfo.findOne({ _id: client_id });
+        const clientUsername = clientInfo.username;
+        const skilled_id = finalSkillRate.skilled_id;
+        // Create a notification after successfully creating new exp
+        const notification = await SkilledNotification.create({
+            skilled_id,
+            message: `${clientUsername} has rated your skill.`,
+            // url: `https://samplekasawapp.onrender.com/api/admin/getOne/Barangay/${skilledBClearance._id}`,
+            urlReact:`/temporary/`
+        });
+
         res.status(200).json({ comment: clientComment, averageRating });
         
     } catch (error) {
@@ -365,8 +382,6 @@ const getAllClientOneComment = async(req, res)=>{
 }
 
 const updateClientComment = async (req, res) => {
-    // const skill_id = req.params.skill_id; // Retrieve skill_id from params
-    // const { star, comment } = req.body;
     const client_id = req.clientInfo._id;
   
     // Check if the skill_id is valid
@@ -429,6 +444,19 @@ const updateClientComment = async (req, res) => {
             { totalrating: roundedRating },
             { new: true }
         );
+
+        //this is for the notification
+        // Get the name of the skilled user
+        const clientInfo = await ClientInfo.findOne({ _id: client_id });
+        const clientUsername = clientInfo.username;
+        const skilled_id = updatedSkill.skilled_id;
+        // Create a notification after successfully creating new exp
+        const notification = await SkilledNotification.create({
+            skilled_id,
+            message: `${clientUsername} has updated the rate in your skill.`,
+            // url: `https://samplekasawapp.onrender.com/api/admin/getOne/Barangay/${skilledBClearance._id}`,
+            urlReact:`/temporary/`
+        });
   
       res.status(200).json({ comment: updatedClientComment, averageRating });
   

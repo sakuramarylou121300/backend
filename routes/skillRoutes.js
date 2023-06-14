@@ -37,5 +37,8 @@ router.get('/getAll/clientone/comment', clientRequireAuth, getAllClientOneCommen
 router.patch('/update/comment/:id', upload.array("photo"), clientRequireAuth, updateClientComment)
 router.patch('/delete/comment/:id', clientRequireAuth, deleteClientComment)
 
+//this is for public
+router.get('/getOne/client/skilled/skill/:id', clientRequireAuth, getOneSkill)
+
 //export
 module.exports = router

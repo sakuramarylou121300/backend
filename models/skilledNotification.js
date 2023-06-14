@@ -17,8 +17,11 @@ const skilledNotificationSchema = new Schema({
     },
     skilled_id:{
         type: mongoose.Schema.Types.ObjectId,
-        required: true,
         ref: 'SkilledInfo'
+    }, 
+    client_id:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'ClientInfo'
     }, 
     isRead:{
         type: Number,
