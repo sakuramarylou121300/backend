@@ -13,7 +13,11 @@ const {
     getAllClientComment,
     getAllClientOneComment,
     updateClientComment,
-    deleteClientComment
+    deleteClientComment,
+    getOneClientSkilledSkill,
+    createClientReq,
+    getAllSkilledReq,
+    getAllClientReq
 } = require('../controllers/skillController')
 const {requireAuth} = require('../middleware/requireAuth')
 const {clientRequireAuth} = require('../middleware/clientRequireAuth')
@@ -28,6 +32,10 @@ router.get('/getOne/:id', requireAuth, getOneSkill)
 router.patch('/update/:id', requireAuth, updateSkill)
 router.patch('/delete/:id', requireAuth, deleteSkill)
 
+//to get the req from client for skilled workers
+router.get('/getAll/skilled/req', requireAuth ,getAllSkilledReq)
+
+//FOR CLIENT
 //this is for the rating
 router.patch('/rating/:skill_id', clientRequireAuth, rating)
 //this is for the comment
@@ -37,8 +45,12 @@ router.get('/getAll/clientone/comment', clientRequireAuth, getAllClientOneCommen
 router.patch('/update/comment/:id', upload.array("photo"), clientRequireAuth, updateClientComment)
 router.patch('/delete/comment/:id', clientRequireAuth, deleteClientComment)
 
-//this is for public
-router.get('/getOne/client/skilled/skill/:id', clientRequireAuth, getOneSkill)
+//this is for public , get the skilled skill to load the rate and comment
+router.get('/getOne/client/skilled/skill/:id/:skill/:skilled_id', clientRequireAuth, getOneClientSkilledSkill)
+
+//this is for the labor req
+router.post('/post/req/:skill_id/:skilled_id', clientRequireAuth, createClientReq)
+router.get('/getAll/client/req', clientRequireAuth ,getAllClientReq)
 
 //export
 module.exports = router

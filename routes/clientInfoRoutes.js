@@ -69,8 +69,8 @@ router.get('/filter/skilled/:_id', getFilterSkilledSkill);
 //all get one
 router.get('/getOne/skilledInfo/:id', clientRequireAuth, getClientSkilledInfo)
 router.get('/getOne/skilledInfo/skill/:_id', clientRequireAuth, getClientSkilledSkill)
-router.get('/getOne/skilledInfo/skillCert/:_id', clientRequireAuth, getClientSkilledCert)
-router.get('/getOne/skilledInfo/skilledExp/:_id', clientRequireAuth, getClientSkilledExp)
+router.get('/getOne/skilledInfo/skillCert/:_id/:skillName', clientRequireAuth, getClientSkilledCert)
+router.get('/getOne/skilledInfo/skilledExp/:_id/:skillName', clientRequireAuth, getClientSkilledExp)
 
 //get all skill
 router.get('/getAll/client/skilledskill', clientRequireAuth, getAllSkill)

@@ -5,7 +5,7 @@ const AdminInfo = require('../models/adminInfo')
 const ClientInfo = require('../models/clientInfo')
 const ClientComment = require('../models/clientComment')
 const SkilledNotification = require('../models/skilledNotification')
-
+const ClientReq = require('../models/clientReq')
 const cloudinary = require("../utils/cloudinary")
 const upload = require("../utils/multer") 
 const mongoose = require('mongoose')
@@ -499,6 +499,84 @@ const deleteClientComment = async(req, res)=>{
     res.status(200).json({ message: 'Successfully deleted.'})
 
 }
+
+//get one the skill of the skilled worker first
+const getOneClientSkilledSkill = async (req, res) => {
+    const { id, skill, skilled_id } = req.params;
+
+    //check if id is not existing
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(404).json({ error: 'Invalid id' });
+    }
+
+    //find query
+    const skilledSkill = await Skill.findById({ _id: id })
+        .populate('skillName', 'skill')
+        .populate('skilled_id', '_id username lname fname mname');
+
+    //check if not existing
+    if (!skilledSkill) {
+        return res.status(404).json({ error: 'Skill not found' });
+    }
+
+    res.status(200).json(skilledSkill);
+}
+//sending req to skilled worker
+const createClientReq = async (req, res) => {
+    
+    try {
+        const client_id = req.clientInfo._id;
+        const {skill_id, skilled_id} = req.params; // Retrieve skill_id from params
+        
+        let newRequest = await ClientReq({
+            skill_id: skill_id,
+            skilled_id:skilled_id,
+            client_id: client_id
+        }).save();
+        console.log(newRequest)
+        res.status(200).json({ message: 'Successfully added.'});
+        
+    } catch (error) {
+        res.status(404).json({ error: error.message });
+    }
+};
+
+//skilled worker receiving req
+const getAllSkilledReq = async(req, res)=>{
+
+    try{
+        //this is to find skill for specific user
+        const skilled_id = req.skilledInfo._id
+        //get all query
+        const clientReq = await ClientReq.find({skilled_id, isDeleted: 0})
+        .sort({createdAt: -1})
+        .populate('skill_id')
+        .populate('client_id')
+        
+        res.status(200).json(clientReq)
+    }
+    catch(error){
+        res.status(404).json({error: error.message})
+    }  
+}
+
+const getAllClientReq = async(req, res)=>{
+
+    try{
+        //this is to find skill for specific user
+        const client_id = req.clientInfo._id
+        //get all query
+        const clientReq = await ClientReq.find({client_id, isDeleted: 0})
+        .sort({createdAt: -1})
+        .populate('skill_id')
+        .populate('client_id')
+        
+        res.status(200).json(clientReq)
+    }
+    catch(error){
+        res.status(404).json({error: error.message})
+    }  
+}
 module.exports = {
     createSkills,
     createSkill,
@@ -511,5 +589,9 @@ module.exports = {
     getAllClientComment,
     getAllClientOneComment,
     deleteClientComment,
-    updateClientComment
+    updateClientComment,
+    getOneClientSkilledSkill,
+    createClientReq,
+    getAllSkilledReq,
+    getAllClientReq
 }
