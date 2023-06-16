@@ -741,7 +741,7 @@ const getClientSkilledCert = async(req, res)=>{
 
     try{
         const skilledWorkerId  = req.params._id//this is to get the _id of skilled worker first
-        const skillName  = req.params.skillName //this is to get the skill from AdminSkill
+        const skillId  = req.params.skillId; // Get the skill ID
 
        //find skill worker first
         const skilledInfo = await SkilledInfo.findOne({_id: skilledWorkerId })
@@ -751,7 +751,7 @@ const getClientSkilledCert = async(req, res)=>{
         }
         // Find skilled_id document based on username
         const skillIdDoc = await AdminSkill.findOne({
-            skill: skillName});
+            _id: skillId });
 
         const skillCert = await Certificate
         .find({
@@ -774,7 +774,7 @@ const getClientSkilledExp = async(req, res)=>{
 
     try{
         const skilledWorkerId  = req.params._id//this is to get the _id of skilled worker first
-        const skillName  = req.params.skillName //this is to get the skill from AdminSkill
+        const skillId  = req.params.skillId; // Get the skill ID
 
        //find skill worker first
         const skilledInfo = await SkilledInfo.findOne({_id: skilledWorkerId })
@@ -784,7 +784,7 @@ const getClientSkilledExp = async(req, res)=>{
         }
         // Find skilled_id document based on username
         const skillIdDoc = await AdminSkill.findOne({
-            skill: skillName});
+            _id: skillId});
 
         const skilledExp = await Experience
         .find({
