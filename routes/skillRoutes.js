@@ -14,7 +14,6 @@ const {
     getAllClientOneComment,
     updateClientComment,
     deleteClientComment,
-    getOneClientSkilledSkill,
     createClientReq,
     getAllSkilledReq,
     getAllClientReq
@@ -36,6 +35,9 @@ router.patch('/delete/:id', requireAuth, deleteSkill)
 router.get('/getAll/skilled/req', requireAuth ,getAllSkilledReq)
 
 //FOR CLIENT
+//get skilled skill
+router.get('/getOne/client/skilledskill/:id', clientRequireAuth, getOneSkill)
+
 //this is for the rating
 router.patch('/rating/:skill_id', clientRequireAuth, rating)
 //this is for the comment
@@ -45,11 +47,8 @@ router.get('/getAll/clientone/comment', clientRequireAuth, getAllClientOneCommen
 router.patch('/update/comment/:id', upload.array("photo"), clientRequireAuth, updateClientComment)
 router.patch('/delete/comment/:id', clientRequireAuth, deleteClientComment)
 
-//this is for public , get the skilled skill to load the rate and comment
-router.get('/getOne/client/skilled/skill/:id/:skill/:skilled_id', clientRequireAuth, getOneClientSkilledSkill)
-
 //this is for the labor req
-router.post('/post/req/:skill_id/:skilled_id', clientRequireAuth, createClientReq)
+router.post('/post/req/:skill_id', clientRequireAuth, createClientReq)
 router.get('/getAll/client/req', clientRequireAuth ,getAllClientReq)
 
 //export

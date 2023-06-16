@@ -128,6 +128,7 @@ const getOneSkill = async(req, res)=>{
     //find query
     const skill = await Skill.findById({_id: id})
     .populate('skillName')
+    .populate('skilled_id')
 
     //check if not existing
     if (!skill){
@@ -500,40 +501,19 @@ const deleteClientComment = async(req, res)=>{
 
 }
 
-//get one the skill of the skilled worker first
-const getOneClientSkilledSkill = async (req, res) => {
-    const { id, skill, skilled_id } = req.params;
-
-    //check if id is not existing
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-        return res.status(404).json({ error: 'Invalid id' });
-    }
-
-    //find query
-    const skilledSkill = await Skill.findById({ _id: id })
-        .populate('skillName', 'skill')
-        .populate('skilled_id', '_id username lname fname mname');
-
-    //check if not existing
-    if (!skilledSkill) {
-        return res.status(404).json({ error: 'Skill not found' });
-    }
-
-    res.status(200).json(skilledSkill);
-}
 //sending req to skilled worker
 const createClientReq = async (req, res) => {
     
     try {
         const client_id = req.clientInfo._id;
-        const {skill_id, skilled_id} = req.params; // Retrieve skill_id from params
+        const {skilled_id} = req.body
+        const {skill_id} = req.params; // Retrieve skill_id from params
         
         let newRequest = await ClientReq({
             skill_id: skill_id,
             skilled_id:skilled_id,
             client_id: client_id
         }).save();
-        console.log(newRequest)
         res.status(200).json({ message: 'Successfully added.'});
         
     } catch (error) {
@@ -590,7 +570,6 @@ module.exports = {
     getAllClientOneComment,
     deleteClientComment,
     updateClientComment,
-    getOneClientSkilledSkill,
     createClientReq,
     getAllSkilledReq,
     getAllClientReq
