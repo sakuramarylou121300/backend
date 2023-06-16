@@ -6,6 +6,7 @@ const ClientInfo = require('../models/clientInfo')
 const ClientComment = require('../models/clientComment')
 const SkilledNotification = require('../models/skilledNotification')
 const ClientReq = require('../models/clientReq')
+const AdminSkill = require('../models/adminSkill')
 const cloudinary = require("../utils/cloudinary")
 const upload = require("../utils/multer") 
 const mongoose = require('mongoose')
@@ -501,6 +502,45 @@ const deleteClientComment = async(req, res)=>{
 
 }
 
+//get one skilled skill first
+const getOneSkilledSkill = async(req, res)=>{
+    const skilledWorkerId  = req.params._id//this is to get the _id of skilled worker first
+    const skillId  = req.params.skillId; // Get the skill ID
+    const skilledSkill  = req.params.skilledSkill;
+
+    //find skill worker first
+    const skilledInfo = await SkilledInfo.findOne({_id: skilledWorkerId })
+    //check if not existing
+    if (!skilledInfo){
+        return res.status(404).json({error: 'Skilled Worker not found'})
+    }
+
+    // Find skilled_id document based on username
+    const skillIdDoc = await AdminSkill.findOne({
+        _id: skillId });
+
+    const skillParams = await Skill.find({
+        _id: skilledInfo._id, 
+        skillName: skillIdDoc._id,
+    })
+
+    //find query
+    const skill = await Skill.find({
+        skilled_id: skilledInfo._id, 
+        skillName: skillIdDoc._id,
+    })
+    .populate('skilled_id', 'username lname fname mname')
+    .populate('skillName', 'skill')
+
+    //check if not existing
+    if (!skill){
+        return res.status(404).json({error: 'Skill not found'})
+    }
+
+    res.status(200).json(skill)   
+
+}
+
 //sending req to skilled worker
 const createClientReq = async (req, res) => {
     
@@ -570,6 +610,7 @@ module.exports = {
     getAllClientOneComment,
     deleteClientComment,
     updateClientComment,
+    getOneSkilledSkill,
     createClientReq,
     getAllSkilledReq,
     getAllClientReq
