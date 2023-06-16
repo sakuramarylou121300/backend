@@ -519,13 +519,13 @@ const getOneSkilledSkill = async(req, res)=>{
     const skillIdDoc = await AdminSkill.findOne({
         _id: skillId });
 
-    const skillParams = await Skill.find({
-        _id: skilledInfo._id, 
-        skillName: skillIdDoc._id,
+    const skillParams = await Skill.findOne({
+        _id: skilledSkill
     })
 
     //find query
     const skill = await Skill.find({
+        _id: skillParams._id,
         skilled_id: skilledInfo._id, 
         skillName: skillIdDoc._id,
     })
