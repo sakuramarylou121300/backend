@@ -22,8 +22,7 @@ const skillSchema = new Schema({
     },
     //this is where the skill belong
     skilled_id:{
-        type: String,
-        required: true,
+        type: mongoose.Schema.Types.ObjectId,
         ref: 'SkilledInfo'
     },
     isDeleted:{

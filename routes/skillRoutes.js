@@ -15,6 +15,7 @@ const {
     updateClientComment,
     deleteClientComment,
     getOneSkilledSkill,
+    getOneSkilledSkillClient,
     createClientReq,
     getAllSkilledReq,
     getAllClientReq
@@ -38,6 +39,7 @@ router.get('/getAll/skilled/req', requireAuth ,getAllSkilledReq)
 //FOR CLIENT
 //get skilled skill
 router.get('/getOne/client/skilled/skill/:_id/:skillId/:skilledSkill', clientRequireAuth, getOneSkilledSkill)
+router.get('/getOne/client/skilled/skill/:_id/:skilledSkill', clientRequireAuth, getOneSkilledSkillClient);
 
 //this is for the rating
 router.patch('/rating/:skill_id', clientRequireAuth, rating)

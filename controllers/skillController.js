@@ -541,6 +541,39 @@ const getOneSkilledSkill = async(req, res)=>{
 
 }
 
+//get one skilled skill req
+const getOneSkilledSkillClient = async(req, res)=>{
+    const skilledWorkerId  = req.params._id//this is to get the _id of skilled worker first
+    const skilledSkill  = req.params.skilledSkill;
+
+    //find skill worker first
+    const skilledInfo = await SkilledInfo.findOne({_id: skilledWorkerId })
+    //check if not existing
+    if (!skilledInfo){
+        return res.status(404).json({error: 'Skilled Worker not found'})
+    }
+
+    const skillParams = await Skill.findOne({
+        _id: skilledSkill
+    })
+
+    //find query
+    const skill = await Skill.find({
+        _id: skillParams._id,
+        skilled_id: skilledInfo._id, 
+    })
+    .populate('skilled_id', 'username lname fname mname')
+    .populate('skillName', 'skill')
+
+    //check if not existing
+    if (!skill){
+        return res.status(404).json({error: 'Skill not found'})
+    }
+
+    res.status(200).json(skill)   
+
+}
+
 //sending req to skilled worker
 const createClientReq = async (req, res) => {
     
@@ -611,6 +644,7 @@ module.exports = {
     deleteClientComment,
     updateClientComment,
     getOneSkilledSkill,
+    getOneSkilledSkillClient,
     createClientReq,
     getAllSkilledReq,
     getAllClientReq
