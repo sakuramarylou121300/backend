@@ -17,9 +17,7 @@ const clientReqSchema = new Schema({
         enum:[
             'pending',
             'requestAccepted',
-            'reqCompleted',
-            'reqToRate',
-            'reqRated'
+            'reqCompleted'
         ]
     },
     client_id:{

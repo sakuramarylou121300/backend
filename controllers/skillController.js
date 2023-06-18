@@ -579,8 +579,8 @@ const createClientReq = async (req, res) => {
     
     try {
         const client_id = req.clientInfo._id;
-        const {skilled_id} = req.body
-        const {skill_id} = req.params; // Retrieve skill_id from params
+        // const {skilled_id} = req.body
+        const {skill_id, skilled_id} = req.params; // Retrieve skill_id from params
         
         let newRequest = await ClientReq({
             skill_id: skill_id,
@@ -594,14 +594,34 @@ const createClientReq = async (req, res) => {
     }
 };
 
-//skilled worker receiving req
+//skilled worker receiving req, pending
 const getAllSkilledReq = async(req, res)=>{
 
     try{
         //this is to find skill for specific user
         const skilled_id = req.skilledInfo._id
         //get all query
-        const clientReq = await ClientReq.find({skilled_id, isDeleted: 0})
+        const clientReq = await ClientReq.
+        find({skilled_id, reqStatus:"pending", isDeleted: 0})
+        .sort({createdAt: -1})
+        .populate('skill_id')
+        .populate('client_id')
+        
+        res.status(200).json(clientReq)
+    }
+    catch(error){
+        res.status(404).json({error: error.message})
+    }  
+}
+//request accepted
+const getAllSkilledReqAccepted = async(req, res)=>{
+
+    try{
+        //this is to find skill for specific user
+        const skilled_id = req.skilledInfo._id
+        //get all query
+        const clientReq = await ClientReq.
+        find({skilled_id, reqStatus:"requestAccepted", isDeleted: 0})
         .sort({createdAt: -1})
         .populate('skill_id')
         .populate('client_id')
@@ -613,13 +633,35 @@ const getAllSkilledReq = async(req, res)=>{
     }  
 }
 
+//completed
+const getAllSkilledReqCompleted = async(req, res)=>{
+
+    try{
+        //this is to find skill for specific user
+        const skilled_id = req.skilledInfo._id
+        //get all query
+        const clientReq = await ClientReq.
+        find({skilled_id, reqStatus:"reqCompleted", isDeleted: 0})
+        .sort({createdAt: -1})
+        .populate('skill_id')
+        .populate('client_id')
+        
+        res.status(200).json(clientReq)
+    }
+    catch(error){
+        res.status(404).json({error: error.message})
+    }  
+}
+
+//client receiving req, pending
 const getAllClientReq = async(req, res)=>{
 
     try{
         //this is to find skill for specific user
         const client_id = req.clientInfo._id
         //get all query
-        const clientReq = await ClientReq.find({client_id, isDeleted: 0})
+        const clientReq = await ClientReq
+        .find({client_id, reqStatus:"pending", isDeleted: 0})
         .sort({createdAt: -1})
         .populate('skill_id')
         .populate('client_id')
@@ -630,6 +672,97 @@ const getAllClientReq = async(req, res)=>{
         res.status(404).json({error: error.message})
     }  
 }
+
+//req accepted
+const getAllClientReqAccepted = async(req, res)=>{
+
+    try{
+        //this is to find skill for specific user
+        const client_id = req.clientInfo._id
+        //get all query
+        const clientReq = await ClientReq
+        .find({client_id, reqStatus:"reqAccepted", isDeleted: 0})
+        .sort({createdAt: -1})
+        .populate('skill_id')
+        .populate('client_id')
+        
+        res.status(200).json(clientReq)
+    }
+    catch(error){
+        res.status(404).json({error: error.message})
+    }  
+}
+
+//req completed
+const getAllClientReqCompleted = async(req, res)=>{
+
+    try{
+        //this is to find skill for specific user
+        const client_id = req.clientInfo._id
+        //get all query
+        const clientReq = await ClientReq
+        .find({client_id, reqStatus:"reqCompleted", isDeleted: 0})
+        .sort({createdAt: -1})
+        .populate('skill_id')
+        .populate('client_id')
+        
+        res.status(200).json(clientReq)
+    }
+    catch(error){
+        res.status(404).json({error: error.message})
+    }  
+}
+
+//update client req
+const updateClientSkilledReq = async(req, res) =>{
+    const {id} = req.params    
+    const {reqStatus} = req.body
+
+      //check if id is not existing
+    if(!mongoose.Types.ObjectId.isValid(id)){
+        return res.status(404).json({error: 'Invalid id'})
+    }
+    //check if skilled haven't update the status of client req
+    if(reqStatus==="pending"){
+        res.status(400).send({ message: "Please select request status." });
+        return
+    }
+
+     //delete query
+     const clientReq = await ClientReq.findOneAndUpdate({_id: id},{
+         ...req.body //get new value
+     })
+    
+     //check if not existing
+     if (!clientReq){
+        return res.status(404).json({error: 'Request not found.'})
+    }
+
+    res.status(200).json({ message: 'Successfully updated.'})
+}
+
+const deleteClientSkilledReq = async(req, res)=>{
+    const {id} = req.params
+    
+    //check if id is not existing
+    if(!mongoose.Types.ObjectId.isValid(id)){
+        return res.status(404).json({error: 'Invalid id'})
+    }
+
+    //delete query
+    const clientReq = await ClientReq.findOneAndUpdate({_id: id},
+        {isDeleted:1})
+    
+    //check if not existing
+    if (!clientReq){
+        return res.status(404).json({error: 'Request not found'})
+    }
+
+    res.status(200).json({ message: 'Request cancelled.'})
+
+}
+
+
 module.exports = {
     createSkills,
     createSkill,
@@ -647,5 +780,11 @@ module.exports = {
     getOneSkilledSkillClient,
     createClientReq,
     getAllSkilledReq,
-    getAllClientReq
+    getAllSkilledReqAccepted,
+    getAllSkilledReqCompleted,
+    getAllClientReq,
+    getAllClientReqAccepted,
+    getAllClientReqCompleted,
+    updateClientSkilledReq,
+    deleteClientSkilledReq
 }

@@ -18,7 +18,9 @@ const {
     getOneSkilledSkillClient,
     createClientReq,
     getAllSkilledReq,
-    getAllClientReq
+    getAllClientReq,
+    updateClientSkilledReq,
+    deleteClientSkilledReq
 } = require('../controllers/skillController')
 const {requireAuth} = require('../middleware/requireAuth')
 const {clientRequireAuth} = require('../middleware/clientRequireAuth')
@@ -35,6 +37,8 @@ router.patch('/delete/:id', requireAuth, deleteSkill)
 
 //to get the req from client for skilled workers
 router.get('/getAll/skilled/req', requireAuth ,getAllSkilledReq)
+router.patch('/update/skilled/req/:id', requireAuth, updateClientSkilledReq)
+router.patch('/delete/skilled/req/:id', requireAuth, deleteClientSkilledReq)
 
 //FOR CLIENT
 //get skilled skill
@@ -51,8 +55,8 @@ router.patch('/update/comment/:id', upload.array("photo"), clientRequireAuth, up
 router.patch('/delete/comment/:id', clientRequireAuth, deleteClientComment)
 
 //this is for the labor req
-router.post('/post/req/:skill_id', clientRequireAuth, createClientReq)
+router.post('/post/req/:skill_id/:skilled_id', clientRequireAuth, createClientReq)
 router.get('/getAll/client/req', clientRequireAuth ,getAllClientReq)
-
+router.patch('/update/client/req/:id', clientRequireAuth, updateClientSkilledReq)
 //export
 module.exports = router
