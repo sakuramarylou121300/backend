@@ -38,14 +38,14 @@ router.patch('/delete/:id', requireAuth, deleteSkill)
 //to get the req from client for skilled workers
 router.get('/getAll/skilled/req', requireAuth ,getAllSkilledReq)
 router.patch('/update/skilled/req/:id', requireAuth, updateClientSkilledReq)
-router.patch('/delete/skilled/req/:id', requireAuth, deleteClientSkilledReq)
 
 //FOR CLIENT
 //get skilled skill
 router.get('/getOne/client/skilled/skill/:_id/:skillId/:skilledSkill', clientRequireAuth, getOneSkilledSkill)
 router.get('/getOne/client/skilled/skill/:_id/:skilledSkill', clientRequireAuth, getOneSkilledSkillClient);
+router.get('/getOne/client/skilled/skill/:id', clientRequireAuth, getOneSkill);
 
-//this is for the rating
+//this is for the rating, this is not included anymore
 router.patch('/rating/:skill_id', clientRequireAuth, rating)
 //this is for the comment
 router.post('/post/comment/:skill_id', upload.array("photo"), clientRequireAuth, createClientComment)
@@ -58,5 +58,7 @@ router.patch('/delete/comment/:id', clientRequireAuth, deleteClientComment)
 router.post('/post/req/:skill_id/:skilled_id', clientRequireAuth, createClientReq)
 router.get('/getAll/client/req', clientRequireAuth ,getAllClientReq)
 router.patch('/update/client/req/:id', clientRequireAuth, updateClientSkilledReq)
+router.patch('/delete/client/req/:id', requireAuth, deleteClientSkilledReq)
+
 //export
 module.exports = router

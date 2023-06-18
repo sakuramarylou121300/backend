@@ -76,6 +76,4 @@ router.get('/getOne/skilledInfo/skilledExp/:_id/:skillId', clientRequireAuth, ge
 router.get('/getAll/client/skilledskill', clientRequireAuth, getAllSkill)
 router.get('/getOne/client/skilledskill/:id', clientRequireAuth, getOneSkill)
 
-
-
 module.exports = router
