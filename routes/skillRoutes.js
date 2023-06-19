@@ -44,6 +44,7 @@ router.get('/getAll/skilled/req', requireAuth ,getAllSkilledReq)
 router.get('/getAll/skilled/req/accepted', requireAuth ,getAllSkilledReqAccepted)
 router.get('/getAll/skilled/req/completed', requireAuth ,getAllSkilledReqCompleted)
 router.patch('/update/skilled/req/:id', requireAuth, updateClientSkilledReq)
+router.patch('/delete/skilled/req/:id', requireAuth, deleteClientSkilledReq)
 
 //FOR CLIENT
 //get skilled skill, cert, exp and comment

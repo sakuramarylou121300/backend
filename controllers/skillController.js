@@ -604,7 +604,7 @@ const getAllSkilledReq = async(req, res)=>{
         const clientReq = await ClientReq.
         find({skilled_id, reqStatus:"pending", isDeleted: 0})
         .sort({createdAt: -1})
-        .populate('skilled_id', 'username lname fname mname barangayAddr cityAddr provinceAddr regionAddr')
+        .populate('skilled_id')
         .populate('skill_id')
         .populate('client_id')
         
@@ -624,6 +624,7 @@ const getAllSkilledReqAccepted = async(req, res)=>{
         const clientReq = await ClientReq.
         find({skilled_id, reqStatus:"reqAccepted", isDeleted: 0})
         .sort({createdAt: -1})
+        .populate('skilled_id')
         .populate('skill_id')
         .populate('client_id')
         
@@ -644,6 +645,7 @@ const getAllSkilledReqCompleted = async(req, res)=>{
         const clientReq = await ClientReq.
         find({skilled_id, reqStatus:"reqCompleted", isDeleted: 0})
         .sort({createdAt: -1})
+        .populate('skilled_id')
         .populate('skill_id')
         .populate('client_id')
         
@@ -664,6 +666,7 @@ const getAllClientReq = async(req, res)=>{
         const clientReq = await ClientReq
         .find({client_id, reqStatus:"pending", isDeleted: 0})
         .sort({createdAt: -1})
+        .populate('skilled_id')
         .populate('skill_id')
         .populate('client_id')
         
@@ -684,6 +687,7 @@ const getAllClientReqAccepted = async(req, res)=>{
         const clientReq = await ClientReq
         .find({client_id, reqStatus:"reqAccepted", isDeleted: 0})
         .sort({createdAt: -1})
+        .populate('skilled_id')
         .populate('skill_id')
         .populate('client_id')
         
@@ -704,6 +708,7 @@ const getAllClientReqCompleted = async(req, res)=>{
         const clientReq = await ClientReq
         .find({client_id, reqStatus:"reqCompleted", isDeleted: 0})
         .sort({createdAt: -1})
+        .populate('skilled_id')
         .populate('skill_id')
         .populate('client_id')
         
