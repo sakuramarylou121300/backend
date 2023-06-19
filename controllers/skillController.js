@@ -604,6 +604,7 @@ const getAllSkilledReq = async(req, res)=>{
         const clientReq = await ClientReq.
         find({skilled_id, reqStatus:"pending", isDeleted: 0})
         .sort({createdAt: -1})
+        .populate('skilled_id', 'username lname fname mname barangayAddr cityAddr provinceAddr regionAddr')
         .populate('skill_id')
         .populate('client_id')
         
