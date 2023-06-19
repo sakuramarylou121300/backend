@@ -18,7 +18,11 @@ const {
     getOneSkilledSkillClient,
     createClientReq,
     getAllSkilledReq,
+    getAllSkilledReqCompleted,
+    getAllSkilledReqAccepted,
     getAllClientReq,
+    getAllClientReqAccepted,
+    getAllClientReqCompleted,
     updateClientSkilledReq,
     deleteClientSkilledReq
 } = require('../controllers/skillController')
@@ -37,12 +41,16 @@ router.patch('/delete/:id', requireAuth, deleteSkill)
 
 //to get the req from client for skilled workers
 router.get('/getAll/skilled/req', requireAuth ,getAllSkilledReq)
+router.get('/getAll/skilled/req/accepted', requireAuth ,getAllSkilledReqAccepted)
+router.get('/getAll/skilled/req/completed', requireAuth ,getAllSkilledReqCompleted)
 router.patch('/update/skilled/req/:id', requireAuth, updateClientSkilledReq)
 
 //FOR CLIENT
-//get skilled skill
+//get skilled skill, cert, exp and comment
 router.get('/getOne/client/skilled/skill/:_id/:skillId/:skilledSkill', clientRequireAuth, getOneSkilledSkill)
+//this is when sending req
 router.get('/getOne/client/skilled/skill/:_id/:skilledSkill', clientRequireAuth, getOneSkilledSkillClient);
+//this is for the comment
 router.get('/getOne/client/skilled/skill/:id', clientRequireAuth, getOneSkill);
 
 //this is for the rating, this is not included anymore
@@ -57,8 +65,10 @@ router.patch('/delete/comment/:id', clientRequireAuth, deleteClientComment)
 //this is for the labor req
 router.post('/post/req/:skill_id/:skilled_id', clientRequireAuth, createClientReq)
 router.get('/getAll/client/req', clientRequireAuth ,getAllClientReq)
+router.get('/getAll/client/req/accepted', clientRequireAuth ,getAllClientReqAccepted)
+router.get('/getAll/client/req/completed', clientRequireAuth ,getAllClientReqCompleted)
 router.patch('/update/client/req/:id', clientRequireAuth, updateClientSkilledReq)
-router.patch('/delete/client/req/:id', requireAuth, deleteClientSkilledReq)
+router.patch('/delete/client/req/:id', clientRequireAuth, deleteClientSkilledReq)
 
 //export
 module.exports = router

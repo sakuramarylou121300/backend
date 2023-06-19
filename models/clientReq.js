@@ -16,7 +16,7 @@ const clientReqSchema = new Schema({
         default: 'pending',
         enum:[
             'pending',
-            'requestAccepted',
+            'reqAccepted',
             'reqCompleted'
         ]
     },

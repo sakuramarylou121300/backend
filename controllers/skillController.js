@@ -621,7 +621,7 @@ const getAllSkilledReqAccepted = async(req, res)=>{
         const skilled_id = req.skilledInfo._id
         //get all query
         const clientReq = await ClientReq.
-        find({skilled_id, reqStatus:"requestAccepted", isDeleted: 0})
+        find({skilled_id, reqStatus:"reqAccepted", isDeleted: 0})
         .sort({createdAt: -1})
         .populate('skill_id')
         .populate('client_id')
