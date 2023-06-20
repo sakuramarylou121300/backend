@@ -277,6 +277,7 @@ const rating = async (req, res) => {
 };
 
 const createClientComment = async (req, res) => {
+    const id = req.params._id
     const skill_id = req.params.skill_id; // Retrieve skill_id from params
     const client_id = req.clientInfo._id;
     const { star, comment } = req.body;
@@ -326,6 +327,14 @@ const createClientComment = async (req, res) => {
             { new: true }
         );
 
+        //this is to update completed after rate
+        const clientReq = await ClientReq.findByIdAndUpdate(
+            id,
+            { 
+                reqStatus: "reqCompleted"
+            });
+
+
         //this is for the notification
         // Get the name of the skilled user
         const clientInfo = await ClientInfo.findOne({ _id: client_id });
@@ -334,7 +343,7 @@ const createClientComment = async (req, res) => {
         // Create a notification after successfully creating new exp
         const notification = await SkilledNotification.create({
             skilled_id,
-            message: `${clientUsername} has rated your skill.`,
+            message: `${clientUsername} marked completed and rated your skill labor.`,
             // url: `https://samplekasawapp.onrender.com/api/admin/getOne/Barangay/${skilledBClearance._id}`,
             urlReact:`/temporary/`
         });

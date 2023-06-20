@@ -63,7 +63,7 @@ router.get('/getOne/client/skilled/skill/:id', clientRequireAuth, getOneSkill);
 //this is for the rating, this is not included anymore
 router.patch('/rating/:skill_id', clientRequireAuth, rating)
 //this is for the comment
-router.post('/post/comment/:skill_id', upload.array("photo"), clientRequireAuth, createClientComment)
+router.post('/post/comment/:skill_id/:_id', upload.array("photo"), clientRequireAuth, createClientComment)
 router.get('/getAll/comment/:skill_id', clientRequireAuth, getAllClientComment)
 router.get('/getAll/clientone/comment', clientRequireAuth, getAllClientOneComment)
 router.patch('/update/comment/:id', upload.array("photo"), clientRequireAuth, updateClientComment)
