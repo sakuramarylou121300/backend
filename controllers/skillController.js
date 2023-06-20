@@ -623,8 +623,14 @@ const getAllSkilledReq = async(req, res)=>{
         .populate('skilled_id')
         .populate('skill_id')
         .populate('client_id')
+
+        const pendingCount = clientReq.filter(clientReq => clientReq.reqStatus === "pending").length;
+        const output = {
+            clientReq,
+            pendingCount
+        }
         
-        res.status(200).json(clientReq)
+        res.status(200).json(output)
     }
     catch(error){
         res.status(404).json({error: error.message})
@@ -643,8 +649,14 @@ const getAllSkilledReqAccepted = async(req, res)=>{
         .populate('skilled_id')
         .populate('skill_id')
         .populate('client_id')
+
+        const acceptCount = clientReq.filter(clientReq => clientReq.reqStatus === "reqAccepted").length;
+        const output = {
+            clientReq,
+            acceptCount
+        }
         
-        res.status(200).json(clientReq)
+        res.status(200).json(output)
     }
     catch(error){
         res.status(404).json({error: error.message})
@@ -665,7 +677,45 @@ const getAllSkilledReqCompleted = async(req, res)=>{
         .populate('skill_id')
         .populate('client_id')
         
-        res.status(200).json(clientReq)
+        const completeCount = clientReq.filter(clientReq => clientReq.reqStatus === "reqCompleted").length;
+        const output = {
+            clientReq,
+            completeCount
+        }
+
+        res.status(200).json(output)
+    }
+    catch(error){
+        res.status(404).json({error: error.message})
+    }  
+}
+
+const getAllSkilledReqCancelled = async(req, res)=>{
+
+    try{
+        //this is to find skill for specific user
+        const skilled_id = req.skilledInfo._id
+        //get all query
+        const clientReq = await ClientReq
+        .find({skilled_id, reqStatus:"reqCancelled", isDeleted: 0})
+        .sort({createdAt: -1})
+        .populate('skilled_id', 'username lname fname mname regionAddr cityAddr barangayAddr')
+        .populate('skill_id')
+        .populate('client_id')
+        .populate({
+            path: 'message.message',
+            model: 'ClientCancelReq',
+            select: 'reason',
+            options: { lean: true },
+        })
+
+        const cancelledCount = clientReq.filter(clientReq => clientReq.reqStatus === "reqCancelled").length;
+        const output = {
+            clientReq,
+            cancelledCount
+        }
+        
+        res.status(200).json(output)
     }
     catch(error){
         res.status(404).json({error: error.message})
@@ -725,8 +775,15 @@ const getAllClientReq = async(req, res)=>{
         .populate('skilled_id', 'username lname fname mname regionAddr cityAddr barangayAddr')
         .populate('skill_id')
         .populate('client_id')
+
+        //this is for count
+        const pendingCount = clientReq.filter(clientReq => clientReq.reqStatus === "pending").length;
+        const output = {
+            clientReq,
+            pendingCount
+        }
         
-        res.status(200).json(clientReq)
+        res.status(200).json(output)
     }
     catch(error){
         res.status(404).json({error: error.message})
@@ -746,8 +803,14 @@ const getAllClientReqAccepted = async(req, res)=>{
         .populate('skilled_id', 'username lname fname mname regionAddr cityAddr barangayAddr contact')
         .populate('skill_id')
         .populate('client_id')
+
+        const acceptedCount = clientReq.filter(clientReq => clientReq.reqStatus === "reqAccepted").length;
+        const output = {
+            clientReq,
+            acceptedCount
+        }
         
-        res.status(200).json(clientReq)
+        res.status(200).json(output)
     }
     catch(error){
         res.status(404).json({error: error.message})
@@ -767,8 +830,14 @@ const getAllClientReqCompleted = async(req, res)=>{
         .populate('skilled_id', 'username lname fname mname regionAddr cityAddr barangayAddr')
         .populate('skill_id')
         .populate('client_id')
+
+        const completeCount = clientReq.filter(clientReq => clientReq.reqStatus === "reqCompleted").length;
+        const output = {
+            clientReq,
+            completeCount
+        }
         
-        res.status(200).json(clientReq)
+        res.status(200).json(output)
     }
     catch(error){
         res.status(404).json({error: error.message})
@@ -793,8 +862,14 @@ const getAllClientReqCancelled = async(req, res)=>{
             select: 'reason',
             options: { lean: true },
         })
+
+        const cancelledCount = clientReq.filter(clientReq => clientReq.reqStatus === "reqCancelled").length;
+        const output = {
+            clientReq,
+            cancelledCount
+        }
         
-        res.status(200).json(clientReq)
+        res.status(200).json(output)
     }
     catch(error){
         res.status(404).json({error: error.message})
@@ -952,6 +1027,7 @@ module.exports = {
     getAllSkilledReq,
     getAllSkilledReqAccepted,
     getAllSkilledReqCompleted,
+    getAllSkilledReqCancelled,
     updateSkilledReqCompleted,
     getAllClientReq,
     getAllClientReqAccepted,

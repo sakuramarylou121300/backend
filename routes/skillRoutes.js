@@ -20,6 +20,7 @@ const {
     getAllSkilledReq,
     getAllSkilledReqCompleted,
     getAllSkilledReqAccepted,
+    getAllSkilledReqCancelled,
     updateSkilledReqCompleted,
     getAllClientReq,
     getAllClientReqAccepted,
@@ -47,6 +48,7 @@ router.patch('/delete/:id', requireAuth, deleteSkill)
 router.get('/getAll/skilled/req', requireAuth ,getAllSkilledReq)
 router.get('/getAll/skilled/req/accepted', requireAuth ,getAllSkilledReqAccepted)
 router.get('/getAll/skilled/req/completed', requireAuth ,getAllSkilledReqCompleted)
+router.get('/getAll/skilled/req/cancelled', requireAuth , getAllSkilledReqCancelled)
 router.patch('/update/skilled/req/:id', requireAuth, updateSkilledReqCompleted)
 router.patch('/delete/skilled/req/:id', requireAuth, deleteClientSkilledReq)
 
