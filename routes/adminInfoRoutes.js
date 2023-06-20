@@ -139,6 +139,15 @@ const{
     deleteReasonDeact
 } = require('../controllers/reasonDeactController')
 
+//reason for cancelling req for client
+const {
+    createReasonReq,
+    getAllReasonReq,
+    getOneReasonReq,
+    updateReasonReq,
+    deleteReasonReq
+} = require('../controllers/clientCancelReqController')
+
 const adminControlAdmin = require('../middleware/adminControlAdmin')
 const adminAuth = require('../middleware/adminAuth')
 const adminControlSkilled = require('../middleware/adminControlSkilled')
@@ -277,6 +286,13 @@ router.get('/getAll/reasonDeact', adminAuth, adminControlSkilled, getAllReasonDe
 router.get('/getOne/reasonDeact/:id', adminAuth, adminControlSkilled, getOneReasonDeact)
 router.patch('/update/reasonDeact/:id', adminAuth, adminControlSkilled, updateReasonDeact)
 router.patch('/delete/reasonDeact/:id', adminAuth, adminControlSkilled, deleteReasonDeact)
+
+//REASON CLIENT REQ CANCEL
+router.post('/post/clientReqReason', adminAuth, adminControlClient, createReasonReq)
+router.get('/getAll/clientReqReason', adminAuth, adminControlClient,getAllReasonReq)
+router.get('/getOne/clientReqReason/:id', adminAuth, adminControlClient, getOneReasonReq)
+router.patch('/update/clientReqReason/:id', adminAuth, adminControlClient, updateReasonReq)
+router.patch('/delete/clientReqReason/:id', adminAuth, adminControlClient, deleteReasonReq)
 
 //NOT YET
 router.get('/getAll/skilledBill', adminAuth, adminControlSkilled, adminGetAllSkilledBill)

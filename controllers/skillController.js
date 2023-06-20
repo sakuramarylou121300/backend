@@ -5,8 +5,10 @@ const AdminInfo = require('../models/adminInfo')
 const ClientInfo = require('../models/clientInfo')
 const ClientComment = require('../models/clientComment')
 const SkilledNotification = require('../models/skilledNotification')
+const ClientNotification = require('../models/clientNotification')
 const ClientReq = require('../models/clientReq')
 const AdminSkill = require('../models/adminSkill')
+const ReasonCancelled = require('../models/clientCancelReq')
 const cloudinary = require("../utils/cloudinary")
 const upload = require("../utils/multer") 
 const mongoose = require('mongoose')
@@ -587,6 +589,20 @@ const createClientReq = async (req, res) => {
             skilled_id:skilled_id,
             client_id: client_id
         }).save();
+
+         //this is for the notification
+        // Get the name of the skilled user
+        const clientInfo = await ClientInfo.findOne({ _id: client_id });
+        const clientUsername = clientInfo.username;
+        const skilled_id_notif = newRequest.skilled_id;
+        // Create a notification after successfully creating new exp
+        const notification = await SkilledNotification.create({
+            skilled_id,
+            message: `${clientUsername} sent you a labor request.`,
+            // url: `https://samplekasawapp.onrender.com/api/admin/getOne/Barangay/${skilledBClearance._id}`,
+            urlReact:`/temporary/`
+        });
+
         res.status(200).json({ message: 'Successfully added.'});
         
     } catch (error) {
@@ -656,71 +672,8 @@ const getAllSkilledReqCompleted = async(req, res)=>{
     }  
 }
 
-//client receiving req, pending
-const getAllClientReq = async(req, res)=>{
-
-    try{
-        //this is to find skill for specific user
-        const client_id = req.clientInfo._id
-        //get all query
-        const clientReq = await ClientReq
-        .find({client_id, reqStatus:"pending", isDeleted: 0})
-        .sort({createdAt: -1})
-        .populate('skilled_id')
-        .populate('skill_id')
-        .populate('client_id')
-        
-        res.status(200).json(clientReq)
-    }
-    catch(error){
-        res.status(404).json({error: error.message})
-    }  
-}
-
-//req accepted
-const getAllClientReqAccepted = async(req, res)=>{
-
-    try{
-        //this is to find skill for specific user
-        const client_id = req.clientInfo._id
-        //get all query
-        const clientReq = await ClientReq
-        .find({client_id, reqStatus:"reqAccepted", isDeleted: 0})
-        .sort({createdAt: -1})
-        .populate('skilled_id')
-        .populate('skill_id')
-        .populate('client_id')
-        
-        res.status(200).json(clientReq)
-    }
-    catch(error){
-        res.status(404).json({error: error.message})
-    }  
-}
-
-//req completed
-const getAllClientReqCompleted = async(req, res)=>{
-
-    try{
-        //this is to find skill for specific user
-        const client_id = req.clientInfo._id
-        //get all query
-        const clientReq = await ClientReq
-        .find({client_id, reqStatus:"reqCompleted", isDeleted: 0})
-        .sort({createdAt: -1})
-        .populate('skilled_id')
-        .populate('skill_id')
-        .populate('client_id')
-        
-        res.status(200).json(clientReq)
-    }
-    catch(error){
-        res.status(404).json({error: error.message})
-    }  
-}
-
-//update client req
-const updateClientSkilledReq = async(req, res) =>{
+const updateSkilledReqCompleted = async(req, res) =>{
+    const skilled_id = req.skilledInfo._id;//this is for notification
     const {id} = req.params    
     const {reqStatus} = req.body
 
@@ -743,6 +696,218 @@ const updateClientSkilledReq = async(req, res) =>{
      if (!clientReq){
         return res.status(404).json({error: 'Request not found.'})
     }
+
+    //this is for the notification
+    // Get the name of the skilled user
+    const skilledInfo = await SkilledInfo.findOne({ _id: skilled_id });
+    const skilledUsername = skilledInfo.username;
+    const client_id = clientReq.client_id;
+    // Create a notification after successfully creating new exp
+    const notification = await ClientNotification.create({
+        client_id,
+        message: `${skilledUsername} accepted your request.`,
+        // url: `https://samplekasawapp.onrender.com/api/admin/getOne/Barangay/${skilledBClearance._id}`,
+        urlReact:`/temporary/`
+    });
+    res.status(200).json({ message: 'Successfully updated.'})
+}
+
+//client receiving req, pending
+const getAllClientReq = async(req, res)=>{
+
+    try{
+        //this is to find skill for specific user
+        const client_id = req.clientInfo._id
+        //get all query
+        const clientReq = await ClientReq
+        .find({client_id, reqStatus:"pending", isDeleted: 0})
+        .sort({createdAt: -1})
+        .populate('skilled_id', 'username lname fname mname regionAddr cityAddr barangayAddr')
+        .populate('skill_id')
+        .populate('client_id')
+        
+        res.status(200).json(clientReq)
+    }
+    catch(error){
+        res.status(404).json({error: error.message})
+    }  
+}
+
+//req accepted
+const getAllClientReqAccepted = async(req, res)=>{
+
+    try{
+        //this is to find skill for specific user
+        const client_id = req.clientInfo._id
+        //get all query
+        const clientReq = await ClientReq
+        .find({client_id, reqStatus:"reqAccepted", isDeleted: 0})
+        .sort({createdAt: -1})
+        .populate('skilled_id', 'username lname fname mname regionAddr cityAddr barangayAddr contact')
+        .populate('skill_id')
+        .populate('client_id')
+        
+        res.status(200).json(clientReq)
+    }
+    catch(error){
+        res.status(404).json({error: error.message})
+    }  
+}
+
+//req completed
+const getAllClientReqCompleted = async(req, res)=>{
+
+    try{
+        //this is to find skill for specific user
+        const client_id = req.clientInfo._id
+        //get all query
+        const clientReq = await ClientReq
+        .find({client_id, reqStatus:"reqCompleted", isDeleted: 0})
+        .sort({createdAt: -1})
+        .populate('skilled_id', 'username lname fname mname regionAddr cityAddr barangayAddr')
+        .populate('skill_id')
+        .populate('client_id')
+        
+        res.status(200).json(clientReq)
+    }
+    catch(error){
+        res.status(404).json({error: error.message})
+    }  
+}
+
+const getAllClientReqCancelled = async(req, res)=>{
+
+    try{
+        //this is to find skill for specific user
+        const client_id = req.clientInfo._id
+        //get all query
+        const clientReq = await ClientReq
+        .find({client_id, reqStatus:"reqCancelled", isDeleted: 0})
+        .sort({createdAt: -1})
+        .populate('skilled_id', 'username lname fname mname regionAddr cityAddr barangayAddr')
+        .populate('skill_id')
+        .populate('client_id')
+        .populate({
+            path: 'message.message',
+            model: 'ClientCancelReq',
+            select: 'reason',
+            options: { lean: true },
+        })
+        
+        res.status(200).json(clientReq)
+    }
+    catch(error){
+        res.status(404).json({error: error.message})
+    }  
+}
+
+//update client req completed
+const updateClientSkilledReqCompleted = async(req, res) =>{
+    const client_id = req.clientInfo._id;//this is for notification
+    const {id} = req.params    
+    const {reqStatus} = req.body
+
+      //check if id is not existing
+    if(!mongoose.Types.ObjectId.isValid(id)){
+        return res.status(404).json({error: 'Invalid id'})
+    }
+    //check if skilled haven't update the status of client req
+    if(reqStatus==="pending"){
+        res.status(400).send({ message: "Please select request status." });
+        return
+    }
+
+     //delete query
+     const clientReq = await ClientReq.findOneAndUpdate({_id: id},{
+         ...req.body //get new value
+     })
+    
+     //check if not existing
+     if (!clientReq){
+        return res.status(404).json({error: 'Request not found.'})
+    }
+
+    //this is for the notification
+    // Get the name of the skilled user
+    const clientInfo = await ClientInfo.findOne({ _id: client_id });
+    const clientUsername = clientInfo.username;
+    const skilled_id = clientReq.skilled_id;
+    // Create a notification after successfully creating new exp
+    const notification = await SkilledNotification.create({
+        skilled_id,
+        message: `${clientUsername} marked the labor completed.`,
+        // url: `https://samplekasawapp.onrender.com/api/admin/getOne/Barangay/${skilledBClearance._id}`,
+        urlReact:`/temporary/`
+    });
+    res.status(200).json({ message: 'Successfully updated.'})
+}
+
+//update client req
+const cancelClientSkilledReq = async(req, res) =>{
+    const client_id = req.clientInfo._id;//this is for notification
+    // const {id} = req.params    
+    const {message} = req.body 
+        // Check for duplicate messages in request body
+    const hasDuplicates = message.some((obj, index) => {
+        if (obj.message.trim() === '') {
+            return res.status(404).json({error: 'Please select a reason.'})
+        }
+
+        let foundDuplicate = false;
+        message.forEach((innerObj, innerIndex) => {
+        if (index !== innerIndex && obj.message === innerObj.message) {
+            foundDuplicate = true;
+        }
+        });
+        return foundDuplicate;
+    });
+
+    if (hasDuplicates) {
+        return res.status(400).json({ error: 'Please remove repeating reason.' });
+    }
+
+    await ClientReq.updateOne({  _id: req.params.id }, { $unset: { message: 1 } });
+
+     //delete query
+    const clientReq = await ClientReq.findOneAndUpdate(
+        { _id: req.params.id},
+        {
+            $push: { message },
+            $set: { reqStatus:"reqCancelled" },
+        },
+        { new: true }
+    )
+
+    //this is for the notificatio
+    //notification
+    const clientSkilledNotif = await ClientReq.findOne({  _id: req.params.id })
+    .populate('message');
+    console.log(clientSkilledNotif)
+    const messageIds = clientSkilledNotif.message.map(msg => msg.message)
+    let messageNotif = '';
+        const messages = await Promise.all(
+            messageIds.map(async (msgId) => {
+                if (msgId) {
+                const msg = await ReasonCancelled.findOne({ _id: msgId });
+                return msg.reason;
+                }
+                return null;
+            })
+        );
+         // Get the name of the skilled user
+        const clientInfo = await ClientInfo.findOne({ _id: client_id });
+        const clientUsername = clientInfo.username;
+        const skilled_id = clientReq.skilled_id;
+
+        messageNotif = `${clientUsername} cancelled request. ${clientUsername} ${messages.join(', ')}.`;
+
+    // Create a notification after successfully creating new exp
+    const notification = await SkilledNotification.create({
+        skilled_id,
+        message: messageNotif,
+        // url: `https://samplekasawapp.onrender.com/api/admin/getOne/Barangay/${skilledBClearance._id}`,
+        urlReact:`/temporary/`
+    });
 
     res.status(200).json({ message: 'Successfully updated.'})
 }
@@ -768,7 +933,6 @@ const deleteClientSkilledReq = async(req, res)=>{
 
 }
  
-
 module.exports = {
     createSkills,
     createSkill,
@@ -788,9 +952,12 @@ module.exports = {
     getAllSkilledReq,
     getAllSkilledReqAccepted,
     getAllSkilledReqCompleted,
+    updateSkilledReqCompleted,
     getAllClientReq,
     getAllClientReqAccepted,
     getAllClientReqCompleted,
-    updateClientSkilledReq,
+    getAllClientReqCancelled,
+    updateClientSkilledReqCompleted,
+    cancelClientSkilledReq,
     deleteClientSkilledReq
 }

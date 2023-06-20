@@ -20,12 +20,16 @@ const {
     getAllSkilledReq,
     getAllSkilledReqCompleted,
     getAllSkilledReqAccepted,
+    updateSkilledReqCompleted,
     getAllClientReq,
     getAllClientReqAccepted,
     getAllClientReqCompleted,
-    updateClientSkilledReq,
+    getAllClientReqCancelled,
+    updateClientSkilledReqCompleted,
+    cancelClientSkilledReq,
     deleteClientSkilledReq
 } = require('../controllers/skillController')
+
 const {requireAuth} = require('../middleware/requireAuth')
 const {clientRequireAuth} = require('../middleware/clientRequireAuth')
 
@@ -43,7 +47,7 @@ router.patch('/delete/:id', requireAuth, deleteSkill)
 router.get('/getAll/skilled/req', requireAuth ,getAllSkilledReq)
 router.get('/getAll/skilled/req/accepted', requireAuth ,getAllSkilledReqAccepted)
 router.get('/getAll/skilled/req/completed', requireAuth ,getAllSkilledReqCompleted)
-router.patch('/update/skilled/req/:id', requireAuth, updateClientSkilledReq)
+router.patch('/update/skilled/req/:id', requireAuth, updateSkilledReqCompleted)
 router.patch('/delete/skilled/req/:id', requireAuth, deleteClientSkilledReq)
 
 //FOR CLIENT
@@ -68,8 +72,11 @@ router.post('/post/req/:skill_id/:skilled_id', clientRequireAuth, createClientRe
 router.get('/getAll/client/req', clientRequireAuth ,getAllClientReq)
 router.get('/getAll/client/req/accepted', clientRequireAuth ,getAllClientReqAccepted)
 router.get('/getAll/client/req/completed', clientRequireAuth ,getAllClientReqCompleted)
-router.patch('/update/client/req/:id', clientRequireAuth, updateClientSkilledReq)
+router.get('/getAll/client/req/cancelled', clientRequireAuth ,getAllClientReqCancelled)
+router.patch('/update/client/req/:id', clientRequireAuth, updateClientSkilledReqCompleted)
 router.patch('/delete/client/req/:id', clientRequireAuth, deleteClientSkilledReq)
+//this is for cancelling req for client
+router.patch('/cancel/client/req/:id', clientRequireAuth, cancelClientSkilledReq)
 
 //export
 module.exports = router

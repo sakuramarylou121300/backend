@@ -484,7 +484,7 @@ const adminUpdateSkilled = async(req, res) =>{
     res.status(200).json(skilledInfo)
 }
 
-const adminDeleteSkilled = async (req, res) => {
+const adminDeleteSkilled = async (req, res) => {x
     const message = req.body.message;
   
     try {
@@ -636,30 +636,29 @@ const adminDeleteClient = async (req, res) => {
             { new: true }
         )
         //notification
-    //     const adminSkilledNotif = await SkilledInfo.findOne({ _id: req.params.id })
-    //     .populate('message');
-    //     console.log(adminSkilledNotif)
-    //     const messageIds = adminSkilledNotif.message.map(msg => msg.message)
-    //     let messageNotif = '';
-    //     let isDeletedValue  = 'deleted';
-    //         const messages = await Promise.all(
-    //             messageIds.map(async (msgId) => {
-    //                 if (msgId) {
-    //                 const msg = await ReasonDeact.findOne({ _id: msgId });
-    //                 return msg.reason;
-    //                 }
-    //                 return null;
-    //             })
-    //         );
-    //         messageNotif = `Your account has been ${isDeletedValue} because of ${messages.join(', ')}.`;
+        const adminClientNotif = await ClientInfo.findOne({ _id: req.params.id })
+        .populate('message');
+        const messageIds = adminClientNotif.message.map(msg => msg.message)
+        let messageNotif = '';
+        let isDeletedValue  = 'deleted';
+            const messages = await Promise.all(
+                messageIds.map(async (msgId) => {
+                    if (msgId) {
+                    const msg = await ReasonDeact.findOne({ _id: msgId });
+                    return msg.reason;
+                    }
+                    return null;
+                })
+            );
+            messageNotif = `Your account has been ${isDeletedValue} because of ${messages.join(', ')}.`;
   
-    // const skilled_id = adminSkilledNotif._id;
-    // // Create a notification after updating creating barangay
-    // const notification = await Notification.create({
-    //     skilled_id,
-    //     message: messageNotif,
-    //     urlReact:`/temporary`
-    // });
+    const client_id = adminClientNotif._id;
+    // Create a notification after updating creating barangay
+    const notification = await ClientNotification.create({
+        client_id,
+        message: messageNotif,
+        urlReact:`/temporary`
+    });
       res.status(200).json({ message: 'Client deactivated.'})
       } catch (error) {
           res.status(400).json({ error: error.message })
