@@ -80,5 +80,14 @@ router.patch('/delete/client/req/:id', clientRequireAuth, deleteClientSkilledReq
 //this is for cancelling req for client
 router.patch('/cancel/client/req/:id', clientRequireAuth, cancelClientSkilledReq)
 
+// Error handling middleware
+router.use((err, req, res, next) => {
+    if (err.statusCode && err.statusCode === 400) {
+      return res.status(400).json({ error: err.message });
+    }
+    // Handle other errors
+    return res.status(500).json({ error: 'File is not supported. Please upload a photo with JPEG, JPG, PNG format only.' });
+});
+
 //export
 module.exports = router

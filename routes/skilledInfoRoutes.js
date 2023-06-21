@@ -27,6 +27,7 @@ const{
    
 } = require('../controllers/skilledInfoController')
 
+//this is for notifications
 const{ 
     getAllNotification,
     deleteNotification 
