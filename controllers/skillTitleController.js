@@ -6,6 +6,16 @@ const createTitle = async(req, res)=>{
     try{
         const {skill_id, title, } = req.body
 
+        //required
+        if(skill_id === "Select"){
+            return res.status(400).json({error: "Please select skill."})
+        }
+
+        if(title === ""){
+            return res.status(400).json({error: "Please enter skill title."})
+        }
+
+        //if existing
         const skillTitle = await Title.findOne({
             skill_id:skill_id,
             title:title,
@@ -89,6 +99,16 @@ const updateSkillTitle = async(req, res) =>{
     if(!mongoose.Types.ObjectId.isValid(id)){
         return res.status(404).json({error: 'Invalid id'})
     }
+
+    //required
+    if(skill_id === "Select"){
+        return res.status(400).json({error: "Please select skill."})
+    }
+
+    if(title === ""){
+        return res.status(400).json({error: "Please enter skill title."})
+    }
+    
     const existingTitle = await Title.findOne({ skill_id, title,  isDeleted: 0 });
         if (existingTitle) {
             return res.status(400).json({ message: "Title already exists in this skill." });

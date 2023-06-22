@@ -7,6 +7,11 @@ const createSkill = async(req, res)=>{
 
     try{
         const {skill} = req.body
+
+        //required
+        if(skill === ""){
+            return res.status(400).json({error: "Please enter skill."})
+        }
         //search if existing
         const skillCheck = await AdminSkill.findOne({
             skill:skill,
@@ -75,6 +80,11 @@ const updateSkill = async(req, res) =>{
     //check if id is not existing
     if(!mongoose.Types.ObjectId.isValid(id)){
         return res.status(404).json({error: 'Invalid id'})
+    }
+
+    //required
+    if(skill === ""){
+        return res.status(400).json({error: "Please enter skill."})
     }
 
     const checkAdminSkill = await AdminSkill.findOne({skill})
