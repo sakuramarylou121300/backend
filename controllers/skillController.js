@@ -366,7 +366,14 @@ const getAllClientComment = async(req, res)=>{
         //get all query
         const clientComment = await ClientComment.find({skill_id, isDeleted: 0})
         .sort({createdAt: -1})
-        .populate('skill_id')
+        .populate({
+            path: "skill_id",
+            match: { isDeleted: 0 },
+            populate: {
+                path: "skillName",
+                select: "skill",
+            },
+        })
         .populate('skilledId')
         .populate('client_id')
         
@@ -387,7 +394,14 @@ const getAllClientOneComment = async(req, res)=>{
         const clientComment = await ClientComment
         .find({client_id, isDeleted: 0})
         .sort({createdAt: -1})
-        .populate('skill_id')
+        .populate({
+            path: "skill_id",
+            match: { isDeleted: 0 },
+            populate: {
+                path: "skillName",
+                select: "skill",
+            },
+        })
         .populate('skilledId')
         .populate('client_id')
         
