@@ -277,8 +277,9 @@ const rating = async (req, res) => {
 };
 
 const createClientComment = async (req, res) => {
-    const id = req.params._id
+    const id = req.params._id //this is for update when completed
     const skill_id = req.params.skill_id; // Retrieve skill_id from params
+    const skilledId = req.params.skilledId;
     const client_id = req.clientInfo._id;
     const { star, comment } = req.body;
 
@@ -302,6 +303,7 @@ const createClientComment = async (req, res) => {
 
         let clientComment = new ClientComment({
             comment,
+            skilledId,
             client_id,
             skill_id: skill_id,
             star: star,
@@ -365,6 +367,7 @@ const getAllClientComment = async(req, res)=>{
         const clientComment = await ClientComment.find({skill_id, isDeleted: 0})
         .sort({createdAt: -1})
         .populate('skill_id')
+        .populate('skilledId')
         .populate('client_id')
         
         res.status(200).json(clientComment)
@@ -385,6 +388,7 @@ const getAllClientOneComment = async(req, res)=>{
         .find({client_id, isDeleted: 0})
         .sort({createdAt: -1})
         .populate('skill_id')
+        .populate('skilledId')
         .populate('client_id')
         
         res.status(200).json(clientComment)

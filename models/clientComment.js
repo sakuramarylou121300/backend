@@ -18,6 +18,10 @@ const commentSchema = new Schema({
         type: mongoose.Schema.Types.ObjectId, 
         ref: "ClientInfo"
     },
+    skilledId:{
+        type: mongoose.Schema.Types.ObjectId, 
+        ref: "SkilledInfo"
+    },
     cloudinary_id:{
         type: String,
         required: true,
