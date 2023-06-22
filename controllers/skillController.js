@@ -347,7 +347,7 @@ const createClientComment = async (req, res) => {
             skilled_id,
             message: `${clientUsername} marked completed and rated your skill labor.`,
             // url: `https://samplekasawapp.onrender.com/api/admin/getOne/Barangay/${skilledBClearance._id}`,
-            urlReact:`/temporary/`
+            urlReact:`/viewAllSkilledRequest`
         });
 
         res.status(200).json({ comment: clientComment, averageRating });
@@ -655,7 +655,7 @@ const createClientReq = async (req, res) => {
             skilled_id,
             message: `${clientUsername} sent you a labor request.`,
             // url: `https://samplekasawapp.onrender.com/api/admin/getOne/Barangay/${skilledBClearance._id}`,
-            urlReact:`/temporary/`
+            urlReact:`/viewAllSkilledRequest`
         });
 
         res.status(200).json({ message: 'Successfully added.'});
@@ -812,7 +812,7 @@ const updateSkilledReqCompleted = async(req, res) =>{
         client_id,
         message: `${skilledUsername} accepted your request.`,
         // url: `https://samplekasawapp.onrender.com/api/admin/getOne/Barangay/${skilledBClearance._id}`,
-        urlReact:`/temporary/`
+        urlReact:`/viewAllClientRequest`
     });
     res.status(200).json({ message: 'Successfully updated.'})
 }
@@ -967,7 +967,7 @@ const updateClientSkilledReqCompleted = async(req, res) =>{
         skilled_id,
         message: `${clientUsername} marked the labor completed.`,
         // url: `https://samplekasawapp.onrender.com/api/admin/getOne/Barangay/${skilledBClearance._id}`,
-        urlReact:`/temporary/`
+        urlReact:`/viewAllSkilledRequest`
     });
     res.status(200).json({ message: 'Successfully updated.'})
 }
@@ -1036,7 +1036,7 @@ const cancelClientSkilledReq = async(req, res) =>{
         skilled_id,
         message: messageNotif,
         // url: `https://samplekasawapp.onrender.com/api/admin/getOne/Barangay/${skilledBClearance._id}`,
-        urlReact:`/temporary/`
+        urlReact:`/viewAllSkilledRequest`
     });
 
     res.status(200).json({ message: 'Successfully updated.'})
