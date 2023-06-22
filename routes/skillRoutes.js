@@ -1,6 +1,7 @@
 const express = require('express')
 const cloudinary = require("../utils/cloudinary")
 const upload = require("../utils/multer")
+
 const {
     createSkills,
     createSkill, 
@@ -31,6 +32,10 @@ const {
     deleteClientSkilledReq
 } = require('../controllers/skillController')
 
+//get all reason for canceling for client
+const{
+  getAllReasonReq
+} = require('../controllers/clientCancelReqController')
 const {requireAuth} = require('../middleware/requireAuth')
 const {clientRequireAuth} = require('../middleware/clientRequireAuth')
 
@@ -77,8 +82,11 @@ router.get('/getAll/client/req/completed', clientRequireAuth ,getAllClientReqCom
 router.get('/getAll/client/req/cancelled', clientRequireAuth ,getAllClientReqCancelled)
 router.patch('/update/client/req/:id', clientRequireAuth, updateClientSkilledReqCompleted)
 router.patch('/delete/client/req/:id', clientRequireAuth, deleteClientSkilledReq)
+
 //this is for cancelling req for client
 router.patch('/cancel/client/req/:id', clientRequireAuth, cancelClientSkilledReq)
+//get reason for cancelling for client
+router.get('/getAll/cancel/clientReqReason', clientRequireAuth ,getAllReasonReq)
 
 // Error handling middleware
 router.use((err, req, res, next) => {
