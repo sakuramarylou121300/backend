@@ -1029,7 +1029,7 @@ const cancelClientSkilledReq = async(req, res) =>{
         const clientUsername = clientInfo.username;
         const skilled_id = clientReq.skilled_id;
 
-        messageNotif = `${clientUsername} cancelled request. ${clientUsername} ${messages.join(', ')}.`;
+        messageNotif = `${clientUsername} cancelled request. Reasons: ${messages.join(', ')}.`;
 
     // Create a notification after successfully creating new exp
     const notification = await SkilledNotification.create({
