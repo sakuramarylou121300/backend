@@ -36,7 +36,7 @@ const createSkills = async(req, res)=>{
             }
            
             if (existingSkillNames.includes(skill.skillName)) {
-                res.status(400).send({ error: `${skill.skillName} already exist. ` });
+                res.status(400).send({ error: `Please remove repeating added skill. ` });
                 return;
             }
            
@@ -393,6 +393,34 @@ const getAllClientOneComment = async(req, res)=>{
         //get all query
         const clientComment = await ClientComment
         .find({client_id, isDeleted: 0})
+        .sort({createdAt: -1})
+        .populate({
+            path: "skill_id",
+            match: { isDeleted: 0 },
+            populate: {
+                path: "skillName",
+                select: "skill",
+            },
+        })
+        .populate('skilledId')
+        .populate('client_id')
+        
+        res.status(200).json(clientComment)
+    }
+    catch(error){
+        res.status(404).json({error: error.message})
+    }  
+}
+
+const getAllSkilledOneComment = async(req, res)=>{
+
+    try{
+        //this is to find skill for specific user
+        const skill_id = req.params.skill_id;
+        const skilled_id = req.skilledInfo._id;
+        //get all query
+        const clientComment = await ClientComment
+        .find({skilled_id, isDeleted: 0})
         .sort({createdAt: -1})
         .populate({
             path: "skill_id",
@@ -1046,6 +1074,7 @@ module.exports = {
     createClientComment,
     getAllClientComment,
     getAllClientOneComment,
+    getAllSkilledOneComment,
     deleteClientComment,
     updateClientComment,
     getOneSkilledSkill,

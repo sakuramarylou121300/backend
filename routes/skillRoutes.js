@@ -13,6 +13,7 @@ const {
     createClientComment,
     getAllClientComment,
     getAllClientOneComment,
+    getAllSkilledOneComment,
     updateClientComment,
     deleteClientComment,
     getOneSkilledSkill,
@@ -56,6 +57,9 @@ router.get('/getAll/skilled/req/completed', requireAuth ,getAllSkilledReqComplet
 router.get('/getAll/skilled/req/cancelled', requireAuth , getAllSkilledReqCancelled)
 router.patch('/update/skilled/req/:id', requireAuth, updateSkilledReqCompleted)
 router.patch('/delete/skilled/req/:id', requireAuth, deleteClientSkilledReq)
+
+//skilled comment
+router.get('/getAll/skilledone/comment', requireAuth, getAllSkilledOneComment)
 
 //FOR CLIENT
 //get skilled skill, cert, exp and comment
