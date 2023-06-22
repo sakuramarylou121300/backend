@@ -351,6 +351,34 @@ const verifyOTP = async(req, res) =>{
     }
 }
 
+const updateClientAccount = async (req, res) => {
+    try {
+        // Find the document by its _id
+        const clientInfo = await ClientInfo.findById(req.clientInfo._id)
+        .populate('clientBarangay')
+        .populate('clientNbi');
+     
+        if (clientInfo) {
+            // Check the values of idIsVerified, address.addIsVerified, and skilledBill
+            if (clientInfo.addIsVerified === 1 &&
+                clientInfo.clientBarangay.some(brgy => brgy.bClearanceIsVerified === "true") &&
+                clientInfo.clientNbi.some(nbi => nbi.nClearanceIsVerified === "true")) {
+                const clientInfoVerified = await ClientInfo.findByIdAndUpdate(req.clientInfo._id, { $set: { userIsVerified: 1 } }, { new: true });
+                return res.status(200).json(clientInfoVerified);
+            } else if (clientInfo.addIsVerified === 0 ||
+                clientInfo.clientBarangay.every(brgy => brgy.bClearanceIsVerified === "false") ||
+                clientInfo.clientNbi.every(nbi => nbi.nClearanceIsVerified === "false")) {
+                const clientInfoNotVerified = await ClientInfo.findByIdAndUpdate(req.clientInfo._id, { $set: { userIsVerified: 0 } }, { new: true });
+                return res.status(200).json(clientInfoNotVerified);
+            }
+        } else {
+            return res.status(404).json({ message: "User not found" });
+        }
+    } catch (err) {
+        return res.status(500).json({ message: err.toString() });
+    }
+};
+
 module.exports = {
     clientLogIn,
     clientSignUp,
@@ -361,5 +389,6 @@ module.exports = {
     deleteClientInfo,
     updateClientAddress,
     generateOTP,
-    verifyOTP
+    verifyOTP,
+    updateClientAccount
 }

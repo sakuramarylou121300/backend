@@ -12,7 +12,7 @@ const{
     updateClientAddress,
     generateOTP,
     verifyOTP,
-   
+    updateClientAccount
 } = require('../controllers/clientInfoController')
 
 //client notification 
@@ -57,6 +57,7 @@ router.delete('/delete', clientRequireAuth, deleteClientInfo)
 router.patch('/update/address', clientRequireAuth, updateClientAddress)
 router.get('/generateOTP', localVariables, clientRequireAuth, generateOTP)
 router.patch('/verifyOTP', clientRequireAuth, verifyOTP)
+router.patch('/update/client/account', clientRequireAuth, updateClientAccount)
 
 //notification
 router.get('/getAll/notification', clientRequireAuth, getAllNotification)
