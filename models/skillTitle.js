@@ -6,7 +6,6 @@ const skillTitleSchema = new Schema({
     
     title:{
         type: String,
-        required: true,
         trim: true
     },
     skill_id:{
