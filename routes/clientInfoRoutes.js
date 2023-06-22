@@ -42,6 +42,8 @@ const {
 
 //authentication
 const {clientRequireAuth,localVariables} = require('../middleware/clientRequireAuth')
+//only virified client can view skilled worker
+const clientVerified = require('../middleware/clientVerified')
 const { updateAddress } = require('../controllers/skilledInfoController')
 
 const router = express.Router()
@@ -61,11 +63,11 @@ router.get('/getAll/notification', clientRequireAuth, getAllNotification)
 router.patch('/delete/notification/:id', clientRequireAuth, deleteNotification)
 
 //final filtering
-router.get('/filter/skilled', clientRequireAuth, getFilterSkilled)
-router.get('/filter/skilled/skill/desc/:_id', clientRequireAuth, getFilterSkilledSkillDesc)
-router.get('/filter/skilled/skill/asc/:_id', clientRequireAuth, getFilterSkilledSkillAsc)
-router.get('/filter/skilled/skill/toprate/:_id', clientRequireAuth, getFilterSkilledSkillTopRate)
-router.get('/filter/skilled/:_id', getFilterSkilledSkill);
+router.get('/filter/skilled', clientRequireAuth, clientVerified, getFilterSkilled)
+router.get('/filter/skilled/skill/desc/:_id', clientRequireAuth, clientVerified, getFilterSkilledSkillDesc)
+router.get('/filter/skilled/skill/asc/:_id', clientRequireAuth, clientVerified, getFilterSkilledSkillAsc)
+router.get('/filter/skilled/skill/toprate/:_id', clientRequireAuth, clientVerified, getFilterSkilledSkillTopRate)
+router.get('/filter/skilled/:_id', clientRequireAuth, clientVerified, getFilterSkilledSkill);
 //all get one
 router.get('/getOne/skilledInfo/:id', clientRequireAuth, getClientSkilledInfo)
 router.get('/getOne/skilledInfo/skill/:_id', clientRequireAuth, getClientSkilledSkill)

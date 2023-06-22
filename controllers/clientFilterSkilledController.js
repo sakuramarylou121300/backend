@@ -5,14 +5,57 @@ const AdminSkill = require('../models/adminSkill')
 const Skill = require('../models/skill') 
 const Certificate = require('../models/skillCert')
 const Experience = require('../models/skilledExp')  
-const SkilledBClearance = require('../models/skilledBClearance') //for CRUD of skill (admin)
-const SkilledNClearance = require('../models/skilledNClearance') //for CRUD of skill (admin)
+const SkilledBClearance = require('../models/skilledBClearance') 
+const SkilledNClearance = require('../models/skilledNClearance') 
+const ClientBClearance = require('../models/clientBClearance') 
+const ClientNClearance = require('../models/clientNClearance') 
 const jwt = require('jsonwebtoken')
 const mongoose = require('mongoose')
 
 //FINAL FILTERING
 const getFilterSkilled = async (req, res) => {
     try {
+
+        //CLIENT
+        var currentDate = new Date();//date today
+        await ClientBClearance.updateMany({ bClearanceExp: {$lt:currentDate}}, 
+            {$set: 
+                { bClearanceIsVerified: "false", isExpired: 1 } });
+
+        //update all expired nclearance
+        var currentDate = new Date();//date today
+        await ClientNClearance.updateMany({ nClearanceExp: {$lt:currentDate} }, 
+            {$set: 
+                { nClearanceIsVerified: "false", isExpired: 1 } });
+        
+            const clientInfo = await ClientInfo.find({ userIsVerified: {$in: [0, 1]}, isDeleted: 0 })
+            .sort({ createdAt: -1 })
+            .select("-password")
+            .populate("clientBarangay")
+            .populate("clientNbi");
+    
+            if (clientInfo) {
+                const updatedClientInfo = clientInfo.map((client) => {
+                if (
+                    client.addIsVerified === 1 &&
+                    client.clientBarangay.some((brgy) => brgy.bClearanceIsVerified === "true") &&
+                    client.clientNbi.some((nbi) => nbi.nClearanceIsVerified === "true")
+                ) {
+                    return ClientInfo.findByIdAndUpdate(client._id, { $set: { userIsVerified: 1 } }, { new: true });
+                } else if (
+                    client.addIsVerified === 0 ||
+                    client.clientBarangay.every((brgy) => brgy.bClearanceIsVerified === "false" || brgy.bClearanceIsVerified === "pending") ||
+                    client.clientNbi.every((nbi) => nbi.nClearanceIsVerified === "false" || nbi.nClearanceIsVerified === "pending" )
+                ) {
+                    return ClientInfo.findByIdAndUpdate(client._id, { $set: { userIsVerified: 0 } }, { new: true });
+                } else {
+                    return client;
+                }
+                });
+                const updatedClientInfoResults = await Promise.all(updatedClientInfo);
+            }
+        
+        //SKILLED WORKER 
         //update all expired bclearance
         var currentDate = new Date();//date today
         await SkilledBClearance.updateMany({ bClearanceExp: {$lt:currentDate}}, 
@@ -30,13 +73,13 @@ const getFilterSkilled = async (req, res) => {
         await Certificate.updateMany({ validUntil: {$lt:currentDate} }, 
             {$set: 
                 { skillIsVerified: "false", isExpired: 1 } });
-        
+                
         const skilledInfo = await SkilledInfo.find({ userIsVerified: {$in: [0, 1]}, isDeleted: 0 })
             .sort({ createdAt: -1 })
             .select("-password")
             .populate("skillBarangay")
             .populate("skillNbi");
-  
+
         if (skilledInfo) {
             const updatedSkilledInfo = skilledInfo.map((skilled) => {
             if (
@@ -57,23 +100,20 @@ const getFilterSkilled = async (req, res) => {
             });
   
         const updatedSkilledInfoResults = await Promise.all(updatedSkilledInfo);
-
         const skilledInfoUpdated = await SkilledInfo.find({ userIsVerified: 1, isDeleted: 0 })
         .sort({ createdAt: -1 })
         .select("-password")
         .populate({
-        path: "skills",
-        match: { isDeleted: 0 },
-        populate: {
-            path: "skillName",
-            select: "skill",
-        },
+            path: "skills",
+            match: { isDeleted: 0 },
+            populate: {
+                path: "skillName",
+                select: "skill",
+            },
         })
   
         res.status(200).json(skilledInfoUpdated);
-      } else {
-        return res.status(404).json({ message: "Skilled worker not found" });
-      }
+        } 
     } catch (error) {
       res.status(400).json({ error: error.message });
     }
@@ -694,7 +734,6 @@ const getFilterSkilledSkill = async (req, res) => {
         res.status(400).json({ error: error.message });
     }
 };
-
 
 //ALL GET ONE
 //get one skilled worker, get skilled worker info
