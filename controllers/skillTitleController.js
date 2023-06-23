@@ -8,7 +8,7 @@ const createTitle = async(req, res)=>{
 
         //required
 
-        if(skill_id === "Select" || title === ""){
+        if(skill_id === "Select" || skill_id === "Empty" || title === ""){
             return res.status(400).json({error: "Please check your entered data."})
         }
 
