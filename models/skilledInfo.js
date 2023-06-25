@@ -68,8 +68,8 @@ const skilledInfoSchema = new Schema({
         trim: true
     },
     houseNo:{
-        type:Number,
-        required: true,
+        type:String,
+        default: "",
         trim: true
     },
     street:{
@@ -207,7 +207,7 @@ skilledInfoSchema.statics.signup = async function (
 
     //check  length
     if(username.length <7){
-        throw Error('Please enter atleast 6 characters in user name.')
+        throw Error('Please enter atleast 6 characters in username.')
     }
     //check if strong password
     if(password.length <7){
@@ -306,7 +306,7 @@ skilledInfoSchema.statics.login = async function(username, password){
             return msg.reason;
         }));
   
-        throw Error(`Your account has been deleted because of ${messages.join(', ')}.`);
+        throw Error(`Your account has been deleted. Reason: ${messages.join(', ')}.`);
         
     }
 

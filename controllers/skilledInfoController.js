@@ -162,7 +162,7 @@ const updateSkilledUserName = async(req, res) =>{
 
         //check if strong password
         if(username.length <8){
-            throw Error('Please enter atleast 8 characters in username.')
+            throw Error('Please enter atleast 6 characters in username.')
         }
 
          //check if email is existing
@@ -200,7 +200,7 @@ const updateSkilledPass = async(req, res) =>{
 
         //validation
         if (!oldpass || !newpass || !username){
-            throw Error('Please enter all blank fields.')
+            throw Error('Please enter all the blank fields.')
         }
 
         if (oldpass===newpass){
@@ -209,7 +209,7 @@ const updateSkilledPass = async(req, res) =>{
 
         const skilled_Info = await SkilledInfo.findOne({username})
         if (!skilled_Info){
-            throw Error('Incorrect email.')
+            throw Error('Incorrect username.')
         }
         //check if the password and password hash in match
         const match = await bcrypt.compare(oldpass, skilled_Info.password)
@@ -220,7 +220,7 @@ const updateSkilledPass = async(req, res) =>{
 
         //check if strong password
         if(newpass.length <8){
-            throw Error('Please enter atleast 8 characters in password.')
+            throw Error('Please enter atleast 6 characters in password.')
         }
 
         //salt for additional security of the system
@@ -250,18 +250,10 @@ const updateSkilledInfo = async(req, res) =>{
         const {lname,
                 fname,
                 mname,
-                contact,
-                houseNo,
-                street,
-                barangayAddr,
-                cityAddr,
-                provinceAddr,
-                regionAddr} = req.body
+                contact} = req.body
 
         //validation
-        if (!lname || !fname || !contact ||  
-            !houseNo || !street || !barangayAddr || !cityAddr ||
-            !provinceAddr || !regionAddr){
+        if (!lname || !fname || !contact){
             throw Error('Please fill in all the blank fields.')
         }
         const skilledInfoCheck = await SkilledInfo.findOne({
@@ -269,12 +261,6 @@ const updateSkilledInfo = async(req, res) =>{
             mname: mname,
             lname: lname,
             contact: contact,
-            houseNo: houseNo,
-            street: street,
-            barangayAddr: barangayAddr,
-            cityAddr: cityAddr,
-            provinceAddr: provinceAddr,
-            regionAddr: regionAddr,
             isDeleted:{$in: [0, 1]}
         })
         
@@ -294,17 +280,11 @@ const updateSkilledInfo = async(req, res) =>{
             {lname,
             fname,
             mname,
-            contact,
-            houseNo,
-            street,
-            barangayAddr,
-            cityAddr,
-            provinceAddr,
-            regionAddr
+            contact
         })
 
         //success
-        res.status(200).json(skilledInfo)
+        res.status(200).json({message: "Successfully updated."})
     }
     catch(error){
 
@@ -368,7 +348,7 @@ const updateSkilledAddress = async(req, res) =>{
             urlReact:`/viewSkilled`
         });
         //success
-        res.status(200).json(skilledInfo)
+        res.status(200).json({message: "Successfully updated."})
     }
     catch(error){
 
@@ -382,7 +362,7 @@ const deleteSkilledInfo = async(req, res) =>{
     try{
         const skilledInfo = await SkilledInfo.findOneAndUpdate({_id: req.skilledInfo._id},
             {isDeleted:1})
-        res.status(200).json(skilledInfo)
+        res.status(200).json({message: "Successfully deleted."})
     }
     catch(error){
         res.status(400).json({error:error.message})
