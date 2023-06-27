@@ -102,10 +102,6 @@ const skilledInfoSchema = new Schema({
         type: String,
         default: ''
     },
-    idIsVerified:{
-        type: Number,
-        default: 0
-    },
     userIsVerified:{
         type: Number,
         default: 0
@@ -172,11 +168,6 @@ skilledInfoSchema.virtual('skillBarangay', {
     localField: '_id',
     foreignField: 'skilled_id'
 });
-// skilledInfoSchema.virtual('skillBarangay', {
-//     ref: 'SkilledBClearance',
-//     localField: '_id',
-//     foreignField: 'skilled_id'
-// });
 skilledInfoSchema.virtual('skillNbi', {
     ref: 'SkilledNClearance',
     localField: '_id',
@@ -200,8 +191,8 @@ skilledInfoSchema.statics.signup = async function (
 ){
     // await userExists(username);
     //validation
-    if (!username || !password || !lname || !fname || !contact || 
-        !houseNo || !street || !barangayAddr || !cityAddr || !provinceAddr || !regionAddr){
+    if (!username || !password || !lname || !fname || !contact || !street || 
+        !barangayAddr || !cityAddr || !provinceAddr || !regionAddr){
         throw Error('Please fill in all the blank fields.')
     }
 
@@ -319,37 +310,6 @@ skilledInfoSchema.statics.login = async function(username, password){
 
     return skilledInfo
 }
-
-// exports.updateVerifiedUsers = async (event) => {
-//     try {
-//         // update all the documents in the 'skilledInfo' collection that match the specified query
-//         const skilledInfos = await this.updateMany({
-//             idIsVerified: 1,
-//             "address.addIsVerified": 1,
-//             skilledBill: { $elemMatch: { billIsVerified: 1 } }
-//         }, { $set: { userIsVerified: 1 } });
-//         return { statusCode: 200, body: 'Users updated successfully' };
-//     } catch (err) {
-//         return { statusCode: 500, body: err.toString() };
-//     }
-// };
-
-// exports.updateNotVerifiedUsers = async (event) => {
-//     try {
-//         // update all the documents in the 'skilledInfo' collection that match the specified query
-//         const skilledInfos = await this.updateMany({
-//             $or: [
-//                 { idIsVerified: 0 },
-//                 { "address.addIsVerified": 0},
-//                 { $and: [{ skilledBill: { $exists: true } }, 
-//                     { skilledBill: { $not: { $elemMatch: { billIsVerified: 1 } } } }] }
-//             ]
-//         }, { $set: { userIsVerified: 0 } });
-//         return { statusCode: 200, body: 'Users updated successfully' };
-//     } catch (err) {
-//         return { statusCode: 500, body: err.toString() };
-//     }
-// };
 
 module.exports = mongoose.model('SkilledInfo', skilledInfoSchema)
 const AdminInfo = require('../models/adminInfo') 

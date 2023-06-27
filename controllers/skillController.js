@@ -24,19 +24,19 @@ const createSkills = async(req, res)=>{
         const newSkills = [];
 
         if (skillsToAdd.length === 0) {
-            res.status(400).send({ error: "Please enter your skill" });
+            res.status(400).send({ error: "Please select skill." });
             return;
         }
 
         for (const skill of skillsToAdd) {
             //if the value in the drop down is Select
             if (!skill.skillName || skill.skillName === "Select") {
-                res.status(400).send({ error: "Please enter your skill" });
+                res.status(400).send({ error: "Please select skill." });
                 return;
             }
            
             if (existingSkillNames.includes(skill.skillName)) {
-                res.status(400).send({ error: `Please remove repeating added skill. ` });
+                res.status(400).send({ error: `Please remove repeating skill. ` });
                 return;
             }
            
@@ -63,7 +63,7 @@ const createSkill = async(req, res)=>{
 
     //send message if there is an empty fields
     if(emptyFields.length >0){
-        return res.status(400).json({error: 'Please fill in all the blank fields.', emptyFields})
+        return res.status(400).json({error: 'Please select skill.', emptyFields})
     }
     
     try{
@@ -99,8 +99,10 @@ const getAllSkill = async(req, res)=>{
         //this is to find skill for specific user
         const skilled_id = req.skilledInfo._id
         //get all query
-        const skill = await Skill.find({skilled_id, isDeleted: 0}).sort({createdAt: -1})
-        .populate('skillName')
+        const skill = await Skill
+        .find({skilled_id, isDeleted: 0})
+        // .sort({skillName: -1})
+        .populate('skillName', 'skill')
         .populate('skilled_id')
         .populate('comments')
         .populate({
@@ -111,8 +113,17 @@ const getAllSkill = async(req, res)=>{
               select: "skillName", // Assuming 'skill' is the field in 'AdminSkill' model that holds the skill name
             },
         })
-        
-        res.status(200).json(skill)
+        .lean();
+
+        const sortedSkills = skill.sort((a, b) => {
+            const skillA = a.skillName.skill.toLowerCase();
+            const skillB = b.skillName.skill.toLowerCase();
+            if (skillA < skillB) return -1;
+            if (skillA > skillB) return 1;
+            return 0;
+        });
+
+        res.status(200).json(sortedSkills)
     }
     catch(error){
         res.status(404).json({error: error.message})
@@ -125,7 +136,7 @@ const getOneSkill = async(req, res)=>{
 
      //check if id is not existing
      if(!mongoose.Types.ObjectId.isValid(id)){
-        return res.status(404).json({error: 'Invalid id'})
+        return res.status(404).json({error: 'Invalid id.'})
     }
 
     //find query
@@ -135,7 +146,7 @@ const getOneSkill = async(req, res)=>{
 
     //check if not existing
     if (!skill){
-        return res.status(404).json({error: 'Skill not found'})
+        return res.status(404).json({error: 'Skill not found.'})
     }
 
     res.status(200).json(skill)   
@@ -150,7 +161,7 @@ const updateSkill = async(req, res) =>{
 
       //check if id is not existing
     if(!mongoose.Types.ObjectId.isValid(id)){
-        return res.status(404).json({error: 'Invalid id'})
+        return res.status(404).json({error: 'Invalid id.'})
     }
     // check empty fields
     let emptyFields = []
@@ -164,7 +175,7 @@ const updateSkill = async(req, res) =>{
         return res.status(400).json({error: 'Please fill in all the blank fields.', emptyFields})
     }
     if(skillName==="Select"){
-        res.status(400).send({ message: "Please enter your skill" });
+        res.status(400).send({ message: "Please enter your skill." });
         return
     }
     const skillCheck = await Skill.findOne({
@@ -184,7 +195,7 @@ const updateSkill = async(req, res) =>{
     
      //check if not existing
      if (!skill){
-        return res.status(404).json({error: 'Skill not found'})
+        return res.status(404).json({error: 'Skill not found.'})
     }
 
     res.status(200).json({ message: 'Successfully updated.'})
@@ -196,7 +207,7 @@ const deleteSkill = async(req, res)=>{
     
     //check if id is not existing
     if(!mongoose.Types.ObjectId.isValid(id)){
-        return res.status(404).json({error: 'Invalid id'})
+        return res.status(404).json({error: 'Invalid id.'})
     }
 
     //delete query
@@ -205,7 +216,7 @@ const deleteSkill = async(req, res)=>{
     
     //check if not existing
     if (!skill){
-        return res.status(404).json({error: 'Skill not found'})
+        return res.status(404).json({error: 'Skill not found.'})
     }
 
     res.status(200).json({ message: 'Successfully deleted.'})

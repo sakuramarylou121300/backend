@@ -52,7 +52,7 @@ const createExp = async(req, res) => {
     //check if valid contact no
     const mobileNumberRegex = /^09\d{9}$|^639\d{9}$/;
     if (!mobileNumberRegex.test(refContactNo)) {
-        return res.status(400).json({error: 'Please check the contact you have entered'});
+        return res.status(400).json({error: 'Please check the contact you have entered.'});
     }
 
     try {
@@ -64,7 +64,6 @@ const createExp = async(req, res) => {
         isWorking:isWorking,
         workStart:workStart,
         workEnd:workEnd,
-        // photo:photo,
         refLname:refLname, 
         refFname:refFname,
         refMname:refMname,
@@ -92,7 +91,7 @@ const createExp = async(req, res) => {
         }
     }
     if (categorySkill === "Select") {
-        res.status(400).send({ error: "Please enter your skill" });
+        res.status(400).send({ error: "Please enter skill." });
         return;
     }
 
@@ -103,15 +102,6 @@ const createExp = async(req, res) => {
         let result = await cloudinary.uploader.upload(file.path);
         uploadedPhotos.push({ url: result.secure_url, public_id: result.public_id });
     }
-    // console.log(result)
-    console.log(req.files)
-
-    // const uploadedPhotos = await Promise.all(
-    //   req.files.map(async (file) => {
-    //     const result = await cloudinary.uploader.upload(file.path);
-    //     return { url: result.secure_url, public_id: result.public_id };
-    //   })
-    // );
 
     // Create new SkilledExp object
     let skilledExp = new SkilledExp({
@@ -131,7 +121,6 @@ const createExp = async(req, res) => {
         photo: uploadedPhotos,
         cloudinary_id: uploadedPhotos[0].public_id // Use the public ID of the first photo in the array
     });
-    console.log(skilledExp)
     await skilledExp.save();
 
      // Get the name of the skilled user
@@ -149,7 +138,6 @@ const createExp = async(req, res) => {
     res.status(200).json({ message: 'Successfully added.'});
 
     }catch(error) {
-    console.log(error)
     res.status(404).json({error: error.message});
     }
 }
@@ -165,7 +153,7 @@ const getAllExp = async(req, res)=>{
         .find({skilled_id, 
             isDeleted: 0,
             isExpired:{$ne: 1},})
-        .sort({updatedAt: -1})
+        .sort({createdAt: -1})
         .populate('categorySkill')
         .populate('skilled_id')
         .populate({

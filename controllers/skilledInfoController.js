@@ -1,5 +1,6 @@
 const SkilledInfo = require('../models/skilledInfo')     
 const AdminInfo = require('../models/adminInfo')    
+const ClientInfo = require('../models/clientInfo')    
 const SkilledBill = require('../models/skilledBill')
 const Notification = require('../models/adminNotification')
 const jwt = require('jsonwebtoken') 
@@ -74,41 +75,6 @@ const skilledSignUp = async(req, res) =>{
     }
 }
 
-// //skilledIsVerifiedOrNot
-// const verifiedSkilled = async(req, res) =>{ 
-//     try {
-//         // Find the document by its _id
-//         const skilledInfo = await SkilledInfo.findById(req.skilledInfo._id)
-//         .populate('skillBarangay')
-//         .populate('skillNbi');
-//         if (skilledInfo) {
-//             // Check the values of idIsVerified, address.addIsVerified, and skilledBill
-//             if (skilledInfo.skillBarangay.some(barangay => barangay.bClearanceIsVerified === 1) &&
-//                 skilledInfo.skillNbi.some(nbi => nbi.nClearanceIsVerified === 1)) {
-//                 // Update the userIsVerified field to 1
-//                 const updatedSkilledInfo = await SkilledInfo.findByIdAndUpdate(req.skilledInfo._id, 
-//                     { $set: { userIsVerified: 1 } }, { new: true });
-//                 return res.status(200).json(updatedSkilledInfo);
-//             } 
-//             else if (
-//                 !skilledInfo.skillBarangay.some(barangay => barangay.bClearanceIsVerified === 1) &&
-//                 !skilledInfo.skillNbi.some(nbi => nbi.nClearanceIsVerified === 1)) {
-//            // Update the userIsVerified field to 0
-//            const updatedSkilledInfo = await SkilledInfo.findByIdAndUpdate(req.skilledInfo._id, 
-//                { $set: { userIsVerified: 0 } }, { new: true });
-//            return res.status(200).json(updatedSkilledInfo);
-//        }
-//             // else {
-//             //     return res.status(200).json({ message: "Please check your id, address and your bill if they are verified." });
-//             // }
-//         } else {
-//             return res.status(404).json({ message: "SkilledInfo not found" });
-//         }   
-//     } catch (err) {
-//         return res.status(500).json({ message: err.toString() });
-//     }
-// }
-
 //get skilled info for update 
 const getSkilledInfo = async(req, res) =>{
 
@@ -161,13 +127,19 @@ const updateSkilledUserName = async(req, res) =>{
         }
 
         //check if strong password
-        if(username.length <8){
+        if(username.length <7){
             throw Error('Please enter atleast 6 characters in username.')
         }
 
-         //check if email is existing
+        //check if email is existing
         const adminExists = await AdminInfo.findOne({username})
         if (adminExists){
+            throw Error('Username already in use.')
+        }
+
+        //check if email is existing
+        const clientExists = await ClientInfo.findOne({username})
+        if (clientExists){
             throw Error('Username already in use.')
         }
 
@@ -182,7 +154,7 @@ const updateSkilledUserName = async(req, res) =>{
             {username})
 
         //success
-        res.status(200).json({skilledInfo})
+        res.status(200).json({message: "Successfully updated."})
     }
     catch(error){
 
@@ -233,7 +205,7 @@ const updateSkilledPass = async(req, res) =>{
             {password:hash})
 
         //success
-        res.status(200).json(skilledInfo)
+        res.status(200).json({message: "Successfully updated."})
     }
     catch(error){
 
@@ -386,7 +358,7 @@ const generateOTP = async(req, res) =>{
             urlReact:`/viewSkilled`
         });
 
-        res.status(200).json({ message: 'Request Sent. Your requested OTP will be send via snail mail.'})
+        res.status(200).json({ message: 'Request Sent. OTP will be send via snail mail.'})
     }
     catch(error){
         res.status(400).json({error:error.message})
