@@ -957,7 +957,7 @@ const adminGetAllSkilledExpDetail = async(req, res)=>{
             isExpired:{$ne: 1}, 
             isDeleted: 0
         })
-        .sort({updatedAt: 1})
+        .sort({createdAt: -1})
         .populate('skilled_id')
         .populate('categorySkill')
         .populate({
@@ -994,7 +994,7 @@ const adminGetAllSkilledCertDetail = async(req, res)=>{
             skilled_id: skilledIdDoc._id,
             isExpired:{$ne: 1},
             isDeleted: 0})
-        .sort({updatedAt: 1})
+        .sort({createdAt: -1})
         .populate('skilled_id')
         .populate({
             path: 'message.message',
@@ -1036,7 +1036,7 @@ const adminGetAllSkilledBarangayDetail = async(req, res)=>{
             skilled_id: skilledIdDoc._id,
             isExpired:{$ne: 1}, 
             isDeleted: 0})
-        .sort({updatedAt: -1})
+        .sort({createdAt: -1})
         .populate('skilled_id')
         .populate({
             path: 'message.message',
@@ -1076,7 +1076,7 @@ const adminGetAllSkilledNbiDetail = async(req, res)=>{
             skilled_id: skilledIdDoc._id,
             isExpired:{$ne: 1}, 
             isDeleted: 0})
-        .sort({updatedAt: -1})
+        .sort({createdAt: -1})
         .populate('skilled_id')
         .populate({
             path: 'message.message',
@@ -1116,7 +1116,7 @@ const adminGetAllClientBarangayDetail = async(req, res)=>{
             client_id: clientIdDoc._id,
             isExpired:{$ne: 1}, 
             isDeleted: 0})
-        .sort({updatedAt: -1})
+        .sort({createdAt: -1})
         .populate('client_id')
         .populate({
             path: 'message.message',
@@ -1156,7 +1156,7 @@ const adminGetAllClientNbiDetail = async(req, res)=>{
             client_id: clientIdDoc._id,
             isExpired:{$ne: 1}, 
             isDeleted: 0})
-        .sort({updatedAt: -1})
+        .sort({createdAt: -1})
         .populate('client_id')
         .populate({
             path: 'message.message',

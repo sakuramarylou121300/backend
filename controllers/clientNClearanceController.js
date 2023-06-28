@@ -22,12 +22,12 @@ const createClientNClearance = async(req, res)=>{
 
         //check if the photo field is empty
         if (!req.files || req.files.length === 0) {
-            return res.status(400).json({error: 'Please upload a photo either local or international NBI clearance.'});
+            return res.status(400).json({error: 'Please upload a photo either local or international NBI Clearance.'});
         }
 
         //check if the photo is greater than 2
         if (!req.files || req.files.length >=3) {
-            return res.status(400).json({error: 'Only two photo is allowed either local or international NBI clearance.'});
+            return res.status(400).json({error: 'Only two photo is allowed either local or international NBI Clearance.'});
         }
 
         // Check if file type is supported
@@ -42,7 +42,7 @@ const createClientNClearance = async(req, res)=>{
         const validUntilDate = new Date(nClearanceExp);
         // Check if the validUntil date is less than today's date
         if (validUntilDate < new Date()) {
-            return res.status(400).json({ error: 'Your nbi clearance is outdated. Please submit a valid one.' });
+            return res.status(400).json({ error: 'Your NBI Clearance is outdated. Please submit a valid one.' });
         }
 
         //search if existing
@@ -55,7 +55,7 @@ const createClientNClearance = async(req, res)=>{
         })
 
         if(clientNClearanceCheck){
-            return res.status(400).json({error: "NBI Clearance already exists."})
+            return res.status(400).json({error: "NBI Clearance already exists to this user."})
         }
         //create new skill
         let uploadedPhotos = [];
@@ -83,7 +83,7 @@ const createClientNClearance = async(req, res)=>{
         // Create a notification after successfully creating new nbi
         const notification = await Notification.create({
             client_id,
-            message: `${clientUserName} has added new nbi clearance.`,
+            message: `${clientUserName} added new NBI Clearance.`,
         //  url: `https://samplekasawapp.onrender.com/api/admin/getOne/Barangay/${clientNClearance._id}`,
             urlReact:`/temporary/${clientUserName}`
         });
@@ -91,7 +91,6 @@ const createClientNClearance = async(req, res)=>{
         res.status(200).json({ message: 'Successfully added.'})
     }
     catch(error){
-        console.log(error)
         res.status(404).json({error: error.message})
     }
 }
@@ -103,13 +102,8 @@ const getAllClientNClearance = async(req, res)=>{
         .find({client_id,
             isDeleted: 0, 
             isExpired:{$ne: 1}})
-        .sort({updatedAt:-1})
-        // .populate({
-        //     path: 'message.message',
-        //     model: 'Reason',
-        //     select: 'reason',
-        //     options: { lean: true },
-        // })
+        .sort({createdAt:-1})
+    
         var currentDate = new Date();//date today
         await ClientNClearance.updateMany({ nClearanceExp: {$lt:currentDate} }, 
             {$set: 
@@ -147,12 +141,6 @@ const getOneClientNClearance = async(req, res)=>{
 
     //find query
     const clientNClearance = await ClientNClearance.findById({_id: id})
-    // .populate({
-    //     path: 'message.message',
-    //     model: 'Reason',
-    //     select: 'reason',
-    //     options: { lean: true },
-    // })
 
     //check if not existing
     if (!clientNClearance){
@@ -171,12 +159,12 @@ const updateClientNClearance  = async(req, res) =>{
         
         //check if the photo field is empty
         if (!req.files || req.files.length === 0) {
-            return res.status(400).json({error: 'Please upload a photo either local or international NBI clearance.'});
+            return res.status(400).json({error: 'Please upload a photo either local or international NBI Clearance.'});
         }
 
         //check if the photo is greater than 2
         if (!req.files || req.files.length >=3) {
-            return res.status(400).json({error: 'Only two photo is allowed either local or international NBI clearance.'});
+            return res.status(400).json({error: 'Only two photo is allowed either local or international NBI Clearance.'});
         }
 
         // Check if file type is supported
@@ -202,20 +190,7 @@ const updateClientNClearance  = async(req, res) =>{
         const validUntilDate = new Date(req.body.nClearanceExp);
         // Check if the validUntil date is less than today's date
         if (validUntilDate < new Date()) {
-            return res.status(400).json({ error: 'Your nbi clearance is outdated. Please submit a valid one.' });
-        }
-        // check if certificate already exists with the same categorySkill, title, issuedOn, and validUntil
-        const existingNClearance = await ClientNClearance.findOne({
-            nClearanceExp: req.body.nClearanceExp || clientNClearance.nClearanceExp,
-            nClearanceIsVerified:{$in: ["false", "true"]},
-            isDeleted:0,
-            client_id:client_id
-        });
-
-        if (existingNClearance) {
-            return res.status(400).json({
-                message: "This nbi clearance already exists."
-            });
+            return res.status(400).json({ error: 'Your NBI Clearance is outdated. Please submit a valid one.' });
         }
 
         // remove the recent images
@@ -251,7 +226,7 @@ const updateClientNClearance  = async(req, res) =>{
     
         const notification = await Notification.create({
             client_id,
-            message: `${clientUserName} updated nbi clerance.`,
+            message: `${clientUserName} updated NBI Clearance.`,
             // url: `https://samplekasawapp.onrender.com/api/admin/getOne/Barangay/${clientBClearance._id}`,
             urlReact:`/temporary/${clientUserName}`
         });
@@ -268,7 +243,7 @@ const deleteClientNClearance = async(req, res)=>{
     
     //check if id is not existing
     if(!mongoose.Types.ObjectId.isValid(id)){
-        return res.status(404).json({error: 'Invalid id'})
+        return res.status(404).json({error: 'Invalid id.'})
     }
 
     //delete query
@@ -277,7 +252,7 @@ const deleteClientNClearance = async(req, res)=>{
     
     //check if not existing
     if (!clientNClearance){
-        return res.status(404).json({error: 'Barangay Clearance not found'})
+        return res.status(404).json({error: 'NBI Clearance not found.'})
     }
 
     res.status(200).json({ message: 'Successfully deleted.'})

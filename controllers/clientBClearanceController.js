@@ -23,7 +23,7 @@ const createClientBClearance = async(req, res)=>{
         }
 
         if (!req.file) {
-            return res.status(400).json({error: 'Please upload your barangay clearance photo.'})
+            return res.status(400).json({error: 'Please upload a photo.'})
         }
 
         // Check if file type is supported
@@ -103,7 +103,7 @@ const getAllClientBClearance = async(req, res)=>{
             client_id,
             isDeleted: 0,
             isExpired:{$ne: 1}})
-        .sort({updatedAt:-1})
+        .sort({createdAt:-1})
         .populate({
             path: 'message.message',
             model: 'Reason',
@@ -143,21 +143,16 @@ const getOneClientBClearance = async(req, res)=>{
 
      //check if id is not existing
      if(!mongoose.Types.ObjectId.isValid(id)){
-        return res.status(404).json({error: 'Invalid id'})
+        return res.status(404).json({error: 'Invalid id.'})
     }
 
     //find query
     const clientBClearance = await ClientBClearance.findById({_id: id})
-    // .populate({
-    //     path: 'message.message',
-    //     model: 'Reason',
-    //     select: 'reason',
-    //     options: { lean: true },
-    // })
+
 
     //check if not existing
     if (!clientBClearance){
-        return res.status(404).json({error: 'Barangay Clearance not found'})
+        return res.status(404).json({error: 'Barangay Clearance not found.'})
     }
 
     res.status(200).json(clientBClearance)   
@@ -170,7 +165,7 @@ const updateClientBClearance  = async(req, res) =>{
         const client_id = req.clientInfo._id
         let clientBClearance = await ClientBClearance.findById(req.params.id)  
         if (!req.file) {
-            return res.status(400).json({error: 'Please upload your barangay clearance photo.'})
+            return res.status(400).json({error: 'Please upload a photo.'})
         }
         const supportedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
         if (!supportedTypes.includes(req.file.mimetype)) {
@@ -192,19 +187,6 @@ const updateClientBClearance  = async(req, res) =>{
         // Check if the validUntil date is less than today's date
         if (validUntilDate < new Date()) {
             return res.status(400).json({ error: 'Your barangay clearance is outdated. Please submit a valid one.' });
-        }
-        // check if certificate already exists with the same categorySkill, title, issuedOn, and validUntil
-        const existingBClearance = await ClientBClearance.findOne({
-            bClearanceExp: req.body.bClearanceExp || clientBClearance.bClearanceExp,
-            bClearanceIsVerified:{$in: ["false", "true"]},
-            isDeleted:0,
-            client_id:client_id
-        });
-
-        if (existingBClearance) {
-            return res.status(400).json({
-                message: "This barangay clearance already exists."
-            });
         }
 
         //remove the recent image

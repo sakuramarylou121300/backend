@@ -103,18 +103,18 @@ const updateClientUsername = async(req, res) =>{
 
         //validation
         if (!username){
-            throw Error('Please enter your new username.')
+            throw Error('Please enter your username.')
         }
 
         //check if strong password
-        if(username.length <8){
-            throw Error('Please enter atleast 8 characters in username.')
+        if(username.length <7){
+            throw Error('Please enter atleast 6 characters in username.')
         }
 
          //check if username is existing
         const exists = await ClientInfo.findOne({username})
         if (exists){
-            throw Error('username already in use. Please enter a new unique username.')
+            throw Error('Username already in use.')
         }
         const adminExists = await AdminInfo.findOne({username})
         if (adminExists){
@@ -131,7 +131,7 @@ const updateClientUsername = async(req, res) =>{
             {username})
 
         //success
-        res.status(200).json(clientInfo)
+        res.status(200).json({message: "Successfully updated."})
     }
     catch(error){
 
@@ -168,8 +168,8 @@ const updateClientPass = async(req, res) =>{
         }
 
         //check if strong password
-        if(newpass.length <8){
-            throw Error('Please enter atleast 8 characters in password.')
+        if(newpass.length <7){
+            throw Error('Please enter atleast 6 characters in password.')
         }
 
         //salt for additional security of the system
@@ -182,7 +182,7 @@ const updateClientPass = async(req, res) =>{
             {password:hash})
 
         //success
-        res.status(200).json(clientInfo)
+        res.status(200).json({message: "Successfully updated."})
     }
     catch(error){
 
@@ -231,7 +231,7 @@ const updateClientInfo = async(req, res) =>{
             contact})
 
         //success
-        res.status(200).json(clientInfo)
+        res.status(200).json({message: "Successfully updated."})
     }
     catch(error){
 
@@ -299,7 +299,7 @@ const updateClientAddress = async(req, res) =>{
 
 
         //success
-        res.status(200).json(clientInfo)
+        res.status(200).json({message: "Successfully updated."})
     }
     catch(error){
 

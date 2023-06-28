@@ -22,12 +22,12 @@ const createSkilledNClearance = async(req, res)=>{
 
         //check if the photo field is empty
         if (!req.files || req.files.length === 0) {
-            return res.status(400).json({error: 'Please upload a photo either local or international NBI clearance.'});
+            return res.status(400).json({error: 'Please upload a photo either local or international NBI Clearance.'});
         }
 
         //check if the photo is greater than 2
         if (!req.files || req.files.length >=3) {
-            return res.status(400).json({error: 'Only two photo is allowed either local or international NBI clearance.'});
+            return res.status(400).json({error: 'Only two photo is allowed either local or international NBI Clearance.'});
         }
 
         // Check if file type is supported
@@ -42,7 +42,7 @@ const createSkilledNClearance = async(req, res)=>{
         const validUntilDate = new Date(nClearanceExp);
         // Check if the validUntil date is less than today's date
         if (validUntilDate < new Date()) {
-            return res.status(400).json({ error: 'Your NBI clearance is outdated. Please submit a valid one.' });
+            return res.status(400).json({ error: 'Your NBI Clearance is outdated. Please submit a valid one.' });
         }
 
         //search if existing
@@ -170,12 +170,12 @@ const updateSkilledNClearance  = async(req, res) =>{
         
         //check if the photo field is empty
         if (!req.files || req.files.length === 0) {
-            return res.status(400).json({error: 'Please upload a photo either local or international NBI clearance.'});
+            return res.status(400).json({error: 'Please upload a photo either local or international NBI Clearance.'});
         }
 
         //check if the photo is greater than 2
         if (!req.files || req.files.length >=3) {
-            return res.status(400).json({error: 'Only two photo is allowed either local or international NBI clearance.'});
+            return res.status(400).json({error: 'Only two photo is allowed either local or international NBI Clearance.'});
         }
 
         // Check if file type is supported
@@ -237,7 +237,7 @@ const updateSkilledNClearance  = async(req, res) =>{
     
         const notification = await Notification.create({
             skilled_id,
-            message: `${skilledUserName} updated NBI clearance.`,
+            message: `${skilledUserName} updated NBI Clearance.`,
             // url: `https://samplekasawapp.onrender.com/api/admin/getOne/Barangay/${skilledBClearance._id}`,
             urlReact:`/viewSkilled/nbiClearance/${skilledUserName}`
         });
@@ -254,7 +254,7 @@ const deleteSkilledNClearance = async(req, res)=>{
     
     //check if id is not existing
     if(!mongoose.Types.ObjectId.isValid(id)){
-        return res.status(404).json({error: 'Invalid id'})
+        return res.status(404).json({error: 'Invalid id.'})
     }
 
     //delete query
@@ -263,7 +263,7 @@ const deleteSkilledNClearance = async(req, res)=>{
     
     //check if not existing
     if (!skilledNClearance){
-        return res.status(404).json({error: 'NBI clearance not found'})
+        return res.status(404).json({error: 'NBI Clearance not found'})
     }
 
     res.status(200).json({ message: 'Successfully deleted.'})
