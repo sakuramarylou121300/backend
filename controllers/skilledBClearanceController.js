@@ -23,7 +23,7 @@ const createSkilledBClearance = async(req, res)=>{
         }
 
         if (!req.file) {
-            return res.status(400).json({error: 'Please upload your barangay clearance photo.'})
+            return res.status(400).json({error: 'Please upload a photo.'})
         }
 
         // Check if file type is supported
@@ -48,7 +48,7 @@ const createSkilledBClearance = async(req, res)=>{
             skilled_id:skilled_id
         })
         if(skilledBClearanceCheck){
-            return res.status(400).json({error: "Barangay Clearance already exists."})
+            return res.status(400).json({error: "Barangay clearance already exists in this user."})
         }
         result = await cloudinary.uploader.upload(req.file.path)
         let skilledBClearance = new SkilledBClearance({

@@ -91,7 +91,7 @@ const createExp = async(req, res) => {
         }
     }
     if (categorySkill === "Select") {
-        res.status(400).send({ error: "Please enter skill." });
+        res.status(400).send({ error: "Please select skill." });
         return;
     }
 
@@ -179,7 +179,6 @@ const getAllExpSkill = async(req, res)=>{
         // Find skilled_id document based on username
         const skillIdDoc = await AdminSkill.findOne({ 
             skill: skill});
-            console.log(skillIdDoc)
 
         // Check if skilled_id exists for the given username
         if (!skillIdDoc) {
@@ -201,8 +200,6 @@ const getAllExpSkill = async(req, res)=>{
             select: 'reason',
             options: { lean: true },
         })
-        console.log(skillIdDoc._id)
-        console.log(skilledExp)
         res.status(200).json(skilledExp)
     }
     catch(error){
@@ -263,32 +260,9 @@ const updateExp = async (req, res) => {
           //check if valid contact no
         const mobileNumberRegex = /^09\d{9}$|^639\d{9}$/;
         if (!mobileNumberRegex.test(req.body.refContactNo)) {
-            return res.status(400).json({error: 'Please check the contact you have entered'});
+            return res.status(400).json({error: 'Please check the contact you have entered.'});
         }
-        // // check if certificate already exists with the same categorySkill, title, issuedOn, and validUntil
-        // const existingExp = await SkilledExp.findOne({
-        //     categorySkill: req.body.categorySkill || skilledExp.categorySkill,
-        //     isHousehold: req.body.isHousehold || skilledExp.isHousehold,
-        //     company: req.body.company || skilledExp.company,
-        //     isWorking: req.body.isWorking || skilledExp.isWorking,
-        //     workStart: req.body.workStart || skilledExp.workStart,
-        //     workEnd: req.body.workEnd || skilledExp.workEnd,
-        //     refLname: req.body.refLname || skilledExp.refLname,
-        //     refFname: req.body.refFname || skilledExp.refFname,
-        //     refMname: req.body.refMname || skilledExp.refMname,
-        //     refPosition: req.body.refPosition || skilledExp.refPosition,
-        //     refOrg: req.body.refOrg || skilledExp.refOrg,
-        //     refContactNo: req.body.refContactNo || skilledExp.refContactNo,
-        //     expIsVerified:{$in: ["false", "true"]},
-        //     skilled_id:skilled_id,
-        //     isDeleted:0
-        // });
 
-        // if (existingExp) {
-        //     return res.status(400).json({
-        //     message: "This experience already exists."
-        //     });
-        // }
         //check if the photo field is empty
         if (!req.files || req.files.length === 0) {
             return res.status(400).json({error: 'Please upload a photo.'});
@@ -301,7 +275,7 @@ const updateExp = async (req, res) => {
             }
         }
         if (req.body.categorySkill === "Select") {
-            res.status(400).send({ error: "Please enter your skill" });
+            res.status(400).send({ error: "Please select skill." });
             return;
         }
         const trueExp = await SkilledExp.findOne({
@@ -311,7 +285,7 @@ const updateExp = async (req, res) => {
 
         if (trueExp) {
             return res.status(400).json({
-                message: "You cannot update verified experience."
+                error: "You cannot update verified work experience."
             });
         }
         // remove the recent images
@@ -376,7 +350,7 @@ const deleteExp = async(req, res)=>{
     
     //check if id is not existing
     if(!mongoose.Types.ObjectId.isValid(id)){
-        return res.status(404).json({error: 'Invalid id'})
+        return res.status(404).json({error: 'Invalid id.'})
     }
 
     //delete query
@@ -385,7 +359,7 @@ const deleteExp = async(req, res)=>{
     
     //check if not existing
     if (!skilledExp){
-        return res.status(404).json({error: 'Skilled Experience not found'})
+        return res.status(404).json({error: 'Work Experience not found.'})
     }
 
     res.status(200).json({ message: 'Successfully deleted.'})

@@ -34,7 +34,7 @@ const createCertificate = async(req, res)=>{
     }
     
     if (!req.file) {
-        return res.status(400).json({error: 'Please upload your certificate photo.'})
+        return res.status(400).json({error: 'Please upload a photo.'})
     }
 
     // Check if file type is supported
@@ -62,7 +62,7 @@ const createCertificate = async(req, res)=>{
         }
         
         if (categorySkill === "Select") {
-            res.status(400).send({ error: "Please enter your skill" });
+            res.status(400).send({ error: "Please select skill." });
             return;
         }
         // Convert the validUntil date string to a Date object
@@ -100,7 +100,6 @@ const createCertificate = async(req, res)=>{
         res.status(200).json({ message: 'Successfully added.'})
     }
     catch(error){
-        console.log(error)
         res.status(404).json({error: error.message})
     }
 }
@@ -116,7 +115,7 @@ const getAllCertificate = async(req, res)=>{
             isDeleted: 0, 
             isExpired:{$ne: 1},
             })
-        .sort({updatedAt: -1})
+        .sort({createdAt: -1})
         .populate('skilled_id')
         .populate('categorySkill')
         .populate({
@@ -202,7 +201,7 @@ const getOneCertificate = async(req, res)=>{
 
      //check if id is not existing
      if(!mongoose.Types.ObjectId.isValid(id)){
-        return res.status(404).json({error: 'Invalid id'})
+        return res.status(404).json({error: 'Invalid id.'})
     }
 
     //find query
@@ -217,7 +216,7 @@ const getOneCertificate = async(req, res)=>{
 
     //check if not existing
     if (!certificate){
-        return res.status(404).json({error: 'Skill Certificate not found'})
+        return res.status(404).json({error: 'Skill Certificate not found.'})
     }
 
     res.status(200).json(certificate)   
@@ -230,7 +229,7 @@ const updateCertificate = async(req,res)=>{
         const skilled_id = req.skilledInfo._id
         let certificate = await Certificate.findById(req.params.id)
         if (!req.file) {
-            return res.status(400).json({error: 'Please upload your certificate photo.'})
+            return res.status(400).json({error: 'Please upload a photo.'})
         }
         const supportedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
         if (!supportedTypes.includes(req.file.mimetype)) {
@@ -238,7 +237,7 @@ const updateCertificate = async(req,res)=>{
         }
 
         if (req.body.categorySkill === "Select") {
-            res.status(400).send({ error: "Please enter your skill" });
+            res.status(400).send({ error: "Please enter skill." });
             return;
         }
 
@@ -249,7 +248,7 @@ const updateCertificate = async(req,res)=>{
     
             if (trueCertificate) {
                 return res.status(400).json({
-                    message: "You cannot update verified certificate."
+                    error: "You cannot update verified certificate."
                 });
             }
         
@@ -260,22 +259,6 @@ const updateCertificate = async(req,res)=>{
         if (validUntilDate < new Date()) {
             return res.status(400).json({ error: 'Your certificate is outdated. Please submit a valid one.' });
         }
-        // // check if certificate already exists with the same categorySkill, title, issuedOn, and validUntil
-        // const existingCertificate = await Certificate.findOne({
-        //     categorySkill: req.body.categorySkill || certificate.categorySkill,
-        //     title: req.body.title || certificate.title,
-        //     issuedOn: req.body.issuedOn || certificate.issuedOn,
-        //     validUntil: req.body.validUntil || certificate.validUntil,
-        //     skillIsVerified:{$in: ["false", "true"]},
-        //     isDeleted:0,
-        //     skilled_id:skilled_id
-        // });
-
-        // if (existingCertificate) {
-        //     return res.status(400).json({
-        //         message: "This certificate already exists."
-        //     });
-        // }
         
         //remove the recent image
         await cloudinary.uploader.destroy(certificate.cloudinary_id)
@@ -315,83 +298,12 @@ const updateCertificate = async(req,res)=>{
     }
 }
 
-//UPDATE skill cert
-// const updateCertificate = async(req, res) =>{
-//     const {id} = req.params   
-//     const {categorySkill,
-//         title,
-//         issuedOn,
-//         validUntil,
-//         photo} = req.body 
-//         const skilled_id = req.skilledInfo._id
-
-//     //check if id is not existing
-//     if(!mongoose.Types.ObjectId.isValid(id)){
-//         return res.status(404).json({error: 'Invalid id'})
-//     }
-
-//      //check empty fields
-//      let emptyFields = []
-//      if(!categorySkill){
-//          emptyFields.push('categorySkill')
-//      }
-//      if(!title){
-//          emptyFields.push('title')
-//      }
-//      if(!issuedOn){
-//          emptyFields.push('issuedOn')
-//      }
-//      if(!validUntil){
-//          emptyFields.push('validUntil')
-//      }
-//      if(!photo){
-//          emptyFields.push('photo')
-//      }
- 
-//      //send message if there is an empty fields
-//      if(emptyFields.length >0){
-//          return res.status(400).json({error: 'Please fill in all the blank fields.', emptyFields})
-//      }
-
-//     const certCheck = await Certificate.findOne({
-//         categorySkill:categorySkill,
-//         title:title,
-//         issuedOn:issuedOn,
-//         validUntil:validUntil,
-//         photo:photo,
-//         skilled_id:skilled_id,
-//         skillIsVerified:{$in: ["false", "true"]},
-//         isDeleted: 0
-//     })
-    
-//     if(certCheck){
-//         return res.status(400).json({error: "Skill certificate already exists in this user."})
-//     }
-
-//     if (issuedOn >= validUntil) {
-//         res.status(400).send({ error: "Please check your certificate issued on and valid until" });
-//         return;
-//     }
-
-//      //delete query
-//      const certificate = await Certificate.findOneAndUpdate({_id: id},{
-//          ...req.body //get new value
-//      })
-    
-//      //check if not existing
-//      if (!certificate){
-//         return res.status(404).json({error: 'Skill Certificate not found'})
-//     }
-
-//     res.status(200).json(certificate)
-// }
-
 const deleteCertificate = async(req, res)=>{
     const {id} = req.params
     
     //check if id is not existing
     if(!mongoose.Types.ObjectId.isValid(id)){
-        return res.status(404).json({error: 'Invalid id'})
+        return res.status(404).json({error: 'Invalid id.'})
     }
 
     //delete query
@@ -400,7 +312,7 @@ const deleteCertificate = async(req, res)=>{
     
     //check if not existing
     if (!certificate){
-        return res.status(404).json({error: 'Skill Certificate not found'})
+        return res.status(404).json({error: 'Skill Certificate not found.'})
     }
 
     res.status(200).json({ message: 'Successfully deleted.'})
@@ -421,7 +333,6 @@ const getAllSkillCertTitle= async(req, res)=>{
         if (!skillIdDoc) {
         return res.status(404).json({ error: 'Skill does not exist to this Skilled Worker' });
         }
-        console.log(skillIdDoc)
         //get all query
         const title = await Title.find({
             skill_id: skillIdDoc.skillName,
@@ -435,8 +346,6 @@ const getAllSkillCertTitle= async(req, res)=>{
         res.status(404).json({error: error.message})
     }  
 }
-
-//get all skill cert
 
 module.exports = {
     createCertificate,
