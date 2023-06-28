@@ -58,7 +58,7 @@ const createCertificate = async(req, res)=>{
         })
         
         if(certCheck){
-            return res.status(400).json({error: "Skill certificate already exists in this user."})
+            return res.status(400).json({error: "Skill certificate already exists to this user."})
         }
         
         if (categorySkill === "Select") {
@@ -287,7 +287,7 @@ const updateCertificate = async(req,res)=>{
         // Create a notification after successfully creating new skills
         const notification = await Notification.create({
             skilled_id,
-            message: `${skilledUserName} has updated skill certificate.`,
+            message: `${skilledUserName} updated skill certificate.`,
             // url: `https://samplekasawapp.onrender.com/api/admin/getOne/Barangay/${skilledBClearance._id}`,
             urlReact:`/viewSkilledCertificate/${skilledUserName}`
         });
@@ -331,7 +331,7 @@ const getAllSkillCertTitle= async(req, res)=>{
 
         // Check if skilled_id exists for the given username
         if (!skillIdDoc) {
-        return res.status(404).json({ error: 'Skill does not exist to this Skilled Worker' });
+        return res.status(404).json({ error: 'Not found.' });
         }
         //get all query
         const title = await Title.find({

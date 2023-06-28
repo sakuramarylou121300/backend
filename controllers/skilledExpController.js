@@ -77,7 +77,7 @@ const createExp = async(req, res) => {
     })
   
     if(expCheck){
-        return res.status(400).json({error: "Work experience already exists in this user."})
+        return res.status(400).json({error: "Work experience already exists to this user."})
     } 
     //check if the photo field is empty
     if (!req.files || req.files.length === 0) {
@@ -130,7 +130,7 @@ const createExp = async(req, res) => {
      // Create a notification after successfully creating new exp
      const notification = await Notification.create({
          skilled_id,
-         message: `${skilledUserName} has added new work experience.`,
+         message: `${skilledUserName} added new work experience.`,
          // url: `https://samplekasawapp.onrender.com/api/admin/getOne/Barangay/${skilledBClearance._id}`,
          urlReact:`/viewSkilledExperience/${skilledUserName}`
      });

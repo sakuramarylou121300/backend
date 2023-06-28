@@ -76,7 +76,7 @@ const createSkill = async(req, res)=>{
         })
         
         if(skillCheck){
-            return res.status(400).json({error: "Skill already exists in this user."})
+            return res.status(400).json({error: "Skill already exists to this user."})
         }
 
         //create query
@@ -185,7 +185,7 @@ const updateSkill = async(req, res) =>{
     })
         
     if(skillCheck){
-        return res.status(400).json({error: "Skill already exists in this user."})
+        return res.status(400).json({error: "Skill already exists to this user."})
     }
 
      //delete query

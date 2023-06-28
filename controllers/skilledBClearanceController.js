@@ -48,7 +48,7 @@ const createSkilledBClearance = async(req, res)=>{
             skilled_id:skilled_id
         })
         if(skilledBClearanceCheck){
-            return res.status(400).json({error: "Barangay clearance already exists in this user."})
+            return res.status(400).json({error: "Barangay clearance already exists to this user."})
         }
         result = await cloudinary.uploader.upload(req.file.path)
         let skilledBClearance = new SkilledBClearance({
@@ -103,7 +103,7 @@ const getAllSkilledBClearance = async(req, res)=>{
             skilled_id,
             isDeleted: 0,
             isExpired:{$ne: 1}})
-        .sort({updatedAt:-1})
+        .sort({createdAt:-1})
         .populate({
             path: 'message.message',
             model: 'Reason',
@@ -143,7 +143,7 @@ const getOneSkilledBClearance = async(req, res)=>{
 
      //check if id is not existing
      if(!mongoose.Types.ObjectId.isValid(id)){
-        return res.status(404).json({error: 'Invalid id'})
+        return res.status(404).json({error: 'Invalid id..'})
     }
 
     //find query
@@ -157,7 +157,7 @@ const getOneSkilledBClearance = async(req, res)=>{
 
     //check if not existing
     if (!skilledBClearance){
-        return res.status(404).json({error: 'Barangay Clearance not found'})
+        return res.status(404).json({error: 'Barangay Clearance not found.'})
     }
 
     res.status(200).json(skilledBClearance)   
@@ -170,7 +170,7 @@ const updateSkilledBClearance  = async(req, res) =>{
         const skilled_id = req.skilledInfo._id
         let skilledBClearance = await SkilledBClearance.findById(req.params.id)  
         if (!req.file) {
-            return res.status(400).json({error: 'Please upload your barangay clearance photo.'})
+            return res.status(400).json({error: 'Please upload a photo.'})
         }
         const supportedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
         if (!supportedTypes.includes(req.file.mimetype)) {
@@ -192,19 +192,6 @@ const updateSkilledBClearance  = async(req, res) =>{
         // Check if the validUntil date is less than today's date
         if (validUntilDate < new Date()) {
             return res.status(400).json({ error: 'Your barangay clearance is outdated. Please submit a valid one.' });
-        }
-        // check if certificate already exists with the same categorySkill, title, issuedOn, and validUntil
-        const existingBClearance = await SkilledBClearance.findOne({
-            bClearanceExp: req.body.bClearanceExp || skilledBClearance.bClearanceExp,
-            bClearanceIsVerified:{$in: ["false", "true"]},
-            isDeleted:0,
-            skilled_id:skilled_id
-        });
-
-        if (existingBClearance) {
-            return res.status(400).json({
-                message: "This barangay clearance already exists."
-            });
         }
 
         //remove the recent image
@@ -232,12 +219,11 @@ const updateSkilledBClearance  = async(req, res) =>{
         // Create a notification after successfully creating new skills
         const notification = await Notification.create({
             skilled_id,
-            message: `${skilledUserName} updated barangay clerance.`,
+            message: `${skilledUserName} updated barangay clearance.`,
             url: `https://samplekasawapp.onrender.com/api/admin/getOne/Barangay/${skilledBClearance._id}`,
             urlReact:`/viewSkilled/brgyClearance/${skilledUserName}`
         
         });
-        console.log(notification)
 
         res.json({ message: 'Successfully updated.'})
     }catch(error){
@@ -260,7 +246,7 @@ const deleteSkilledBClearance = async(req, res)=>{
     
     //check if not existing
     if (!skilledBClearance){
-        return res.status(404).json({error: 'Barangay Clearance not found'})
+        return res.status(404).json({error: 'Barangay Clearance not found.'})
     }
     res.status(200).json({ message: 'Successfully deleted.'})
 }

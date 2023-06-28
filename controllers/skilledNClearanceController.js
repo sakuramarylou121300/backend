@@ -42,7 +42,7 @@ const createSkilledNClearance = async(req, res)=>{
         const validUntilDate = new Date(nClearanceExp);
         // Check if the validUntil date is less than today's date
         if (validUntilDate < new Date()) {
-            return res.status(400).json({ error: 'Your nbi clearance is outdated. Please submit a valid one.' });
+            return res.status(400).json({ error: 'Your NBI clearance is outdated. Please submit a valid one.' });
         }
 
         //search if existing
@@ -55,7 +55,7 @@ const createSkilledNClearance = async(req, res)=>{
         })
 
         if(skilledNClearanceCheck){
-            return res.status(400).json({error: "NBI Clearance already exists."})
+            return res.status(400).json({error: "NBI Clearance already exists to this user."})
         }
         //create new skill
         let uploadedPhotos = [];
@@ -83,16 +83,14 @@ const createSkilledNClearance = async(req, res)=>{
          // Create a notification after successfully creating new nbi
          const notification = await Notification.create({
              skilled_id,
-             message: `${skilledUserName} has added new nbi clearance.`,
+             message: `${skilledUserName} added new NBI Clearance.`,
             //  url: `https://samplekasawapp.onrender.com/api/admin/getOne/Barangay/${skilledNClearance._id}`,
              urlReact:`/viewSkilled/nbiClearance/${skilledUserName}`
          });
-         console.log(notification)
 
         res.status(200).json({ message: 'Successfully added.'})
     }
     catch(error){
-        console.log(error)
         res.status(404).json({error: error.message})
     }
 }
@@ -104,7 +102,7 @@ const getAllSkilledNClearance = async(req, res)=>{
         .find({skilled_id,
             isDeleted: 0, 
             isExpired:{$ne: 1}})
-        .sort({updatedAt:-1})
+        .sort({createdAt:-1})
         .populate({
             path: 'message.message',
             model: 'Reason',
@@ -143,7 +141,7 @@ const getOneSkilledNClearance = async(req, res)=>{
 
      //check if id is not existing
      if(!mongoose.Types.ObjectId.isValid(id)){
-        return res.status(404).json({error: 'Invalid id'})
+        return res.status(404).json({error: 'Invalid id.'})
     }
 
     //find query
@@ -157,7 +155,7 @@ const getOneSkilledNClearance = async(req, res)=>{
 
     //check if not existing
     if (!skilledNClearance){
-        return res.status(404).json({error: 'Barangay Clearance not found'})
+        return res.status(404).json({error: 'NBI Clearance not found.'})
     }
 
     res.status(200).json(skilledNClearance)   
@@ -203,20 +201,7 @@ const updateSkilledNClearance  = async(req, res) =>{
         const validUntilDate = new Date(req.body.nClearanceExp);
         // Check if the validUntil date is less than today's date
         if (validUntilDate < new Date()) {
-            return res.status(400).json({ error: 'Your nbi clearance is outdated. Please submit a valid one.' });
-        }
-        // check if certificate already exists with the same categorySkill, title, issuedOn, and validUntil
-        const existingNClearance = await SkilledNClearance.findOne({
-            nClearanceExp: req.body.nClearanceExp || skilledNClearance.nClearanceExp,
-            nClearanceIsVerified:{$in: ["false", "true"]},
-            isDeleted:0,
-            skilled_id:skilled_id
-        });
-
-        if (existingNClearance) {
-            return res.status(400).json({
-                message: "This nbi clearance already exists."
-            });
+            return res.status(400).json({ error: 'Your NBI Clearance is outdated. Please submit a valid one.' });
         }
 
         // remove the recent images
@@ -252,7 +237,7 @@ const updateSkilledNClearance  = async(req, res) =>{
     
         const notification = await Notification.create({
             skilled_id,
-            message: `${skilledUserName} updated nbi clerance.`,
+            message: `${skilledUserName} updated NBI clearance.`,
             // url: `https://samplekasawapp.onrender.com/api/admin/getOne/Barangay/${skilledBClearance._id}`,
             urlReact:`/viewSkilled/nbiClearance/${skilledUserName}`
         });
@@ -278,7 +263,7 @@ const deleteSkilledNClearance = async(req, res)=>{
     
     //check if not existing
     if (!skilledNClearance){
-        return res.status(404).json({error: 'Barangay Clearance not found'})
+        return res.status(404).json({error: 'NBI clearance not found'})
     }
 
     res.status(200).json({ message: 'Successfully deleted.'})
