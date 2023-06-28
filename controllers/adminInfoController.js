@@ -79,12 +79,11 @@ const adminGetAllAdmin = async(req, res)=>{
 
     try{
         //get all query
-        const adminInfo = await AdminInfo.find({isDeleted: 0}).sort({username: -1})
+        const adminInfo = await AdminInfo.find({isDeleted: 0})
         .select("-password")
+        .sort({lname: 1})
         .populate({path: 'roleCapabality', populate: [{path: 'capability_id'}, {path: 'adminInfo_id'}]})
-        // .populate('roleCapabality')
-        // .populate('adminRoleCapabality')
-        // .populate({path: 'adminRoleCapabality',populate: {path:'roleCapability_id',populate:{path:'capability_id'}}})
+   
         res.status(200).json(adminInfo)
     }
     catch(error){
@@ -97,7 +96,7 @@ const adminGetOneAdmin = async(req, res)=>{
 
      //check if id is not existing
      if(!mongoose.Types.ObjectId.isValid(id)){
-        return res.status(404).json({error: 'Invalid id'})
+        return res.status(404).json({error: 'Invalid id.'})
     }
 
     //find query
@@ -105,7 +104,7 @@ const adminGetOneAdmin = async(req, res)=>{
 
     //check if not existing
     if (!adminInfo){
-        return res.status(404).json({error: 'Admin not found'})
+        return res.status(404).json({error: 'Admin not found.'})
     }
 
     res.status(200).json(adminInfo)   
@@ -121,23 +120,28 @@ const adminUpdateUserName = async(req, res) =>{
 
         //validation
         if (!username){
-            throw Error('Please enter your new username.')
+            throw Error('Please enter your username.')
         }
 
         //check if strong password
-        if(username.length <8){
-            throw Error('Please enter atleast 8 characters in username.')
+        if(username.length <7){
+            throw Error('Please enter atleast 6 characters in username.')
         }
 
          //check if email is existing
         const skilledExists = await SkilledInfo.findOne({username})
         if (skilledExists){
-            throw Error('Username already in use. Please enter a new unique username.')
+            throw Error('Username already in use.')
+        }
+
+        const clientExists = await ClientInfo.findOne({username})
+        if (clientExists){
+            throw Error('Username already in use.')
         }
 
         const exists = await AdminInfo.findOne({username})
         if (exists){
-            throw Error('Username already in use. Please enter a new unique username.')
+            throw Error('Username already in use.')
         }
         //update info
         const adminInfo = await AdminInfo.findOneAndUpdate(
@@ -166,8 +170,8 @@ const adminUpdatePass = async(req, res) =>{
         }
 
         //check if strong password
-        if(newpass.length <8){
-            throw Error('Please enter atleast 8 characters in password.')
+        if(newpass.length <7){
+            throw Error('Please enter atleast 6 characters in password.')
         }
 
         //salt for additional security of the system
@@ -180,7 +184,7 @@ const adminUpdatePass = async(req, res) =>{
             {password:hash})
 
         //success
-        res.status(200).json(adminInfo)
+        res.status(200).json({message: "Successfully updated."})
     }
     catch(error){
 
@@ -199,14 +203,14 @@ const adminUpdateInfo = async(req, res) =>{
                 contact} = req.body
 
         //validation
-        if (!lname || !fname || !mname || !contact){
+        if (!lname || !fname || !contact){
             throw Error('Please fill in all the blank fields.')
         }
 
         const mobileNumberRegex = /^09\d{9}$|^639\d{9}$/;
         
         if (!mobileNumberRegex.test(contact)) {
-            throw new Error('Please check your contact number.');
+            throw new Error('Please check contact number.');
         }
 
         //update info
@@ -231,15 +235,13 @@ const adminDeleteInfo = async(req, res) =>{
     const {id} = req.params 
 
     try{
-        // const adminInfo = await AdminInfo.findByIdAndDelete(id)
-        // res.status(200).json(adminInfo)
         const adminInfo = await AdminInfo.findById(id)
         if(adminInfo.isMainAdmin === 1){
-           return res.status(400).json({error: "Cannot delete main admin account"})
+           return res.status(400).json({error: "Cannot delete main admin account."})
         }
         adminInfo.isDeleted = 1;
         await adminInfo.save() 
-        res.status(200).json({ message: "Admin account deleted successfully"})
+        res.status(200).json({ message: "Successfully deleted."})
     }
     
     catch(error){
@@ -248,7 +250,7 @@ const adminDeleteInfo = async(req, res) =>{
 }
 
 //THIS IS FOR ALL ADMIN ACCESS TO THEIR OWN INFO
-//get one to their specific account
+//SPECIFIC ACCOUNT
 const getAdminInfo = async(req, res) =>{
 
     try{
@@ -271,24 +273,30 @@ const updateAdminUserName = async(req, res) =>{
 
         //validation
         if (!username){
-            throw Error('Please enter your new email.')
+            throw Error('Please enter your username.')
         }
 
         //check if strong password
-        if(username.length <8){
-            throw Error('Please enter atleast 8 characters in email.')
+        if(username.length <7){
+            throw Error('Please enter atleast 6 characters in username.')
         }
 
-         //check if email is existing
-         const skilledExists = await SkilledInfo.findOne({username})
-         if (skilledExists){
-             throw Error('Username already in use. Please enter a new unique username.')
-         }
+        //check if email is existing
+        const skilledExists = await SkilledInfo.findOne({username})
+        if (skilledExists){
+            throw Error('Username already in use.')
+        }
+
+        //check if email is existing
+        const clientExists = await ClientInfo.findOne({username})
+        if (clientExists){
+            throw Error('Username already in use.')
+        }
 
          //check if email is existing
         const exists = await AdminInfo.findOne({username})
         if (exists){
-            throw Error('Email already in use. Please enter a new unique email.')
+            throw Error('Username already in use.')
         }
 
         //update info
@@ -297,7 +305,7 @@ const updateAdminUserName = async(req, res) =>{
             {username})
 
         //success
-        res.status(200).json({adminInfo})
+        res.status(200).json({message: "Successfully updated."})
     }
     catch(error){
 
@@ -314,7 +322,7 @@ const updateAdminPass = async(req, res) =>{
 
         //validation
         if (!oldpass || !newpass || !username){
-            throw Error('Please enter all blank fields.')
+            throw Error('Please fill in all the blank fields.')
         }
 
         if (oldpass===newpass){
@@ -323,7 +331,7 @@ const updateAdminPass = async(req, res) =>{
 
         const admin_Info = await AdminInfo.findOne({username})
         if (!admin_Info){
-            throw Error('Incorrect email.')
+            throw Error('Incorrect username.')
         }
         //check if the password and password hash in match
         const match = await bcrypt.compare(oldpass, admin_Info.password)
@@ -333,8 +341,8 @@ const updateAdminPass = async(req, res) =>{
         }
 
         //check if strong password
-        if(newpass.length <8){
-            throw Error('Please enter atleast 8 characters in password.')
+        if(newpass.length <7){
+            throw Error('Please enter atleast 6 characters in password.')
         }
 
         //salt for additional security of the system
@@ -347,7 +355,7 @@ const updateAdminPass = async(req, res) =>{
             {password:hash})
 
         //success
-        res.status(200).json(adminInfo)
+        res.status(200).json({message: "Successfully updated."})
     }
     catch(error){
 
@@ -399,11 +407,11 @@ const deleteAdminInfo = async(req, res) =>{
     try{
         const adminInfo = await AdminInfo.findById(req.adminInfo._id)
         if(adminInfo.isMainAdmin === 1){
-            return res.status(400).json({error: "Cannot delete main admin account"})
+            return res.status(400).json({error: "Cannot delete main admin account."})
         }
         adminInfo.isDeleted = 1;
         await adminInfo.save()
-        res.status(200).json({ message: "Admin account deleted successfully"})
+        res.status(200).json({ message: "Successfully deleted."})
     }
     catch(error){
         res.status(400).json({error:error.message})
@@ -414,7 +422,8 @@ const adminGetAllSkilled = async(req, res)=>{
 
     try{
         //get all query
-        const skilledInfo = await SkilledInfo.find({isDeleted: 0}).sort({createdAt: -1})
+        const skilledInfo = await SkilledInfo.find({isDeleted: 0})
+        .sort({lastname: 1})
         .select("-password")
         .populate({
             path: 'skills',
@@ -448,7 +457,7 @@ const adminGetOneSkilled = async(req, res)=>{
 
      //check if id is not existing
      if(!mongoose.Types.ObjectId.isValid(id)){
-        return res.status(404).json({error: 'Invalid id'})
+        return res.status(404).json({error: 'Invalid id.'})
     }
 
     //find query
@@ -456,19 +465,20 @@ const adminGetOneSkilled = async(req, res)=>{
 
     //check if not existing
     if (!skilledInfo){
-        return res.status(404).json({error: 'Skilled Worker not found'})
+        return res.status(404).json({error: 'Skilled Worker not found.'})
     }
 
     res.status(200).json(skilledInfo)   
 
 }
 
+//this is not being used
 const adminUpdateSkilled = async(req, res) =>{
     const {id} = req.params    
 
     //check if id is not existing
     if(!mongoose.Types.ObjectId.isValid(id)){
-        return res.status(404).json({error: 'Invalid id'})
+        return res.status(404).json({error: 'Invalid id.'})
     }
 
      //delete query
@@ -478,10 +488,10 @@ const adminUpdateSkilled = async(req, res) =>{
     
      //check if not existing
      if (!skilledInfo){
-        return res.status(404).json({error: 'Skilled Worker not found'})
+        return res.status(404).json({error: 'Skilled Worker not found.'})
     }
 
-    res.status(200).json(skilledInfo)
+    res.status(200).json({message: "Successfully updated."})
 }
 
 const adminDeleteSkilled = async (req, res) => {x
@@ -490,7 +500,7 @@ const adminDeleteSkilled = async (req, res) => {x
     try {
         const hasDuplicates = message.some((obj, index) => {
             if (obj.message.trim() === '') {
-                throw new Error('Please enter a reason.');
+                throw new Error('Please select a reason.');
             }
 
             let foundDuplicate = false;
@@ -550,7 +560,8 @@ const adminGetAllClient = async(req, res)=>{
 
     try{
         //get all query
-        const clientInfo = await ClientInfo.find({isDeleted: 0}).sort({createdAt: -1})
+        const clientInfo = await ClientInfo.find({isDeleted: 0})
+        .sort({lname: 1})
         .select("-password")
         .populate({
             path: 'clientBarangay',
@@ -566,12 +577,13 @@ const adminGetAllClient = async(req, res)=>{
         res.status(404).json({error: error.message})
     }  
 }
+
 const adminGetOneClient = async(req, res)=>{
     const {id} = req.params  
 
      //check if id is not existing
      if(!mongoose.Types.ObjectId.isValid(id)){
-        return res.status(404).json({error: 'Invalid id'})
+        return res.status(404).json({error: 'Invalid id.'})
     }
 
     //find query
@@ -579,12 +591,14 @@ const adminGetOneClient = async(req, res)=>{
 
     //check if not existing
     if (!clientInfo){
-        return res.status(404).json({error: 'Client not found'})
+        return res.status(404).json({error: 'Client not found.'})
     }
 
     res.status(200).json(clientInfo)   
 
 }
+
+//this is not being used
 const adminUpdateClient = async(req, res) =>{
     const {id} = req.params    
 
@@ -600,18 +614,19 @@ const adminUpdateClient = async(req, res) =>{
     
      //check if not existing
      if (!clientInfo){
-        return res.status(404).json({error: 'Client not found'})
+        return res.status(404).json({error: 'Client not found.'})
     }
 
-    res.status(200).json(clientInfo)
+    res.status(200).json({message: "Successfully updated."})
 }
+
 const adminDeleteClient = async (req, res) => {
     const message = req.body.message;
   
     try {
         const hasDuplicates = message.some((obj, index) => {
             if (obj.message.trim() === '') {
-                throw new Error('Please enter a reason.');
+                throw new Error('Please select a reason.');
             }
 
             let foundDuplicate = false;
@@ -666,12 +681,14 @@ const adminDeleteClient = async (req, res) => {
 }
 
 //SORT BY RECENTLY ADDED SKILLED
+//this is not being used
 const adminGetAllSkill = async(req, res)=>{
 
     try{
         //this is to find skill for specific user
         //get all query
-        const skill = await Skill.find({isDeleted: 0}).sort({createdAt: -1}).populate('skilled_id')
+        const skill = await Skill.find({isDeleted: 0})
+        .sort({skillName: 1}).populate('skilled_id')
         res.status(200).json(skill)
     }
     catch(error){
@@ -1162,79 +1179,8 @@ const adminGetAllClientNbiDetail = async(req, res)=>{
         res.status(404).json({error: error.message})
     }  
 }
-//UPDATE INFO SKILLED
-// const adminUpdateExperience = async (req, res) => {
-//   const { expIsVerified, message } = req.body
 
-//   try {
-//     await Experience.updateOne({ _id: req.params.id }, { $unset: { message: 1 } })
-//     const skilledExp = await Experience.findOneAndUpdate(
-//         { _id: req.params.id },
-//         {
-//             $push: { message },
-//             $set: { expIsVerified }
-//         },
-//         { new: true }
-//     )
-//     //notification
-//     const expNotif = await Experience.findOne({ _id: req.params.id })
-//     .populate('message');
-//     const messageIds = expNotif.message.map(msg => msg.message)
-//     let messageNotif = '';
-//     let isVerified = expNotif.expIsVerified;
-//     let expIsVerifiedValue;
-
-//     if (isVerified === 'true') {
-//         expIsVerifiedValue = 'approved';
-//         messageNotif = `Your work experience has been ${expIsVerifiedValue}.`;
-//     } else if (isVerified === 'false') {
-//         expIsVerifiedValue = 'disapproved';
-//         //validation
-//         const isEmptyMessage = message.some((obj) => obj.message === "");
-//         if (isEmptyMessage) {
-//             return res.status(400).json({ error: 'Please select a reason.' });
-//         }
-    
-//         // Check for duplicate messages in request body
-//         const hasDuplicates = message.some((obj, index) => {
-//             let foundDuplicate = false;
-//             message.forEach((innerObj, innerIndex) => {
-//                 if (index !== innerIndex && obj.message === innerObj.message) {
-//                     foundDuplicate = true;
-//                 }
-//             });
-//             return foundDuplicate;
-//         });
-        
-//         if (hasDuplicates) {
-//             return res.status(400).json({ error: 'Please remove repeating reason.' });
-//         }
-
-//         const messages = await Promise.all(messageIds.map(async (msgId) => {
-//             const msg = await Reason.findOne({ _id: msgId });
-//             return msg.reason;
-//         }));
-//             messageNotif = `Your work experience has been ${expIsVerifiedValue}. Please update your uploaded work experience. Your work experience has ${messages.join(', ')}.`;
-//     }
-
-//     const skilled_id = expNotif.skilled_id;
-//     const skilledInfo = await SkilledInfo.findOne({ _id: skilled_id });
-//     const username = skilledInfo.username;
-//     const contactNo = skilledInfo.contact;
-//     console.log(contactNo)
-
-//     // Create a notification after updating creating barangay
-//     const notification = await Notification.create({
-//         skilled_id,
-//         message: messageNotif,
-//         urlReact:`/profileSkilled/${username}`
-//     });
-//     res.status(200).json({ message: 'Successfully updated.'})
-//     } catch (error) {
-//         res.status(400).json({ error: error.message })
-//     }
-// }
-
+//UPDATE
 const adminUpdateExperience = async (req, res) => {
     const { expIsVerified, message } = req.body;
   
@@ -1716,7 +1662,7 @@ const updateExpIsRead = async(req, res) =>{
 }
 
 //TABLES
-//list of deleted account for admin
+//SKILLED AND CLIENT DEACT 
 const adminGetAllSkilledDeact = async(req, res)=>{
 
     try{
@@ -1755,6 +1701,7 @@ const adminGetAllClientDeact = async(req, res)=>{
         res.status(404).json({error: error.message})
     }  
 }
+//SKILLED EXPIRED
 const adminGetAllSkilledCertDetailExpired = async(req, res)=>{
     const username = req.params.username;
     try{
@@ -1821,7 +1768,7 @@ const adminGetAllSkilledNbiDetailExpired = async(req, res)=>{
         res.status(404).json({error: error.message})
     }  
 }
-//CLIENT EXP
+//CLIENT EXPIRED
 const adminGetAllClientBarangayDetailExpired = async(req, res)=>{
     const username = req.params.username;
     try{
@@ -1866,6 +1813,8 @@ const adminGetAllClientNbiDetailExpired = async(req, res)=>{
         res.status(404).json({error: error.message})
     }  
 }
+
+//SKILLED DELETED
 const adminGetAllSkilledExpDeleted = async(req, res)=>{
     // const skilled_id = req.params.skilled_id;
     const username = req.params.username;

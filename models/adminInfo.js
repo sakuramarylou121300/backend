@@ -67,39 +67,39 @@ adminInfoSchema.statics.signup = async function (
     }
 
     //check  length
-    if(username.length <6){
-        throw Error('Please enter atleast 8 characters in user name.')
+    if(username.length <7){
+        throw Error('Please enter atleast 6 characters in user name.')
     }
     //check if strong password
-    if(password.length <6){
-        throw Error('Please enter atleast 8 characters in password.')
+    if(password.length <7){
+        throw Error('Please enter atleast 6 characters in password.')
     }
     const mobileNumberRegex = /^09\d{9}$|^639\d{9}$/;
         
     if (!mobileNumberRegex.test(contact)) {
-        throw new Error('Please check your contact number.');
+        throw new Error('Please check contact number.');
     }
     
     //check if  is existing skilled, client and admin
       const skilledExists = await SkilledInfo.findOne({username})
       if (skilledExists){
-          throw Error('Email already in use. Please enter a new unique .')
+          throw Error('Username already in use.')
       }
       const clientExists = await ClientInfo.findOne({username})
       if (clientExists){
-          throw Error('Email already in use. Please enter a new unique .')
+          throw Error('Username already in use.')
       }
     const exists = await this.findOne({username})
     if (exists){
-    throw Error('Email already in use. Please enter a new unique .')
+    throw Error('Username already in use.')
     }
 
     const adminInfoWithSameDetails = await this.findOne({
         fname: mname,
-        mname: lname,
+        mname: mname,
         lname: lname,
         contact: contact,
-        isDeleted:0
+        isDeleted:{$in: [0, 1]}
     });
     
     if (adminInfoWithSameDetails) {
