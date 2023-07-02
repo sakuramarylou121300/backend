@@ -33,6 +33,7 @@ const skillCertRoutes = require('./routes/skillCertRoutes')
 const experienceRoutes = require('./routes/experienceRoutes')
 const skilledExpRoutes = require('./routes/skilledExpRoutes')
 const skillRoutes = require('./routes/skillRoutes')
+const skilledDateRoutes = require('./routes/skilledDateRoutes')
 const skilledBillRoutes = require('./routes/skilledBillRoutes')
 
 //CLIENT
@@ -105,6 +106,7 @@ app.use('/api/skill', skillRoutes)
 app.use('/api/skillCert', skillCertRoutes)
 app.use('/api/experience', experienceRoutes)
 app.use('/api/skilledExp', skilledExpRoutes)
+app.use('/api/skilledDate', skilledDateRoutes)
 //this is for photos
 app.use('/public', express.static(path.join(__dirname, 'public')))
 // app.use("/public", express.static(path.join(__dirname, "public")))
