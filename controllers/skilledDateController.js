@@ -2,6 +2,61 @@ const SkilledDate = require('../models/skilledDate')
 const moment = require('moment-timezone');
 const mongoose = require('mongoose')
 
+//CREATE skilled dates
+const createSkilledDates = async (req, res) => {
+    try {
+        const skilled_id = req.skilledInfo._id;
+        const skilledDatesToAdd = req.body;
+
+        // Check for empty skilledDates or duplicate skilledDates
+        const existingSkilledDates = await SkilledDate.find({ skilled_id });
+        const existingDates = existingSkilledDates.map(date => moment(date.skilledDate).format('MM-DD-YYYY'));
+        const newSkilledDates = [];
+
+        if (!skilledDatesToAdd || skilledDatesToAdd.length === 0) {
+            res.status(400).json({ error: "Please enter date." });
+            return;
+        }
+
+        for (const skilledDate of skilledDatesToAdd) {
+            // Check for empty skilledDate
+            if (!skilledDate || skilledDate.skilledDate === "") {
+                res.status(400).json({ error: "Please enter a valid skilled date." });
+                return;
+            }
+
+            // Convert skilledDate string to a Date object
+            const dateFormat = 'MM-DD-YYYY';
+            const timeZone = 'YourTimeZone'; // Replace 'YourTimeZone' with the desired timezone e.g., 'UTC', 'America/New_York', etc.
+            const validUntilDate = moment.tz(skilledDate.skilledDate, dateFormat, timeZone).utc();
+
+            if (!validUntilDate.isValid()) {
+                res.status(400).json({ error: "Please enter a valid skilled date in the format MM-DD-YYYY." });
+                return;
+            }
+
+            if (validUntilDate.isBefore(moment().utc().startOf('day'), 'day')) {
+                res.status(400).json({ error: "Skilled date cannot be in the past." });
+                return;
+            }
+
+            const formattedDate = validUntilDate.format('MM-DD-YYYY');
+            if (existingDates.includes(formattedDate)) {
+                res.status(400).json({ error: "Duplicate skilled date found. Please remove repeating date." });
+                return;
+            }
+
+            existingDates.push(formattedDate);
+            newSkilledDates.push({ skilledDate: validUntilDate.toDate(), skilled_id });
+        }
+
+        const skilledDates = await SkilledDate.insertMany(newSkilledDates);
+        res.status(201).json({ message: 'Successfully added.' });
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+}
+
 //CREATE skilled date
 const createSkilledDate = async (req, res) => {
     const { skilledDate } = req.body;
@@ -113,16 +168,43 @@ const updateSkilledDate = async(req, res) =>{
         isDeleted: 0
     });
 
+    if (checkSkilledDate) {
+        return res.status(400).json({ error: "Date is already marked as unavailable." });
+    }
+
     //update
     const skilledDateUpdate = await SkilledDate.findOneAndUpdate({_id: id},{
-        ...req.body //get new value
+        skilledDate: validUntilDate.toDate()
     })
 
     res.status(200).json({message: "Successfully updated."})
 }
+
+const deleteSkilledDate = async(req, res)=>{
+    const {id} = req.params
+    
+    //check if id is not existing
+    if(!mongoose.Types.ObjectId.isValid(id)){
+        return res.status(404).json({error: 'Invalid id.'})
+    }
+
+    //delete query
+    const skilledDate = await SkilledDate.findOneAndUpdate({_id: id},
+        {isDeleted:1})
+    
+    //check if not existing
+    if (!skilledDate){
+        return res.status(404).json({error: 'Date not found.'})
+    }
+
+    res.status(200).json({message: "Successfully deleted."})
+
+}
 module.exports = {
+    createSkilledDates,
     createSkilledDate,
     getAllSkilledDate,
     getOneSkilledDate,
-    updateSkilledDate
+    updateSkilledDate,
+    deleteSkilledDate
 }
