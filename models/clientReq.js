@@ -34,6 +34,9 @@ const clientReqSchema = new Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "ClientInfo"
     },
+    reqDate:{
+        type: Date
+    },
     isDeleted:{
         type: Number,
         default: 0,

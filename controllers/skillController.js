@@ -9,8 +9,10 @@ const ClientNotification = require('../models/clientNotification')
 const ClientReq = require('../models/clientReq')
 const AdminSkill = require('../models/adminSkill')
 const ReasonCancelled = require('../models/clientCancelReq')
+const SkilledDate = require('../models/skilledDate')
 const cloudinary = require("../utils/cloudinary")
 const upload = require("../utils/multer") 
+const moment = require('moment-timezone');
 const mongoose = require('mongoose')
 
 const createSkills = async(req, res)=>{ 
@@ -647,12 +649,44 @@ const createClientReq = async (req, res) => {
     
     try {
         const client_id = req.clientInfo._id;
-        // const {skilled_id} = req.body
-        const {skill_id, skilled_id} = req.params; // Retrieve skill_id from params
-        
+        const { skill_id, skilled_id } = req.params; // Retrieve skill_id from params
+        const { reqDate } = req.body;
+
+        // If empty
+        if (reqDate === "") {
+            res.status(404).json({ error: "Please enter a date." });
+            return;
+        }
+
+        // Convert the reqDate string to a Date object
+        const dateFormat = 'MM-DD-YYYY';
+        const timeZone = 'America/New_York'; // Replace with the desired timezone identifier
+
+        const validUntilDate = moment.tz(reqDate, dateFormat, timeZone).utc();
+        const today = moment().utc().startOf('day');
+
+        // Check if the validUntil date is less than today's date
+        if (validUntilDate.isBefore(today, 'day')) {
+            res.status(400).json({ error: "Please enter today's date or a date in the future." });
+            return;
+        }
+
+        // Check if the requested date is already saved in skilledDate collection
+        const existingSkilledDate = await SkilledDate.findOne({
+            skilledDate: validUntilDate.toDate(),
+            skilled_id,
+            isDeleted: 0
+        });
+
+        if (existingSkilledDate) {
+            res.status(400).json({ error: "The date is marked as unavailable. Please select another date." });
+            return;
+        }
+
         let newRequest = await ClientReq({
+            reqDate: validUntilDate.toDate(),
             skill_id: skill_id,
-            skilled_id:skilled_id,
+            skilled_id: skilled_id,
             client_id: client_id
         }).save();
 
