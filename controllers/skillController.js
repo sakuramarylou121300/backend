@@ -822,6 +822,7 @@ const getAllSkilledReqCancelled = async(req, res)=>{
     }  
 }
 
+//request accepted for skilled workers
 const updateSkilledReqCompleted = async(req, res) =>{
     const skilled_id = req.skilledInfo._id;//this is for notification
     const {id} = req.params    
@@ -974,6 +975,71 @@ const getAllClientReqCancelled = async(req, res)=>{
     catch(error){
         res.status(404).json({error: error.message})
     }  
+}
+//update date, this is for pending
+const updateClientSkilledReqDate = async(req, res) =>{
+    const client_id = req.clientInfo._id;//this is for notification
+    const {id, skilled_id} = req.params    
+    const { reqDate } = req.body;
+
+    //check if id is not existing
+    if(!mongoose.Types.ObjectId.isValid(id)){
+        return res.status(404).json({error: 'Invalid id.'})
+    }
+    // If empty
+    if (reqDate === "") {
+        res.status(404).json({ error: "Please enter a date." });
+        return;
+    }
+
+    // Convert the reqDate string to a Date object
+    const dateFormat = 'MM-DD-YYYY';
+    const timeZone = 'America/New_York'; // Replace with the desired timezone identifier
+
+    const validUntilDate = moment.tz(reqDate, dateFormat, timeZone).utc();
+    const today = moment().utc().startOf('day');
+
+    // Check if the validUntil date is less than today's date
+    if (validUntilDate.isBefore(today, 'day')) {
+        res.status(400).json({ error: "Please enter today's date or a date in the future." });
+        return;
+    }
+
+    // Check if the requested date is already saved in skilledDate collection
+    const existingSkilledDate = await SkilledDate.findOne({
+        skilledDate: validUntilDate.toDate(),
+        skilled_id,
+        isDeleted: 0
+    });
+
+    if (existingSkilledDate) {
+        res.status(400).json({ error: "The date is marked as unavailable. Please select another date." });
+        return;
+    }
+
+    //update query
+    const clientReq = await ClientReq.findOneAndUpdate({_id: id},{
+        reqDate: validUntilDate.toDate() //get new value
+    })
+    
+     //check if not existing
+     if (!clientReq){
+        return res.status(404).json({error: 'Request not found.'})
+    }
+
+    //this is for the notification
+    // Get the name of the skilled user
+    const clientInfo = await ClientInfo.findOne({ _id: client_id });
+    const clientUsername = clientInfo.username;
+    const skilled_idNotif = clientReq.skilled_id;
+    // Create a notification after successfully creating new exp
+    const notification = await SkilledNotification.create({
+        skilled_id: skilled_idNotif,
+        message: `${clientUsername} updated labor date.`,
+        // url: `https://samplekasawapp.onrender.com/api/admin/getOne/Barangay/${skilledBClearance._id}`,
+        urlReact:`/viewAllSkilledRequest`
+    });
+    res.status(200).json({ message: 'Successfully updated.'})
 }
 
 //update client req completed
@@ -1134,6 +1200,7 @@ module.exports = {
     getAllClientReqAccepted,
     getAllClientReqCompleted,
     getAllClientReqCancelled,
+    updateClientSkilledReqDate,
     updateClientSkilledReqCompleted,
     cancelClientSkilledReq,
     deleteClientSkilledReq

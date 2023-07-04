@@ -28,6 +28,7 @@ const {
     getAllClientReqAccepted,
     getAllClientReqCompleted,
     getAllClientReqCancelled,
+    updateClientSkilledReqDate,
     updateClientSkilledReqCompleted,
     cancelClientSkilledReq,
     deleteClientSkilledReq
@@ -84,6 +85,7 @@ router.get('/getAll/client/req', clientRequireAuth ,getAllClientReq)
 router.get('/getAll/client/req/accepted', clientRequireAuth ,getAllClientReqAccepted)
 router.get('/getAll/client/req/completed', clientRequireAuth ,getAllClientReqCompleted)
 router.get('/getAll/client/req/cancelled', clientRequireAuth ,getAllClientReqCancelled)
+router.patch('/update/client/req/date/:id/:skilled_id', clientRequireAuth, updateClientSkilledReqDate)
 router.patch('/update/client/req/:id', clientRequireAuth, updateClientSkilledReqCompleted)
 router.patch('/delete/client/req/:id', clientRequireAuth, deleteClientSkilledReq)
 
