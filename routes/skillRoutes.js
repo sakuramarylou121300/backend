@@ -16,9 +16,11 @@ const {
     getAllSkilledOneComment,
     updateClientComment,
     deleteClientComment,
+    createClientReply,
     getOneSkilledSkill,
     getOneSkilledSkillClient,
     createClientReq,
+    updateClientReply,
     getAllSkilledReq,
     getAllSkilledReqCompleted,
     getAllSkilledReqAccepted,
@@ -78,6 +80,10 @@ router.get('/getAll/comment/:skill_id', clientRequireAuth, getAllClientComment)
 router.get('/getAll/clientone/comment', clientRequireAuth, getAllClientOneComment)
 router.patch('/update/comment/:id', upload.array("photo"), clientRequireAuth, updateClientComment)
 router.patch('/delete/comment/:id', clientRequireAuth, deleteClientComment)
+
+//this is for reply
+router.post('/post/reply/:comment_id/:skilledId', clientRequireAuth, createClientReply)
+router.patch('/update/reply/:id', clientRequireAuth, updateClientReply)
 
 //this is for the labor req
 router.post('/post/req/:skill_id/:skilled_id', clientRequireAuth, createClientReq)

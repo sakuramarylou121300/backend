@@ -34,7 +34,15 @@ const commentSchema = new Schema({
         type: Number,
         default: 0,
     },
+},{
+    toJSON: { virtuals: true }, // So `res.json()` and other `JSON.stringify()` functions include virtuals
+    toObject: { virtuals: true },
+    timestamps: true// So `console.log()` and other functions that use `toObject()` include virtuals
 },{timestamps: true})
-
+commentSchema.virtual('replies', {
+    ref: 'Reply',
+    localField: '_id',
+    foreignField: 'comment_id'
+});
 
 module.exports = mongoose.model('ClientComment',commentSchema)

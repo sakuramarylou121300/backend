@@ -10,6 +10,7 @@ const ClientReq = require('../models/clientReq')
 const AdminSkill = require('../models/adminSkill')
 const ReasonCancelled = require('../models/clientCancelReq')
 const SkilledDate = require('../models/skilledDate')
+const Reply = require('../models/reply')
 const cloudinary = require("../utils/cloudinary")
 const upload = require("../utils/multer") 
 const moment = require('moment-timezone');
@@ -370,6 +371,7 @@ const createClientComment = async (req, res) => {
     }
 };
 
+//COMMENT
 //this is for all the user
 const getAllClientComment = async(req, res)=>{
 
@@ -386,6 +388,22 @@ const getAllClientComment = async(req, res)=>{
                 path: "skillName",
                 select: "skill",
             },
+        })
+        // .populate('replies')
+        .populate({
+            path: "replies",
+            match: { isDeleted: 0 },
+            populate: [
+                { 
+                    path: "client_id",
+                    select: "username"
+                },
+                {
+                    path: "skilledId",
+                    select: "username",
+                },
+            ],
+            
         })
         .populate('skilledId')
         .populate('client_id')
@@ -572,6 +590,85 @@ const deleteClientComment = async(req, res)=>{
 
 }
 
+//REPLY
+//create reply
+const createClientReply = async(req, res)=>{
+
+    try{
+        const comment_id = req.params.comment_id //this is for comment id
+        const skilledId = req.params.skilledId;
+        const client_id = req.clientInfo._id;
+        const { reply } = req.body;
+        
+        if(reply === ""){
+            return res.status(400).json({error: "Please enter reply."})
+        }
+        //create query
+        const createReply = await Reply.create({
+            comment_id,
+            skilledId,
+            client_id,
+            reply
+        })
+        //this is for the notification
+        // Get the name of the skilled user
+        const clientInfo = await ClientInfo.findOne({ _id: client_id });
+        const clientUsername = clientInfo.username;
+        const skilled_id = createReply.skilledId;
+        // Create a notification after successfully creating new exp
+        const notification = await SkilledNotification.create({
+            skilled_id,
+            message: `${clientUsername} replied to comment.`,
+            // url: `https://samplekasawapp.onrender.com/api/admin/getOne/Barangay/${skilledBClearance._id}`,
+            urlReact:`/temporary`
+        });
+        res.status(200).json({message: "Successfully added."})
+    }
+    catch(error){
+        res.status(404).json({error: error.message})
+    }
+}
+//update reply
+const updateClientReply = async(req, res) =>{
+    const {id} = req.params    
+    const {reply} = req.body
+    const client_id = req.clientInfo._id
+
+      //check if id is not existing
+    if(!mongoose.Types.ObjectId.isValid(id)){
+        return res.status(404).json({error: 'Invalid id.'})
+    }
+    
+    if(reply === ""){
+        res.status(400).send({ message: "Please enter reply." });
+        return
+    }
+
+     //delete query
+     const replyUpdate = await Reply.findOneAndUpdate({_id: id},{
+         ...req.body //get new value
+     })
+    
+     //check if not existing
+     if (!replyUpdate){
+        return res.status(404).json({error: 'Reply not found.'})
+    }
+
+    //this is for the notification
+    // Get the name of the skilled user
+    const clientInfo = await ClientInfo.findOne({ _id: client_id });
+    const clientUsername = clientInfo.username;
+    const skilled_id = replyUpdate.skilledId;
+    // Create a notification after successfully creating new exp
+    const notification = await SkilledNotification.create({
+        skilled_id,
+        message: `${clientUsername} modified reply.`,
+        // url: `https://samplekasawapp.onrender.com/api/admin/getOne/Barangay/${skilledBClearance._id}`,
+        urlReact:`/temporary`
+    });
+    res.status(200).json({ message: 'Successfully updated.'})
+}
+
 //get one skilled skill first
 const getOneSkilledSkill = async(req, res)=>{
     const skilledWorkerId  = req.params._id//this is to get the _id of skilled worker first
@@ -709,6 +806,7 @@ const createClientReq = async (req, res) => {
         res.status(404).json({ error: error.message });
     }
 };
+
 
 //skilled worker receiving req, pending
 const getAllSkilledReq = async(req, res)=>{
@@ -1187,10 +1285,12 @@ module.exports = {
     getAllClientOneComment,
     getAllSkilledOneComment,
     deleteClientComment,
+    createClientReply,
     updateClientComment,
     getOneSkilledSkill,
     getOneSkilledSkillClient,
     createClientReq,
+    updateClientReply,
     getAllSkilledReq,
     getAllSkilledReqAccepted,
     getAllSkilledReqCompleted,
