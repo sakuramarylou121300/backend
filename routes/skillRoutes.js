@@ -14,13 +14,17 @@ const {
     getAllClientComment,
     getAllClientOneComment,
     getAllSkilledOneComment,
+    getOneClientComment,
     updateClientComment,
     deleteClientComment,
     createClientReply,
     getOneSkilledSkill,
     getOneSkilledSkillClient,
     createClientReq,
+    getOneClientReply,
     updateClientReply,
+    deleteClientReply,
+    createSkilledReply,
     getAllSkilledReq,
     getAllSkilledReqCompleted,
     getAllSkilledReqAccepted,
@@ -78,12 +82,18 @@ router.patch('/rating/:skill_id', clientRequireAuth, rating)
 router.post('/post/comment/:skill_id/:skilledId/:_id', upload.array("photo"), clientRequireAuth, createClientComment)
 router.get('/getAll/comment/:skill_id', clientRequireAuth, getAllClientComment)
 router.get('/getAll/clientone/comment', clientRequireAuth, getAllClientOneComment)
+router.get('/getOne/comment/:id', clientRequireAuth, getOneClientComment)
 router.patch('/update/comment/:id', upload.array("photo"), clientRequireAuth, updateClientComment)
 router.patch('/delete/comment/:id', clientRequireAuth, deleteClientComment)
 
-//this is for reply
-router.post('/post/reply/:comment_id/:skilledId', clientRequireAuth, createClientReply)
+//this is for reply - client
+router.post('/post/reply/:comment_id', clientRequireAuth, createClientReply)
+router.get('/getOne/reply/:id', clientRequireAuth, getOneClientReply)
 router.patch('/update/reply/:id', clientRequireAuth, updateClientReply)
+router.patch('/delete/reply/:id', clientRequireAuth, deleteClientReply)
+
+//this is for reply - skilled
+router.post('/post/skilledReply/:comment_id', requireAuth, createSkilledReply)
 
 //this is for the labor req
 router.post('/post/req/:skill_id/:skilled_id', clientRequireAuth, createClientReq)

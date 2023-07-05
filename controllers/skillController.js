@@ -389,7 +389,6 @@ const getAllClientComment = async(req, res)=>{
                 select: "skill",
             },
         })
-        // .populate('replies')
         .populate({
             path: "replies",
             match: { isDeleted: 0 },
@@ -407,8 +406,15 @@ const getAllClientComment = async(req, res)=>{
         })
         .populate('skilledId')
         .populate('client_id')
+
+        //count number of reviews
+        const countComment = clientComment.filter(clientComment => clientComment.isDeleted === 0).length;
+        const output = {
+            clientComment,
+            countComment
+        }
         
-        res.status(200).json(clientComment)
+        res.status(200).json(output)
     }
     catch(error){
         res.status(404).json({error: error.message})
@@ -470,7 +476,26 @@ const getAllSkilledOneComment = async(req, res)=>{
         res.status(404).json({error: error.message})
     }  
 }
+//get one comment
+const getOneClientComment = async(req, res)=>{
+    const {id} = req.params  
 
+     //check if id is not existing
+     if(!mongoose.Types.ObjectId.isValid(id)){
+        return res.status(404).json({error: 'Invalid id.'})
+    }
+
+    //find query
+    const clientComment = await ClientComment.findById({_id: id})
+
+    //check if not existing
+    if (!clientComment){
+        return res.status(404).json({error: 'Comment not found.'})
+    }
+
+    res.status(200).json(clientComment)   
+
+}
 const updateClientComment = async (req, res) => {
     const client_id = req.clientInfo._id;
   
@@ -590,43 +615,68 @@ const deleteClientComment = async(req, res)=>{
 
 }
 
-//REPLY
+//REPLY FOR CLIENT
 //create reply
-const createClientReply = async(req, res)=>{
-
-    try{
-        const comment_id = req.params.comment_id //this is for comment id
-        const skilledId = req.params.skilledId;
+const createClientReply = async (req, res) => {
+    try {
+        const comment_id = req.params.comment_id;
         const client_id = req.clientInfo._id;
         const { reply } = req.body;
-        
-        if(reply === ""){
-            return res.status(400).json({error: "Please enter reply."})
+    
+        if (reply === "") {
+            return res.status(400).json({ error: "Please enter a reply." });
         }
-        //create query
+    
+        // Retrieve the comment using comment_id
+        const comment = await ClientComment.findOne({ _id: comment_id });
+    
+        // Extract the skilledId from the comment object
+        const skilledId = comment.skilledId;
+  
+        // Create query
         const createReply = await Reply.create({
             comment_id,
-            skilledId,
             client_id,
-            reply
-        })
-        //this is for the notification
+            reply,
+        });
+  
+        // Notification
         // Get the name of the skilled user
         const clientInfo = await ClientInfo.findOne({ _id: client_id });
         const clientUsername = clientInfo.username;
-        const skilled_id = createReply.skilledId;
-        // Create a notification after successfully creating new exp
+    
+        // Create a notification after successfully creating the reply
         const notification = await SkilledNotification.create({
-            skilled_id,
+            skilled_id: skilledId,
             message: `${clientUsername} replied to comment.`,
             // url: `https://samplekasawapp.onrender.com/api/admin/getOne/Barangay/${skilledBClearance._id}`,
-            urlReact:`/temporary`
+            urlReact: `/temporary`,
         });
-        res.status(200).json({message: "Successfully added."})
+        res.status(200).json({ message: "Successfully added." });
+    }   catch (error) {
+        res.status(404).json({ error: error.message });
     }
-    catch(error){
-        res.status(404).json({error: error.message})
+  };
+  
+//get one reply
+const getOneClientReply = async(req, res)=>{
+    const {id} = req.params  
+
+     //check if id is not existing
+     if(!mongoose.Types.ObjectId.isValid(id)){
+        return res.status(404).json({error: 'Invalid id.'})
     }
+
+    //find query
+    const reply = await Reply.findById({_id: id})
+
+    //check if not existing
+    if (!reply){
+        return res.status(404).json({error: 'Reply not found.'})
+    }
+
+    res.status(200).json(reply)   
+
 }
 //update reply
 const updateClientReply = async(req, res) =>{
@@ -634,11 +684,11 @@ const updateClientReply = async(req, res) =>{
     const {reply} = req.body
     const client_id = req.clientInfo._id
 
-      //check if id is not existing
+    //check if id is not existing
     if(!mongoose.Types.ObjectId.isValid(id)){
         return res.status(404).json({error: 'Invalid id.'})
     }
-    
+
     if(reply === ""){
         res.status(400).send({ message: "Please enter reply." });
         return
@@ -667,6 +717,68 @@ const updateClientReply = async(req, res) =>{
         urlReact:`/temporary`
     });
     res.status(200).json({ message: 'Successfully updated.'})
+}
+//delete reply
+const deleteClientReply = async(req, res)=>{
+    const {id} = req.params
+    
+    //check if id is not existing
+    if(!mongoose.Types.ObjectId.isValid(id)){
+        return res.status(404).json({error: 'Invalid id.'})
+    }
+
+    //delete query
+    const replyDelete = await Reply.findOneAndUpdate({_id:id},
+        {isDeleted:1})
+    
+    //check if not existing
+    if (!replyDelete){
+        return res.status(404).json({error: 'Comment not found.'})
+    }
+
+    res.status(200).json({ message: 'Successfully deleted.'})
+}
+
+//REPLY FOR SKILLED
+const createSkilledReply = async(req, res)=>{
+
+    try{
+        const comment_id = req.params.comment_id
+        const skilledId = req.skilledInfo._id;
+        const { reply } = req.body;
+        
+        if(reply === ""){
+            return res.status(400).json({error: "Please enter reply."})
+        }
+
+        // Retrieve the comment using comment_id
+        const comment = await ClientComment.findOne({ _id: comment_id });
+    
+        // Extract the skilledId from the comment object
+        const client_id = comment.client_id;
+
+        //create query
+        const createReply = await Reply.create({
+            comment_id,
+            skilledId,
+            reply
+        })
+        //this is for the notification
+        // Get the name of the skilled user
+        const skilledInfo = await SkilledInfo.findOne({ _id: skilledId });
+        const skilleddUsername = skilledInfo.username;
+        // Create a notification after successfully creating new exp
+        const notification = await ClientNotification.create({
+            client_id: client_id,
+            message: `${skilleddUsername} replied to comment.`,
+            // url: `https://samplekasawapp.onrender.com/api/admin/getOne/Barangay/${skilledBClearance._id}`,
+            urlReact:`/temporary`
+        });
+        res.status(200).json({message: "Successfully added."})
+    }
+    catch(error){
+        res.status(404).json({error: error.message})
+    }
 }
 
 //get one skilled skill first
@@ -806,7 +918,6 @@ const createClientReq = async (req, res) => {
         res.status(404).json({ error: error.message });
     }
 };
-
 
 //skilled worker receiving req, pending
 const getAllSkilledReq = async(req, res)=>{
@@ -1284,13 +1395,17 @@ module.exports = {
     getAllClientComment,
     getAllClientOneComment,
     getAllSkilledOneComment,
+    getOneClientComment,
     deleteClientComment,
     createClientReply,
     updateClientComment,
     getOneSkilledSkill,
     getOneSkilledSkillClient,
     createClientReq,
+    getOneClientReply,
     updateClientReply,
+    deleteClientReply,
+    createSkilledReply,
     getAllSkilledReq,
     getAllSkilledReqAccepted,
     getAllSkilledReqCompleted,
