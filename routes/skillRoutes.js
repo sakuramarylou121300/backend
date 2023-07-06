@@ -18,13 +18,15 @@ const {
     updateClientComment,
     deleteClientComment,
     createClientReply,
-    getOneSkilledSkill,
-    getOneSkilledSkillClient,
-    createClientReq,
     getOneClientReply,
     updateClientReply,
     deleteClientReply,
     createSkilledReply,
+    updateSkilledReply,
+    deleteSkilledReply,
+    getOneSkilledSkill,
+    getOneSkilledSkillClient,
+    createClientReq,
     getAllSkilledReq,
     getAllSkilledReqCompleted,
     getAllSkilledReqAccepted,
@@ -88,12 +90,15 @@ router.patch('/delete/comment/:id', clientRequireAuth, deleteClientComment)
 
 //this is for reply - client
 router.post('/post/reply/:comment_id', clientRequireAuth, createClientReply)
-router.get('/getOne/reply/:id', clientRequireAuth, getOneClientReply)
-router.patch('/update/reply/:id', clientRequireAuth, updateClientReply)
+router.get('/getOne/reply/:id/:comment_id', clientRequireAuth, getOneClientReply)
+router.patch('/update/reply/:id/:comment_id', clientRequireAuth, updateClientReply)
 router.patch('/delete/reply/:id', clientRequireAuth, deleteClientReply)
 
 //this is for reply - skilled
 router.post('/post/skilledReply/:comment_id', requireAuth, createSkilledReply)
+router.get('/getOne/skilledReply/:id/:comment_id', requireAuth, getOneClientReply)
+router.patch('/update/skilledReply/:id/:comment_id', requireAuth, updateSkilledReply)
+router.patch('/delete/skilledReply/:id', requireAuth, deleteSkilledReply)
 
 //this is for the labor req
 router.post('/post/req/:skill_id/:skilled_id', clientRequireAuth, createClientReq)
