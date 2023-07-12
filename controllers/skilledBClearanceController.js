@@ -2,7 +2,7 @@ const SkilledBClearance = require('../models/skilledBClearance') //for CRUD of s
 const Notification = require('../models/adminNotification')
 const SkilledInfo = require('../models/skilledInfo')
 const AdminInfo = require('../models/adminInfo')
-const { DateTime } = require('luxon');
+const moment = require('moment');
 const cloudinary = require("../utils/cloudinary")
 const mongoose = require('mongoose') 
  
@@ -22,25 +22,20 @@ const createSkilledBClearance = async(req, res)=>{
         if(emptyFields.length >0){
             return res.status(400).json({error: 'Please fill in all the blank fields.', emptyFields})
         }
-
+        //photo is required
         if (!req.file) {
             return res.status(400).json({error: 'Please upload a photo.'})
         }
 
-        // Check if file type is supported
-        const supportedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
-        if (!supportedTypes.includes(req.file.mimetype)) {
-            return res.status(400).json({error: 'File type not supported. Please upload an image in PNG, JPEG, or JPG format.'})
-        }
+        //check if the date in the req.body is less than date today
+        const bClearanceExpMoment = moment.utc(bClearanceExp, 'MM-DD-YYYY');
+        const validUntilDate = bClearanceExpMoment.toDate();
 
-        // Convert the validUntil date string to a Date object
-        const validUntilDate = new Date(bClearanceExp);
-        // Check if the validUntil date is less than today's date
         if (validUntilDate < new Date()) {
-            return res.status(400).json({ error: 'Your barangay clearance is outdated. Please submit a valid one.' });
+            return res.status(400).json({ error: 'Your NBI Clearance is outdated. Please submit a valid one.' });
         }
 
-        //search if existing
+        // //search if existing
         const skilledBClearanceCheck = await SkilledBClearance.findOne({
             bClearanceExp:bClearanceExp,
             bClearanceIsVerified:{$in: ["false", "true", "pending"]},
@@ -96,32 +91,38 @@ const createSkilledBClearance = async(req, res)=>{
     }
 }
 
-const getAllSkilledBClearance = async(req, res)=>{
-    try{
-        const skilled_id = req.skilledInfo._id
-        const skilledBClearance = await SkilledBClearance
-        .find({
+const getAllSkilledBClearance = async (req, res) => {
+    try {
+        const skilled_id = req.skilledInfo._id;
+        const skilledBClearance = await SkilledBClearance.find({
             skilled_id,
             isDeleted: 0,
-            isExpired:{$ne: 1}})
-        .sort({createdAt:-1})
+            isExpired: { $ne: 1 }
+        })
+        .sort({ createdAt: -1 })
         .populate({
             path: 'message.message',
             model: 'Reason',
             select: 'reason',
-            options: { lean: true },
-        })
-        var currentDate = new Date();//date today
-        await SkilledBClearance.updateMany({ bClearanceExp: {$lt:currentDate}}, 
-            {$set: 
-                { bClearanceIsVerified: "false", isExpired: 1 } });
-        
-        res.status(200).json(skilledBClearance)
+            options: { lean: true }
+        });
+  
+        var currentDate = new Date(); // date today
+        await SkilledBClearance.updateMany(
+            { bClearanceExp: { $lt: currentDate } },
+            { $set: { bClearanceIsVerified: 'false', isExpired: 1 } }
+        );
+  
+        const formattedSkilledBClearance = skilledBClearance.map((clearance) => ({
+            ...clearance.toObject(),
+            bClearanceExp: moment(clearance.bClearanceExp).tz('Asia/Manila').format('MM-DD-YYYY')
+        }));
+  
+        res.status(200).json(formattedSkilledBClearance);
+    } catch (err) {
+      return res.status(500).json({ messg: err.message });
     }
-    catch(err){
-        return res.status(500).json({messg: err.message})
-    }
-}
+};
 
 const getAllSkilledExpiredBClearance = async(req, res)=>{
     try{
@@ -132,51 +133,60 @@ const getAllSkilledExpiredBClearance = async(req, res)=>{
             isDeleted: 0,
             isExpired:1})
         .sort({createdAt:-1})
-        res.status(200).json(skilledBClearance)
+
+        //proper format of date
+        const formattedSkilledBClearance = skilledBClearance.map((clearance) => ({
+            ...clearance.toObject(),
+            bClearanceExp: moment(clearance.bClearanceExp).tz('Asia/Manila').format('MM-DD-YYYY')
+        }));
+        res.status(200).json(formattedSkilledBClearance)
     }
     catch(err){
         return res.status(500).json({messg: err.message})
     }
 }
 
-const getOneSkilledBClearance = async(req, res)=>{
-    const {id} = req.params  
+const getOneSkilledBClearance = async (req, res) => {
+    const { id } = req.params;
 
-     //check if id is not existing
-     if(!mongoose.Types.ObjectId.isValid(id)){
-        return res.status(404).json({error: 'Invalid id..'})
+    // check if id is not existing
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(404).json({ error: 'Invalid id.' });
     }
 
-    //find query
-    const skilledBClearance = await SkilledBClearance.findById({_id: id})
-    .populate({
+    // find query
+    const skilledBClearance = await SkilledBClearance.findById({ _id: id }).populate({
         path: 'message.message',
         model: 'Reason',
         select: 'reason',
-        options: { lean: true },
-    })
+        options: { lean: true }
+    });
 
-    //check if not existing
-    if (!skilledBClearance){
-        return res.status(404).json({error: 'Barangay Clearance not found.'})
+    // check if not existing
+    if (!skilledBClearance) {
+        return res.status(404).json({ error: 'Barangay Clearance not found.' });
     }
 
-    res.status(200).json(skilledBClearance)   
+    const formattedSkilledBClearance = {
+        ...skilledBClearance.toObject(),
+        bClearanceExp: moment(skilledBClearance.bClearanceExp).tz('Asia/Manila').format('MM-DD-YYYY')
+    };
 
-}
+    res.status(200).json(formattedSkilledBClearance);
+};
+
 
 const updateSkilledBClearance  = async(req, res) =>{
 
     try{  
         const skilled_id = req.skilledInfo._id
         let skilledBClearance = await SkilledBClearance.findById(req.params.id)  
+        
+        //photo is required
         if (!req.file) {
             return res.status(400).json({error: 'Please upload a photo.'})
         }
-        const supportedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
-        if (!supportedTypes.includes(req.file.mimetype)) {
-            return res.status(400).json({error: 'File type not supported. Please upload an image in PNG, JPEG, or JPG format.'})
-        }
+
         const trueBClearance = await SkilledBClearance.findOne({
             _id: req.params.id,
             bClearanceIsVerified: true,
@@ -187,12 +197,13 @@ const updateSkilledBClearance  = async(req, res) =>{
                 message: "You cannot update verified barangay clearance."
             });
         }
-        // Convert the validUntil date string to a Date object
-        const validUntilDate = new Date(req.body.bClearanceExp);
-
-        // Check if the validUntil date is less than today's date
+    
+        //check if less than date today
+        const bClearanceExpMoment = moment.utc(req.body.bClearanceExp, 'MM-DD-YYYY');
+        const validUntilDate = bClearanceExpMoment.toDate();
+        
         if (validUntilDate < new Date()) {
-            return res.status(400).json({ error: 'Your barangay clearance is outdated. Please submit a valid one.' });
+            return res.status(400).json({ error: 'Your Barangay Clearance is outdated. Please submit a valid one.' });
         }
 
         //remove the recent image

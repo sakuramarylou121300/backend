@@ -6,7 +6,7 @@ const Notification = require('../models/adminNotification')
 const SkilledInfo = require('../models/skilledInfo')
 const mongoose = require('mongoose')
 const cloudinary = require("../utils/cloudinary"); 
-const moment = require('moment-timezone');
+const moment = require('moment');
 const upload = require("../utils/multer");
 const multer = require('multer')
 const path = require('path')
@@ -38,17 +38,12 @@ const createCertificate = async(req, res)=>{
         return res.status(400).json({error: 'Please upload a photo.'})
     }
 
-    // Convert the skilledDate string to a Date object
-    const dateFormat = 'MM-DD-YYYY';
-    const timeZone = 'America/New_York'; // Replace with the desired timezone identifier
+    //check if the date in the req.body is less than date today
+    const skillCertMoment = moment.utc(validUntil, 'MM-DD-YYYY');
+    const validUntilDate = skillCertMoment.toDate();
 
-    const validUntilDate = moment.tz(validUntil, dateFormat, timeZone).utc();
-    const today = moment().utc().startOf('day');
-
-    // Check if the validUntil date is less than today's date
-    if (validUntilDate.isBefore(today, 'day')) {
-        res.status(400).json({ error: "Your Certificate is outdated." });
-        return;
+    if (validUntilDate < new Date()) {
+        return res.status(400).json({ error: 'Your NBI Clearance is outdated. Please submit a valid one.' });
     }
 
     try{
@@ -59,7 +54,7 @@ const createCertificate = async(req, res)=>{
         const certCheck = await Certificate.findOne({
             categorySkill:categorySkill,
             title:title,
-            validUntil:validUntilDate.toDate(),
+            validUntil: validUntil,
             skilled_id:skilled_id,
             skillIsVerified:{$in: ["pending", "false", "true"]},
             isExpired: {$in: [0, 1]},
@@ -79,7 +74,7 @@ const createCertificate = async(req, res)=>{
         let certificate = new Certificate({
             categorySkill,
             title,
-            validUntil: validUntilDate.toDate(),
+            validUntil,
             photo: result.secure_url,     
             cloudinary_id: result.public_id,
             skilled_id

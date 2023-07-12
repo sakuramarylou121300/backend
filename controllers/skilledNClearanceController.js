@@ -1,6 +1,7 @@
 const SkilledNClearance = require('../models/skilledNClearance') //for CRUD of skill (admin)
 const SkilledInfo = require('../models/skilledInfo')
 const Notification = require('../models/adminNotification')
+const moment = require('moment');
 const cloudinary = require("../utils/cloudinary");
 const mongoose = require('mongoose')
 
@@ -30,17 +31,10 @@ const createSkilledNClearance = async(req, res)=>{
             return res.status(400).json({error: 'Only two photo is allowed either local or international NBI Clearance.'});
         }
 
-        // Check if file type is supported
-        const supportedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
-        for (let i = 0; i < req.files.length; i++) {
-            if (!supportedTypes.includes(req.files[i].mimetype)) {
-                return res.status(400).json({ error: `File type not supported. Please upload an image in PNG, JPEG, or JPG format. File ${i + 1} is not supported.` });
-            }
-        }
+        //check if the date in the req.body is less than date today
+        const nClearanceExpMoment = moment.utc(nClearanceExp, 'MM-DD-YYYY');
+        const validUntilDate = nClearanceExpMoment.toDate();
 
-        // Convert the validUntil date string to a Date object
-        const validUntilDate = new Date(nClearanceExp);
-        // Check if the validUntil date is less than today's date
         if (validUntilDate < new Date()) {
             return res.status(400).json({ error: 'Your NBI Clearance is outdated. Please submit a valid one.' });
         }
@@ -113,8 +107,13 @@ const getAllSkilledNClearance = async(req, res)=>{
         await SkilledNClearance.updateMany({ nClearanceExp: {$lt:currentDate} }, 
             {$set: 
                 { nClearanceIsVerified: "false", isExpired: 1 } });
+
+        const formattedSkilledNClearance = skilledNClearance.map((clearance) => ({
+            ...clearance.toObject(),
+            nClearanceExp: moment(clearance.nClearanceExp).tz('Asia/Manila').format('MM-DD-YYYY')
+        }));
         
-        res.status(200).json(skilledNClearance)
+        res.status(200).json(formattedSkilledNClearance)
     }
     catch(err){
         return res.status(500).json({messg: err.message})
@@ -129,7 +128,13 @@ const getAllExpiredNClearance = async(req, res)=>{
             isDeleted: 0, 
             isExpired: 1})
         .sort({createdAt:-1})
-        res.status(200).json(skilledNClearance)
+
+        //proper format of date
+        const formattedSkilledNClearance = skilledNClearance.map((clearance) => ({
+            ...clearance.toObject(),
+            nClearanceExp: moment(clearance.nClearanceExp).tz('Asia/Manila').format('MM-DD-YYYY')
+        }));
+        res.status(200).json(formattedSkilledNClearance)
     }
     catch(err){
         return res.status(500).json({messg: err.message})
@@ -158,7 +163,12 @@ const getOneSkilledNClearance = async(req, res)=>{
         return res.status(404).json({error: 'NBI Clearance not found.'})
     }
 
-    res.status(200).json(skilledNClearance)   
+    const formattedSkilledBNClearance = {
+        ...skilledNClearance.toObject(),
+        nClearanceExp: moment(skilledNClearance.nClearanceExp).tz('Asia/Manila').format('MM-DD-YYYY')
+    };
+
+    res.status(200).json(formattedSkilledBNClearance)   
 
 }
 
@@ -178,14 +188,6 @@ const updateSkilledNClearance  = async(req, res) =>{
             return res.status(400).json({error: 'Only two photo is allowed either local or international NBI Clearance.'});
         }
 
-        // Check if file type is supported
-        const supportedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
-        for (let i = 0; i < req.files.length; i++) {
-            if (!supportedTypes.includes(req.files[i].mimetype)) {
-                return res.status(400).json({ error: `File type not supported. Please upload an image in PNG, JPEG, or JPG format. File ${i + 1} is not supported.` });
-            }
-        }
-
         const trueNbi = await SkilledNClearance.findOne({
             _id: req.params.id,
             nClearanceIsVerified: true,
@@ -197,13 +199,13 @@ const updateSkilledNClearance  = async(req, res) =>{
             });
         }
 
-        // Convert the validUntil date string to a Date object
-        const validUntilDate = new Date(req.body.nClearanceExp);
-        // Check if the validUntil date is less than today's date
+        //check if less than date today
+        const nClearanceExpMoment = moment.utc(req.body.nClearanceExp, 'MM-DD-YYYY');
+        const validUntilDate = nClearanceExpMoment.toDate();
+        
         if (validUntilDate < new Date()) {
             return res.status(400).json({ error: 'Your NBI Clearance is outdated. Please submit a valid one.' });
         }
-
         // remove the recent images
         await Promise.all(
             skilledNClearance.photo.map(async (nbiPhoto) => {
