@@ -494,7 +494,7 @@ const adminUpdateSkilled = async(req, res) =>{
     res.status(200).json({message: "Successfully updated."})
 }
 
-const adminDeleteSkilled = async (req, res) => {x
+const adminDeleteSkilled = async (req, res) => {
     const message = req.body.message;
   
     try {

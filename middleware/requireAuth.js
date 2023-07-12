@@ -15,6 +15,11 @@ const requireAuth = async (req, res, next) =>{
     try{
         const {_id} = jwt.verify(token, process.env.SECRET)
         req.skilledInfo = await SkilledInfo.findOne({_id}).select('_id')
+
+        //if other users tries to bridge the code not for them
+        if (!req.skilledInfo || !req.skilledInfo._id) {
+            return res.status(401).json({ error: 'Request is not authorized.' });
+        }
         next()
     }
     catch(error){

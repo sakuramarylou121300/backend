@@ -2,6 +2,7 @@ const SkilledBClearance = require('../models/skilledBClearance') //for CRUD of s
 const Notification = require('../models/adminNotification')
 const SkilledInfo = require('../models/skilledInfo')
 const AdminInfo = require('../models/adminInfo')
+const { DateTime } = require('luxon');
 const cloudinary = require("../utils/cloudinary")
 const mongoose = require('mongoose') 
  
@@ -48,7 +49,7 @@ const createSkilledBClearance = async(req, res)=>{
             skilled_id:skilled_id
         })
         if(skilledBClearanceCheck){
-            return res.status(400).json({error: "Barangay clearance already exists to this user."})
+            return res.status(400).json({error: "Barangay Clearance already exists  to this user."})
         }
         result = await cloudinary.uploader.upload(req.file.path)
         let skilledBClearance = new SkilledBClearance({
@@ -208,7 +209,19 @@ const updateSkilledBClearance  = async(req, res) =>{
             bClearanceIsVerified: "pending",
             message: []
         }
-
+        // Check if the new data already exists, excluding the data corresponding to the parameter
+        const existingBClearance = await SkilledBClearance.findOne({
+            _id: { $ne: req.params.id },
+            bClearanceExp: req.body.bClearanceExp, // Compare only the photo field for similarity
+            bClearanceIsVerified:{$in: ["false", "true", "pending"]},
+            isExpired:{$in: [0, 1]},
+            isDeleted: 0,
+            skilled_id:skilled_id 
+        });
+    
+        if (existingBClearance) {
+            return res.status(400).json({ message: 'Barangay Clearance already exists  to this user.' });
+        }
         skilledBClearance = await SkilledBClearance.findByIdAndUpdate(req.params.id, 
             data, {new: true})
 

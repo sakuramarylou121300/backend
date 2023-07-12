@@ -6,6 +6,7 @@ const Notification = require('../models/adminNotification')
 const SkilledInfo = require('../models/skilledInfo')
 const mongoose = require('mongoose')
 const cloudinary = require("../utils/cloudinary"); 
+const moment = require('moment-timezone');
 const upload = require("../utils/multer");
 const multer = require('multer')
 const path = require('path')
@@ -37,20 +38,28 @@ const createCertificate = async(req, res)=>{
         return res.status(400).json({error: 'Please upload a photo.'})
     }
 
-    // Check if file type is supported
-    const supportedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
-    if (!supportedTypes.includes(req.file.mimetype)) {
-        return res.status(400).json({error: 'File type not supported. Please upload an image in PNG, JPEG, or JPG format.'})
+    // Convert the skilledDate string to a Date object
+    const dateFormat = 'MM-DD-YYYY';
+    const timeZone = 'America/New_York'; // Replace with the desired timezone identifier
+
+    const validUntilDate = moment.tz(validUntil, dateFormat, timeZone).utc();
+    const today = moment().utc().startOf('day');
+
+    // Check if the validUntil date is less than today's date
+    if (validUntilDate.isBefore(today, 'day')) {
+        res.status(400).json({ error: "Your Certificate is outdated." });
+        return;
     }
 
     try{
         //this is to assign the job to a specific client user, get id from clientInfo
         const skilled_id = req.skilledInfo._id
 
+        //if existing
         const certCheck = await Certificate.findOne({
             categorySkill:categorySkill,
             title:title,
-            validUntil:validUntil,
+            validUntil:validUntilDate.toDate(),
             skilled_id:skilled_id,
             skillIsVerified:{$in: ["pending", "false", "true"]},
             isExpired: {$in: [0, 1]},
@@ -58,26 +67,19 @@ const createCertificate = async(req, res)=>{
         })
         
         if(certCheck){
-            return res.status(400).json({error: "Skill certificate already exists to this user."})
+            return res.status(400).json({error: "Skill Certificate already exists to this user."})
         }
         
         if (categorySkill === "Select") {
             res.status(400).send({ error: "Please select skill." });
             return;
         }
-        // Convert the validUntil date string to a Date object
-        const validUntilDate = new Date(validUntil);
-
-        // Check if the validUntil date is less than today's date
-        if (validUntilDate < new Date()) {
-            return res.status(400).json({ error: 'Your certificate is outdated. Please submit a valid one.' });
-        }
 
         result = await cloudinary.uploader.upload(req.file.path)
         let certificate = new Certificate({
             categorySkill,
             title,
-            validUntil,
+            validUntil: validUntilDate.toDate(),
             photo: result.secure_url,     
             cloudinary_id: result.public_id,
             skilled_id
@@ -244,18 +246,17 @@ const updateCertificate = async(req,res)=>{
         const trueCertificate = await Certificate.findOne({
                 _id: req.params.id,
                 skillIsVerified: "true",
-            });
+        });
     
-            if (trueCertificate) {
-                return res.status(400).json({
-                    error: "You cannot update verified certificate."
-                });
-            }
-        
+        if (trueCertificate) {
+            return res.status(400).json({
+                error: "You cannot update verified certificate."
+            });
+        }
+
         // Convert the validUntil date string to a Date object
         const validUntilDate = new Date(req.body.validUntil);
 
-        // Check if the validUntil date is less than today's date
         if (validUntilDate < new Date()) {
             return res.status(400).json({ error: 'Your certificate is outdated. Please submit a valid one.' });
         }
@@ -276,7 +277,21 @@ const updateCertificate = async(req,res)=>{
             skillIsVerified: "pending",
             message:[]
         }
-
+         //if existing
+         const certCheck = await Certificate.findOne({
+            _id: { $ne: req.params.id },
+            categorySkill: req.body.categorySkill,
+            title: req.body.title,
+            validUntil:req.body.validUntil,
+            skilled_id:skilled_id,
+            skillIsVerified:{$in: ["pending", "false", "true"]},
+            isExpired: {$in: [0, 1]},
+            isDeleted: 0
+        })
+        
+        if(certCheck){
+            return res.status(400).json({error: "Skill Certificate already exists to this user."})
+        }
         certificate = await Certificate.findByIdAndUpdate(req.params.id, 
             data, {new: true})
 
@@ -297,6 +312,7 @@ const updateCertificate = async(req,res)=>{
         res.status(404).json({error: error.message})
     }
 }
+
 
 const deleteCertificate = async(req, res)=>{
     const {id} = req.params

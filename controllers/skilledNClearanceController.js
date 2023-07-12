@@ -55,7 +55,7 @@ const createSkilledNClearance = async(req, res)=>{
         })
 
         if(skilledNClearanceCheck){
-            return res.status(400).json({error: "NBI Clearance already exists to this user."})
+            return res.status(400).json({error: "NBI Clearance already exists  to this user."})
         }
         //create new skill
         let uploadedPhotos = [];
@@ -227,7 +227,19 @@ const updateSkilledNClearance  = async(req, res) =>{
             message: []
         };
 
-
+        // Check if the new data already exists, excluding the data corresponding to the parameter
+        const existingNClearance = await SkilledNClearance.findOne({
+            _id: { $ne: req.params.id },
+            nClearanceExp: req.body.nClearanceExp, // Compare only the photo field for similarity
+            nClearanceIsVerified:{$in: ["false", "true", "pending"]},
+            isExpired:{$in: [0, 1]},
+            isDeleted: 0,
+            skilled_id:skilled_id
+        });
+    
+        if (existingNClearance) {
+            return res.status(400).json({ message: 'NBI Clearance already exists  to this user.' });
+        }
         skilledNClearance = await SkilledNClearance.findByIdAndUpdate(req.params.id, 
             data, {new: true})
 
