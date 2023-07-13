@@ -32,7 +32,7 @@ const createSkilledNClearance = async(req, res)=>{
         }
 
         //check if the date in the req.body is less than date today
-        const nClearanceExpMoment = moment.utc(nClearanceExp, 'MM-DD-YYYY');
+        const nClearanceExpMoment = moment.utc(nClearanceExp, 'YYYY-MM-DDTHH:mm:ss.SSSZ');
         const validUntilDate = nClearanceExpMoment.toDate();
 
         if (validUntilDate < new Date()) {
@@ -210,7 +210,7 @@ const updateSkilledNClearance  = async(req, res) =>{
         }
 
         //check if less than date today
-        const nClearanceExpMoment = moment.utc(req.body.nClearanceExp, 'MM-DD-YYYY');
+        const nClearanceExpMoment = moment.utc(req.body.nClearanceExp, 'YYYY-MM-DDTHH:mm:ss.SSSZ');
         const validUntilDate = nClearanceExpMoment.toDate();
         
         if (validUntilDate < new Date()) {

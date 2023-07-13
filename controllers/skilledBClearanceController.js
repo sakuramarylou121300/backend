@@ -28,7 +28,7 @@ const createSkilledBClearance = async(req, res)=>{
         }
 
         //check if the date in the req.body is less than date today
-        const bClearanceExpMoment = moment.utc(bClearanceExp, 'MM-DD-YYYY');
+        const bClearanceExpMoment = moment.utc(bClearanceExp, 'YYYY-MM-DDTHH:mm:ss.SSSZ');
         const validUntilDate = bClearanceExpMoment.toDate();
 
         if (validUntilDate < new Date()) {
@@ -209,7 +209,7 @@ const updateSkilledBClearance  = async(req, res) =>{
         }
     
         //check if less than date today
-        const bClearanceExpMoment = moment.utc(req.body.bClearanceExp, 'MM-DD-YYYY');
+        const bClearanceExpMoment = moment.utc(req.body.bClearanceExp, 'YYYY-MM-DDTHH:mm:ss.SSSZ');
         const validUntilDate = bClearanceExpMoment.toDate();
         
         if (validUntilDate < new Date()) {

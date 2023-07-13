@@ -60,29 +60,25 @@ const createSkilledDates = async (req, res) => {
 //CREATE skilled date
 const createSkilledDate = async (req, res) => {
     const { skilledDate } = req.body;
-
+    const skilled_id = req.skilledInfo._id;
     // If empty
     if (skilledDate === "") {
         res.status(404).json({ error: "Please enter a date." });
         return;
     }
 
-    // Convert the skilledDate string to a Date object
-    const dateFormat = 'MM-DD-YYYY';
-    const timeZone = 'America/New_York'; // Replace with the desired timezone identifier
+    //check if the date in the req.body is less than date today
+    const dateMoment = moment.utc(skilledDate, 'YYYY-MM-DDTHH:mm:ss.SSSZ');
+    const validUntilDate = dateMoment.toDate();
 
-    const validUntilDate = moment.tz(skilledDate, dateFormat, timeZone).utc();
-    const today = moment().utc().startOf('day');
-
-    // Check if the validUntil date is less than today's date
-    if (validUntilDate.isBefore(today, 'day')) {
-        res.status(400).json({ error: "Please enter today's date or a date in the future." });
-        return;
+    if (validUntilDate < new Date()) {
+        return res.status(400).json({ error: 'Please enter date today or date in the future.' });
     }
 
     try {
         const checkSkilledDate = await SkilledDate.findOne({
-        skilledDate: validUntilDate.toDate(),
+        skilledDate: skilledDate,
+        skilled_id,
         isDeleted: 0
         });
 
@@ -90,11 +86,9 @@ const createSkilledDate = async (req, res) => {
             res.status(400).json({ error: "Date is already marked as unavailable." });
             return;
         }
-
         // Create query
-        const skilled_id = req.skilledInfo._id;
         const skilledDateCreate = await SkilledDate.create({
-            skilledDate: validUntilDate.toDate(),
+            skilledDate: skilledDate,
             skilled_id
         });
 
@@ -112,7 +106,12 @@ const getAllSkilledDate = async(req, res)=>{
         //get all query
         const skilledDateGet = await SkilledDate.find({skilled_id, isDeleted: 0})
         .sort({skilledDate: 1})
-        res.status(200).json(skilledDateGet)
+
+        const formattedSkilledBClearance = skilledDateGet.map((clearance) => ({
+            ...clearance.toObject(),
+            skilledDate: moment(clearance.skilledDate).tz('Asia/Manila').format('MM-DD-YYYY')
+        }));
+        res.status(200).json(formattedSkilledBClearance)
     }
     catch(error){
         res.status(404).json({error: error.message})
@@ -129,20 +128,25 @@ const getOneSkilledDate = async(req, res)=>{
     }
 
     //find query
-    const skilledDate = await SkilledDate.findById({_id: id})
+    const skilledDateGetOne = await SkilledDate.findById({_id: id})
 
     //check if not existing
-    if (!skilledDate){
+    if (!skilledDateGetOne){
         return res.status(404).json({error: 'Date not found.'})
     }
+    const formattedSkilledBClearance = {
+        ...skilledDateGetOne.toObject(),
+        skilledDate: moment(skilledDateGetOne.skilledDate).tz('Asia/Manila').format('MM-DD-YYYY')
+    };
 
-    res.status(200).json(skilledDate)   
+    res.status(200).json(formattedSkilledBClearance)   
 }
 
 //UPDATE skilled date
 const updateSkilledDate = async(req, res) =>{
     const {id} = req.params    
     const {skilledDate} = req.body
+    const skilled_id = req.skilledInfo._id;
 
     //check if id is not existing
     if(!mongoose.Types.ObjectId.isValid(id)){
@@ -154,21 +158,18 @@ const updateSkilledDate = async(req, res) =>{
         res.status(404).json({ error: "Please enter a date." });
     }
 
-    // Convert the skilledDate string to a Date object
-    const dateFormat = 'MM-DD-YYYY';
-    const timeZone = 'YourTimeZone'; // Replace 'YourTimeZone' with the desired timezone e.g., 'UTC', 'America/New_York', etc.
+    //check if the date in the req.body is less than date today
+    const dateMoment = moment.utc(skilledDate, 'YYYY-MM-DDTHH:mm:ss.SSSZ');
+    const validUntilDate = dateMoment.toDate();
 
-    const validUntilDate = moment.tz(skilledDate, dateFormat, timeZone).utc();
-    const today = moment().utc().startOf('day');
-
-    // Check if the validUntil date is less than today's date
-    if (validUntilDate.isBefore(today, 'day')) {
-        return res.status(400).json({ error: 'Please enter today\'s date or a date in the future.' });
+    if (validUntilDate < new Date()) {
+        return res.status(400).json({ error: 'Please enter date today or date in the future.' });
     }
 
     //if existing
     const checkSkilledDate = await SkilledDate.findOne({
-        skilledDate: validUntilDate.toDate(),
+        skilledDate: skilledDate,
+        skilled_id,
         isDeleted: 0
     });
 
@@ -178,7 +179,7 @@ const updateSkilledDate = async(req, res) =>{
 
     //update
     const skilledDateUpdate = await SkilledDate.findOneAndUpdate({_id: id},{
-        skilledDate: validUntilDate.toDate()
+        skilledDate: skilledDate
     })
 
     res.status(200).json({message: "Successfully updated."})

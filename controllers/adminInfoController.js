@@ -14,6 +14,7 @@ const ClientNotification = require('../models/clientNotification')
 const Reason = require('../models/reason')
 const ReasonDeact = require('../models/reasonDeact')
 const SkilledBill = require('../models/skilledBill')
+const moment = require('moment');
 const mongoose = require('mongoose')
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
@@ -1014,7 +1015,11 @@ const adminGetAllSkilledCertDetail = async(req, res)=>{
             {$set: 
                 { skillIsVerified: "false", isExpired: 1 } });
         
-        res.status(200).json(certificate)
+        const formattedSkillCert = certificate.map((clearance) => ({
+            ...clearance.toObject(),
+            validUntil: moment(clearance.validUntil).tz('Asia/Manila').format('MM-DD-YYYY')
+        }));
+        res.status(200).json(formattedSkillCert)
     }
     catch(error){
         res.status(404).json({error: error.message})
@@ -1053,8 +1058,12 @@ const adminGetAllSkilledBarangayDetail = async(req, res)=>{
         await Barangay.updateMany({ bClearanceExp: {$lt:currentDate} }, 
             {$set: 
                 { bClearanceIsVerified: "false", isExpired: 1 } });
-        
-        res.status(200).json(barangay)
+    
+        const formattedSkilledBClearance = barangay.map((clearance) => ({
+        ...clearance.toObject(),
+        bClearanceExp: moment(clearance.bClearanceExp).tz('Asia/Manila').format('MM-DD-YYYY')
+        }));
+        res.status(200).json(formattedSkilledBClearance)
     }
     catch(error){
         res.status(404).json({error: error.message})
@@ -1092,8 +1101,11 @@ const adminGetAllSkilledNbiDetail = async(req, res)=>{
         await Nbi.updateMany({ nClearanceExp: {$lt:currentDate} }, 
             {$set: 
                 { nClearanceIsVerified: "false", isExpired: 1 } });
-        
-        res.status(200).json(nbi)
+        const formattedSkilledNClearance = nbi.map((clearance) => ({
+            ...clearance.toObject(),
+            nClearanceExp: moment(clearance.nClearanceExp).tz('Asia/Manila').format('MM-DD-YYYY')
+        }));
+        res.status(200).json(formattedSkilledNClearance)
     }
     catch(error){
         res.status(404).json({error: error.message})
