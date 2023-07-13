@@ -39,9 +39,9 @@ const createCertificate = async(req, res)=>{
     }
 
     //check if the date in the req.body is less than date today
-    const skillCertMoment = moment.utc(validUntil, 'MM-DD-YYYY');
+    const skillCertMoment = moment.utc(validUntil, 'YYYY-MM-DDTHH:mm:ss.SSSZ');
     const validUntilDate = skillCertMoment.toDate();
-
+    
     if (validUntilDate < new Date()) {
         return res.status(400).json({ error: 'Your NBI Clearance is outdated. Please submit a valid one.' });
     }
