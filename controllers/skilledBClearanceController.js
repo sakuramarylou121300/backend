@@ -46,6 +46,17 @@ const createSkilledBClearance = async(req, res)=>{
         if(skilledBClearanceCheck){
             return res.status(400).json({error: "Barangay Clearance already exists  to this user."})
         }
+
+        //if there is already verified atleast one then it should not allow the user to upload again
+        const bclearanceTrue = await SkilledBClearance.findOne({
+            bClearanceIsVerified: "true",
+            isDeleted: 0,
+            skilled_id:skilled_id
+        })
+        if(bclearanceTrue){
+            return res.status(400).json({error: "Your Barangay Clearance is still up to date and verified."})
+        }
+
         result = await cloudinary.uploader.upload(req.file.path)
         let skilledBClearance = new SkilledBClearance({
             bClearanceExp,          
@@ -175,7 +186,6 @@ const getOneSkilledBClearance = async (req, res) => {
     res.status(200).json(formattedSkilledBClearance);
 };
 
-
 const updateSkilledBClearance  = async(req, res) =>{
 
     try{  
@@ -233,6 +243,7 @@ const updateSkilledBClearance  = async(req, res) =>{
         if (existingBClearance) {
             return res.status(400).json({ message: 'Barangay Clearance already exists  to this user.' });
         }
+
         skilledBClearance = await SkilledBClearance.findByIdAndUpdate(req.params.id, 
             data, {new: true})
 

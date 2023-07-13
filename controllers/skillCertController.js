@@ -45,6 +45,7 @@ const createCertificate = async(req, res)=>{
     if (validUntilDate < new Date()) {
         return res.status(400).json({ error: 'Your NBI Clearance is outdated. Please submit a valid one.' });
     }
+    
 
     try{
         //this is to assign the job to a specific client user, get id from clientInfo
@@ -126,8 +127,11 @@ const getAllCertificate = async(req, res)=>{
             {$set: 
                 { skillIsVerified: "false", isExpired: 1 } });
         
-        
-        res.status(200).json(certificate)
+        const formattedSkillCert = certificate.map((clearance) => ({
+            ...clearance.toObject(),
+            validUntil: moment(clearance.validUntil).tz('Asia/Manila').format('MM-DD-YYYY')
+        }));
+        res.status(200).json(formattedSkillCert)
     }
     catch(error){
         res.status(404).json({error: error.message})
@@ -167,7 +171,18 @@ const getAllCertSkill = async(req, res)=>{
             options: { lean: true },
         })
         .sort({createdAt: -1})
-        res.status(200).json(skillCert)
+
+        var currentDate = new Date();//date today
+        await Certificate.updateMany({ validUntil: {$lt:currentDate} }, 
+            {$set: 
+                { skillIsVerified: "false", isExpired: 1 } });
+
+        const formattedCert = skillCert.map((clearance) => ({
+            ...clearance.toObject(),
+            validUntil: moment(clearance.validUntil).tz('Asia/Manila').format('MM-DD-YYYY')
+        }));
+
+        res.status(200).json(formattedCert)
     }
     catch(error){
         res.status(404).json({error: error.message})
@@ -186,7 +201,13 @@ const getAllExpiredCert= async(req, res)=>{
             isExpired: 1})
         .sort({createdAt: -1})
         .populate('skilled_id')
-        res.status(200).json(certificate)
+
+        const formattedCert = certificate.map((clearance) => ({
+            ...clearance.toObject(),
+            validUntil: moment(clearance.validUntil).tz('Asia/Manila').format('MM-DD-YYYY')
+        }));
+
+        res.status(200).json(formattedCert)
     }
     catch(error){
         res.status(404).json({error: error.message})
@@ -249,11 +270,12 @@ const updateCertificate = async(req,res)=>{
             });
         }
 
-        // Convert the validUntil date string to a Date object
-        const validUntilDate = new Date(req.body.validUntil);
+       //check if the date in the req.body is less than date today
+        const skillCertMoment = moment.utc(req.body.validUntil, 'MM-DD-YYYY');
+        const validUntilDate = skillCertMoment.toDate();
 
         if (validUntilDate < new Date()) {
-            return res.status(400).json({ error: 'Your certificate is outdated. Please submit a valid one.' });
+            return res.status(400).json({ error: 'Your NBI Clearance is outdated. Please submit a valid one.' });
         }
         
         //remove the recent image

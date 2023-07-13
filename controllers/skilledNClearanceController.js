@@ -51,6 +51,16 @@ const createSkilledNClearance = async(req, res)=>{
         if(skilledNClearanceCheck){
             return res.status(400).json({error: "NBI Clearance already exists  to this user."})
         }
+
+         //if there is already verified atleast one then it should not allow the user to upload again
+         const nclearanceTrue = await SkilledNClearance.findOne({
+            nClearanceIsVerified: "true",
+            isDeleted: 0,
+            skilled_id:skilled_id
+        })
+        if(nclearanceTrue){
+            return res.status(400).json({error: "Your NBI Clearance is still up to date and verified."})
+        }
         //create new skill
         let uploadedPhotos = [];
 
