@@ -42,8 +42,7 @@ const createSkilledNClearance = async(req, res)=>{
         //search if existing
         const skilledNClearanceCheck = await SkilledNClearance.findOne({
             nClearanceExp:nClearanceExp,
-            nClearanceIsVerified:{$in: ["false", "true", "pending"]},
-            isExpired:{$in: [0, 1]},
+            nClearanceIsVerified:{$in: ["false", "true", "pending", "expired"]},
             isDeleted: 0,
             skilled_id:skilled_id
         })
@@ -54,12 +53,12 @@ const createSkilledNClearance = async(req, res)=>{
 
          //if there is already verified atleast one then it should not allow the user to upload again
          const nclearanceTrue = await SkilledNClearance.findOne({
-            nClearanceIsVerified: "true",
+            nClearanceIsVerified:{$in: ["false", "true", "pending", "expired"]},
             isDeleted: 0,
             skilled_id:skilled_id
         })
         if(nclearanceTrue){
-            return res.status(400).json({error: "Your NBI Clearance is still up to date and verified."})
+            return res.status(400).json({error: "You have recently added NBI Clearance. Please wait for the admin to check your upload. You can only add new NBI Clearance if recently added is expired."})
         }
         //create new skill
         let uploadedPhotos = [];
@@ -105,7 +104,8 @@ const getAllSkilledNClearance = async(req, res)=>{
         const skilledNClearance = await SkilledNClearance
         .find({skilled_id,
             isDeleted: 0, 
-            isExpired:{$ne: 1}})
+            nClearanceIsVerified: { $ne: "expired" },
+        })
         .sort({createdAt:-1})
         .populate({
             path: 'message.message',
@@ -116,7 +116,7 @@ const getAllSkilledNClearance = async(req, res)=>{
         var currentDate = new Date();//date today
         await SkilledNClearance.updateMany({ nClearanceExp: {$lt:currentDate} }, 
             {$set: 
-                { nClearanceIsVerified: "false", isExpired: 1 } });
+                { nClearanceIsVerified: "expired" } });
 
         const formattedSkilledNClearance = skilledNClearance.map((clearance) => ({
             ...clearance.toObject(),
@@ -136,7 +136,7 @@ const getAllExpiredNClearance = async(req, res)=>{
         const skilledNClearance = await SkilledNClearance
         .find({skilled_id,
             isDeleted: 0, 
-            isExpired: 1})
+            nClearanceIsVerified: "expired"})
         .sort({createdAt:-1})
 
         //proper format of date
@@ -243,7 +243,7 @@ const updateSkilledNClearance  = async(req, res) =>{
         const existingNClearance = await SkilledNClearance.findOne({
             _id: { $ne: req.params.id },
             nClearanceExp: req.body.nClearanceExp, // Compare only the photo field for similarity
-            nClearanceIsVerified:{$in: ["false", "true", "pending"]},
+            nClearanceIsVerified:{$in: ["false", "true", "pending", "expired"]},
             isExpired:{$in: [0, 1]},
             isDeleted: 0,
             skilled_id:skilled_id

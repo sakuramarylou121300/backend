@@ -1,6 +1,7 @@
 const ClientNClearance = require('../models/clientNClearance') //for CRUD of skill (admin)
 const ClientInfo = require('../models/clientInfo')
 const Notification = require('../models/adminNotification')
+const moment = require('moment');
 const cloudinary = require("../utils/cloudinary");
 const mongoose = require('mongoose')
 
@@ -30,17 +31,10 @@ const createClientNClearance = async(req, res)=>{
             return res.status(400).json({error: 'Only two photo is allowed either local or international NBI Clearance.'});
         }
 
-        // Check if file type is supported
-        const supportedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
-        for (let i = 0; i < req.files.length; i++) {
-            if (!supportedTypes.includes(req.files[i].mimetype)) {
-                return res.status(400).json({ error: `File type not supported. Please upload an image in PNG, JPEG, or JPG format. File ${i + 1} is not supported.` });
-            }
-        }
+        //check if the date in the req.body is less than date today
+        const nClearanceExpMoment = moment.utc(nClearanceExp, 'YYYY-MM-DDTHH:mm:ss.SSSZ');
+        const validUntilDate = nClearanceExpMoment.toDate();
 
-        // Convert the validUntil date string to a Date object
-        const validUntilDate = new Date(nClearanceExp);
-        // Check if the validUntil date is less than today's date
         if (validUntilDate < new Date()) {
             return res.status(400).json({ error: 'Your NBI Clearance is outdated. Please submit a valid one.' });
         }
@@ -109,7 +103,11 @@ const getAllClientNClearance = async(req, res)=>{
             {$set: 
                 { nClearanceIsVerified: "false", isExpired: 1 } });
         
-        res.status(200).json(clientNClearance)
+        const formattedSkilledNClearance = clientNClearance.map((clearance) => ({
+        ...clearance.toObject(),
+            nClearanceExp: moment(clearance.nClearanceExp).tz('Asia/Manila').format('MM-DD-YYYY')
+        }));
+        res.status(200).json(formattedSkilledNClearance)
     }
     catch(err){
         return res.status(500).json({messg: err.message})
@@ -124,7 +122,13 @@ const getAllExpiredNClearance = async(req, res)=>{
             isDeleted: 0, 
             isExpired: 1})
         .sort({createdAt:-1})
-        res.status(200).json(clientNClearance)
+
+        //proper format of date
+        const formattedSkilledNClearance = clientNClearance.map((clearance) => ({
+            ...clearance.toObject(),
+            nClearanceExp: moment(clearance.nClearanceExp).tz('Asia/Manila').format('MM-DD-YYYY')
+        }));
+        res.status(200).json(formattedSkilledNClearance)
     }
     catch(err){
         return res.status(500).json({messg: err.message})
@@ -147,8 +151,12 @@ const getOneClientNClearance = async(req, res)=>{
         return res.status(404).json({error: 'NBI Clearance not found'})
     }
 
-    res.status(200).json(clientNClearance)   
+    const formattedSkilledBNClearance = {
+        ...clientNClearance.toObject(),
+        nClearanceExp: moment(clientNClearance.nClearanceExp).tz('Asia/Manila').format('MM-DD-YYYY')
+    };
 
+    res.status(200).json(formattedSkilledBNClearance)   
 }
 
 const updateClientNClearance  = async(req, res) =>{
@@ -186,9 +194,10 @@ const updateClientNClearance  = async(req, res) =>{
             });
         }
 
-        // Convert the validUntil date string to a Date object
-        const validUntilDate = new Date(req.body.nClearanceExp);
-        // Check if the validUntil date is less than today's date
+        //check if less than date today
+        const nClearanceExpMoment = moment.utc(req.body.nClearanceExp, 'YYYY-MM-DDTHH:mm:ss.SSSZ');
+        const validUntilDate = nClearanceExpMoment.toDate();
+        
         if (validUntilDate < new Date()) {
             return res.status(400).json({ error: 'Your NBI Clearance is outdated. Please submit a valid one.' });
         }
@@ -216,7 +225,19 @@ const updateClientNClearance  = async(req, res) =>{
             message: []
         };
 
-
+        // Check if the new data already exists, excluding the data corresponding to the parameter
+        const existingNClearance = await ClientNClearance.findOne({
+            _id: { $ne: req.params.id },
+            nClearanceExp: req.body.nClearanceExp, // Compare only the photo field for similarity
+            nClearanceIsVerified:{$in: ["false", "true", "pending"]},
+            isExpired:{$in: [0, 1]},
+            isDeleted: 0,
+            client_id:client_id
+        });
+    
+        if (existingNClearance) {
+            return res.status(400).json({ message: 'NBI Clearance already exists  to this user.' });
+        }
         clientNClearance = await ClientNClearance.findByIdAndUpdate(req.params.id, 
             data, {new: true})
 

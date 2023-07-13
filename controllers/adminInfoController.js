@@ -1039,7 +1039,7 @@ const adminGetAllSkilledBarangayDetail = async(req, res)=>{
         //get all query
         const barangay = await Barangay.find({
             skilled_id: skilledIdDoc._id,
-            isExpired:{$ne: 1}, 
+            bClearanceIsVerified: { $ne: "expired" },
             isDeleted: 0})
         .sort({createdAt: -1})
         .populate('skilled_id')
@@ -1057,7 +1057,7 @@ const adminGetAllSkilledBarangayDetail = async(req, res)=>{
         var currentDate = new Date();//date today
         await Barangay.updateMany({ bClearanceExp: {$lt:currentDate} }, 
             {$set: 
-                { bClearanceIsVerified: "false", isExpired: 1 } });
+                { bClearanceIsVerified: "expired" } });
     
         const formattedSkilledBClearance = barangay.map((clearance) => ({
         ...clearance.toObject(),
@@ -1083,7 +1083,7 @@ const adminGetAllSkilledNbiDetail = async(req, res)=>{
         //get all query
         const nbi = await Nbi.find({
             skilled_id: skilledIdDoc._id,
-            isExpired:{$ne: 1}, 
+            nClearanceIsVerified: { $ne: "expired" },
             isDeleted: 0})
         .sort({createdAt: -1})
         .populate('skilled_id')
@@ -1100,7 +1100,7 @@ const adminGetAllSkilledNbiDetail = async(req, res)=>{
         var currentDate = new Date();//date today
         await Nbi.updateMany({ nClearanceExp: {$lt:currentDate} }, 
             {$set: 
-                { nClearanceIsVerified: "false", isExpired: 1 } });
+                { nClearanceIsVerified: "expired" } });
         const formattedSkilledNClearance = nbi.map((clearance) => ({
             ...clearance.toObject(),
             nClearanceExp: moment(clearance.nClearanceExp).tz('Asia/Manila').format('MM-DD-YYYY')
@@ -1145,8 +1145,11 @@ const adminGetAllClientBarangayDetail = async(req, res)=>{
         await ClientBarangay.updateMany({ bClearanceExp: {$lt:currentDate} }, 
             {$set: 
                 { bClearanceIsVerified: "false", isExpired: 1 } });
-        
-        res.status(200).json(barangay)
+        const formattedSkilledBClearance = barangay.map((clearance) => ({
+            ...clearance.toObject(),
+            bClearanceExp: moment(clearance.bClearanceExp).tz('Asia/Manila').format('MM-DD-YYYY')
+        }));
+        res.status(200).json(formattedSkilledBClearance)
     }
     catch(error){
         res.status(404).json({error: error.message})
@@ -1185,7 +1188,11 @@ const adminGetAllClientNbiDetail = async(req, res)=>{
             {$set: 
                 { nClearanceIsVerified: "false", isExpired: 1 } });
         
-        res.status(200).json(nbi)
+        const formattedSkilledNClearance = nbi.map((clearance) => ({
+            ...clearance.toObject(),
+            nClearanceExp: moment(clearance.nClearanceExp).tz('Asia/Manila').format('MM-DD-YYYY')
+        }));        
+        res.status(200).json(formattedSkilledNClearance)
     }
     catch(error){
         res.status(404).json({error: error.message})
@@ -1730,7 +1737,13 @@ const adminGetAllSkilledCertDetailExpired = async(req, res)=>{
             isExpired: 1,
             isDeleted: 0}).sort({updatedAt: 1})
         .populate('skilled_id')
-        res.status(200).json(certificate)
+
+        const formattedSkillCert = certificate.map((clearance) => ({
+            ...clearance.toObject(),
+            validUntil: moment(clearance.validUntil).tz('Asia/Manila').format('MM-DD-YYYY')
+        }));
+
+        res.status(200).json(formattedSkillCert)
     }
     catch(error){
         res.status(404).json({error: error.message})
@@ -1749,10 +1762,15 @@ const adminGetAllSkilledBarangayDetailExpired = async(req, res)=>{
         //get all query
         const barangay = await Barangay.find({
             skilled_id: skilledIdDoc._id,
-            isExpired:1, 
+            bClearanceIsVerified: "expired", 
             isDeleted: 0}).sort({updatedAt: 1})
         .populate('skilled_id')
-        res.status(200).json(barangay)
+
+        const formattedSkilledBClearance = barangay.map((clearance) => ({
+            ...clearance.toObject(),
+            bClearanceExp: moment(clearance.bClearanceExp).tz('Asia/Manila').format('MM-DD-YYYY')
+        }));
+        res.status(200).json(formattedSkilledBClearance)
     }
     catch(error){
         res.status(404).json({error: error.message})
@@ -1771,10 +1789,15 @@ const adminGetAllSkilledNbiDetailExpired = async(req, res)=>{
         //get all query
         const nbi = await Nbi.find({
             skilled_id: skilledIdDoc._id,
-            isExpired:1, 
+            nClearanceIsVerified: "expired", 
             isDeleted: 0}).sort({updatedAt: 1})
         .populate('skilled_id')
-        res.status(200).json(nbi)
+
+        const formattedSkilledNClearance = nbi.map((clearance) => ({
+            ...clearance.toObject(),
+            nClearanceExp: moment(clearance.nClearanceExp).tz('Asia/Manila').format('MM-DD-YYYY')
+        }));
+        res.status(200).json(formattedSkilledNClearance)
     }
     catch(error){
         res.status(404).json({error: error.message})
@@ -1868,7 +1891,12 @@ const adminGetAllSkilledCertDeleted = async(req, res)=>{
             skilled_id: skilledIdDoc._id,
             isDeleted: 1}).sort({updatedAt: 1})
         .populate('skilled_id')
-        res.status(200).json(certificate)
+
+        const formattedSkillCert = certificate.map((clearance) => ({
+            ...clearance.toObject(),
+            validUntil: moment(clearance.validUntil).tz('Asia/Manila').format('MM-DD-YYYY')
+        }));
+        res.status(200).json(formattedSkillCert)
     }
     catch(error){
         res.status(404).json({error: error.message})
@@ -1889,7 +1917,12 @@ const adminGetAllSkilledBarangayDeleted= async(req, res)=>{
             skilled_id: skilledIdDoc._id,
             isDeleted: 1}).sort({updatedAt: 1})
         .populate('skilled_id')
-        res.status(200).json(barangay)
+
+        const formattedSkilledBClearance = barangay.map((clearance) => ({
+            ...clearance.toObject(),
+            bClearanceExp: moment(clearance.bClearanceExp).tz('Asia/Manila').format('MM-DD-YYYY')
+        }));
+        res.status(200).json(formattedSkilledBClearance)
     }
     catch(error){
         res.status(404).json({error: error.message})
@@ -1910,7 +1943,12 @@ const adminGetAllSkilledNbiDeleted = async(req, res)=>{
             skilled_id: skilledIdDoc._id,
             isDeleted: 1}).sort({updatedAt: 1})
         .populate('skilled_id')
-        res.status(200).json(nbi)
+
+        const formattedSkilledNClearance = nbi.map((clearance) => ({
+            ...clearance.toObject(),
+            nClearanceExp: moment(clearance.nClearanceExp).tz('Asia/Manila').format('MM-DD-YYYY')
+        }));
+        res.status(200).json(formattedSkilledNClearance)
     }
     catch(error){
         res.status(404).json({error: error.message})

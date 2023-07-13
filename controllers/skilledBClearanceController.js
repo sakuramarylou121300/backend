@@ -27,19 +27,18 @@ const createSkilledBClearance = async(req, res)=>{
             return res.status(400).json({error: 'Please upload a photo.'})
         }
 
-        //check if the date in the req.body is less than date today
-        const bClearanceExpMoment = moment.utc(bClearanceExp, 'YYYY-MM-DDTHH:mm:ss.SSSZ');
+        //check if less than date today
+        const bClearanceExpMoment = moment.utc(req.body.bClearanceExp, 'YYYY-MM-DDTHH:mm:ss.SSSZ');
         const validUntilDate = bClearanceExpMoment.toDate();
-
+        
         if (validUntilDate < new Date()) {
-            return res.status(400).json({ error: 'Your NBI Clearance is outdated. Please submit a valid one.' });
+            return res.status(400).json({ error: 'Your Barangay Clearance is outdated. Please submit a valid one.' });
         }
-
+ 
         // //search if existing
         const skilledBClearanceCheck = await SkilledBClearance.findOne({
             bClearanceExp:bClearanceExp,
-            bClearanceIsVerified:{$in: ["false", "true", "pending"]},
-            isExpired:{$in: [0, 1]},
+            bClearanceIsVerified:{$in: ["false", "true", "pending", "expired"]},
             isDeleted: 0,
             skilled_id:skilled_id
         })
@@ -49,12 +48,12 @@ const createSkilledBClearance = async(req, res)=>{
 
         //if there is already verified atleast one then it should not allow the user to upload again
         const bclearanceTrue = await SkilledBClearance.findOne({
-            bClearanceIsVerified: "true",
+            bClearanceIsVerified:{$in: ["false", "true", "pending", "expired"]},
             isDeleted: 0,
             skilled_id:skilled_id
         })
         if(bclearanceTrue){
-            return res.status(400).json({error: "Your Barangay Clearance is still up to date and verified."})
+            return res.status(400).json({error: "You have recently added Barangay Clearance. Please wait for the admin to check your upload. You can only add new Barangay Clearance if recently added is expired."})
         }
 
         result = await cloudinary.uploader.upload(req.file.path)
@@ -108,7 +107,7 @@ const getAllSkilledBClearance = async (req, res) => {
         const skilledBClearance = await SkilledBClearance.find({
             skilled_id,
             isDeleted: 0,
-            isExpired: { $ne: 1 }
+            bClearanceIsVerified: { $ne: "expired" }
         })
         .sort({ createdAt: -1 })
         .populate({
@@ -121,7 +120,7 @@ const getAllSkilledBClearance = async (req, res) => {
         var currentDate = new Date(); // date today
         await SkilledBClearance.updateMany(
             { bClearanceExp: { $lt: currentDate } },
-            { $set: { bClearanceIsVerified: 'false', isExpired: 1 } }
+            { $set: { bClearanceIsVerified: 'expired' } }
         );
   
         const formattedSkilledBClearance = skilledBClearance.map((clearance) => ({
@@ -142,7 +141,7 @@ const getAllSkilledExpiredBClearance = async(req, res)=>{
         .find({
             skilled_id,
             isDeleted: 0,
-            isExpired:1})
+            bClearanceIsVerified:"expired"})
         .sort({createdAt:-1})
 
         //proper format of date
@@ -234,8 +233,7 @@ const updateSkilledBClearance  = async(req, res) =>{
         const existingBClearance = await SkilledBClearance.findOne({
             _id: { $ne: req.params.id },
             bClearanceExp: req.body.bClearanceExp, // Compare only the photo field for similarity
-            bClearanceIsVerified:{$in: ["false", "true", "pending"]},
-            isExpired:{$in: [0, 1]},
+            bClearanceIsVerified:{$in: ["false", "true", "pending", "expired"]},
             isDeleted: 0,
             skilled_id:skilled_id 
         });

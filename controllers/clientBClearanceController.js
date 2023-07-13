@@ -2,6 +2,7 @@ const ClientBClearance = require('../models/clientBClearance') //for CRUD of ski
 const Notification = require('../models/adminNotification')
 const ClientInfo = require('../models/clientInfo')
 const AdminInfo = require('../models/adminInfo')
+const moment = require('moment');
 const cloudinary = require("../utils/cloudinary")
 const mongoose = require('mongoose') 
  
@@ -26,29 +27,24 @@ const createClientBClearance = async(req, res)=>{
             return res.status(400).json({error: 'Please upload a photo.'})
         }
 
-        // Check if file type is supported
-        const supportedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
-        if (!supportedTypes.includes(req.file.mimetype)) {
-            return res.status(400).json({error: 'File type not supported. Please upload an image in PNG, JPEG, or JPG format.'})
-        }
+        //check if the date in the req.body is less than date today
+        const bClearanceExpMoment = moment.utc(bClearanceExp, 'YYYY-MM-DDTHH:mm:ss.SSSZ');
+        const validUntilDate = bClearanceExpMoment.toDate();
 
-        // Convert the validUntil date string to a Date object
-        const validUntilDate = new Date(bClearanceExp);
-        // Check if the validUntil date is less than today's date
         if (validUntilDate < new Date()) {
-            return res.status(400).json({ error: 'Your barangay clearance is outdated. Please submit a valid one.' });
+            return res.status(400).json({ error: 'Your NBI Clearance is outdated. Please submit a valid one.' });
         }
 
         //search if existing
         const clientBClearanceCheck = await ClientBClearance.findOne({
             bClearanceExp:bClearanceExp,
-            bClearanceIsVerified:{$in: ["false", "true", "pending"]},
+            bClearanceIsVerified:{$in: ["false", "true", "pending", "expired"]},
             isExpired:{$in: [0, 1]},
             isDeleted: 0,
             client_id:client_id
         })
         if(clientBClearanceCheck){
-            return res.status(400).json({error: "Barangay Clearance already exists."})
+            return res.status(400).json({error: "Barangay Clearance already exists to this user."})
         }
         result = await cloudinary.uploader.upload(req.file.path)
         let clientBClearance = new ClientBClearance({
@@ -62,23 +58,6 @@ const createClientBClearance = async(req, res)=>{
         // Get the name of the client user
         const clientInfo = await ClientInfo.findOne({ _id: client_id });
         const clientUserName = clientInfo.username;
-
-        // const adminInfos = await AdminInfo.find({}).populate({
-        //     path: 'roleCapabality',
-        //     match: { isDeleted: 0 }
-        // });
-          
-        // const adminsWithAccess = adminInfos.filter(adminInfo =>
-        //     adminInfo.roleCapabality.some(capability => capability.capability_id.toString() === "63da861285bb5180f0eabbb9")
-        // );
-          
-        // const contactNumbers = adminsWithAccess.map(admin => admin.contact);
-        // console.log(contactNumbers)
-
-        // // Iterate over contactNumbers and send messages
-        // for (const phoneNumber of contactNumbers) {
-        //         console.log(`Message sent to ${phoneNumber}`);
-        // }
         
         // Create a notification after successfully creating new skills
         const notification = await Notification.create({
@@ -115,7 +94,11 @@ const getAllClientBClearance = async(req, res)=>{
             {$set: 
                 { bClearanceIsVerified: "false", isExpired: 1 } });
         
-        res.status(200).json(clientBClearance)
+        const formattedSkilledBClearance = clientBClearance.map((clearance) => ({
+            ...clearance.toObject(),
+            bClearanceExp: moment(clearance.bClearanceExp).tz('Asia/Manila').format('MM-DD-YYYY')
+        }));
+        res.status(200).json(formattedSkilledBClearance)
     }
     catch(err){
         return res.status(500).json({messg: err.message})
@@ -131,7 +114,13 @@ const getAllClientExpiredBClearance = async(req, res)=>{
             isDeleted: 0,
             isExpired:1})
         .sort({createdAt:-1})
-        res.status(200).json(clientBClearance)
+
+        const formattedSkilledBClearance = skilledBClearance.map((clearance) => ({
+            ...clearance.toObject(),
+            bClearanceExp: moment(clearance.bClearanceExp).tz('Asia/Manila').format('MM-DD-YYYY')
+        }));
+
+        res.status(200).json(formattedSkilledBClearance)
     }
     catch(err){
         return res.status(500).json({messg: err.message})
@@ -149,13 +138,17 @@ const getOneClientBClearance = async(req, res)=>{
     //find query
     const clientBClearance = await ClientBClearance.findById({_id: id})
 
-
     //check if not existing
     if (!clientBClearance){
         return res.status(404).json({error: 'Barangay Clearance not found.'})
     }
 
-    res.status(200).json(clientBClearance)   
+    const formattedSkilledBClearance = {
+        ...clientBClearance.toObject(),
+        bClearanceExp: moment(clientBClearance.bClearanceExp).tz('Asia/Manila').format('MM-DD-YYYY')
+    };
+
+    res.status(200).json(formattedSkilledBClearance)   
 
 }
 
@@ -167,10 +160,7 @@ const updateClientBClearance  = async(req, res) =>{
         if (!req.file) {
             return res.status(400).json({error: 'Please upload a photo.'})
         }
-        const supportedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
-        if (!supportedTypes.includes(req.file.mimetype)) {
-            return res.status(400).json({error: 'File type not supported. Please upload an image in PNG, JPEG, or JPG format.'})
-        }
+
         const trueBClearance = await ClientBClearance.findOne({
             _id: req.params.id,
             bClearanceIsVerified: "true",
@@ -181,12 +171,13 @@ const updateClientBClearance  = async(req, res) =>{
                 message: "You cannot update verified barangay clearance."
             });
         }
-        // Convert the validUntil date string to a Date object
-        const validUntilDate = new Date(req.body.bClearanceExp);
 
-        // Check if the validUntil date is less than today's date
+        //check if the date in the req.body is less than date today
+        const bClearanceExpMoment = moment.utc(req.body.bClearanceExp, 'YYYY-MM-DDTHH:mm:ss.SSSZ');
+        const validUntilDate = bClearanceExpMoment.toDate();
+
         if (validUntilDate < new Date()) {
-            return res.status(400).json({ error: 'Your barangay clearance is outdated. Please submit a valid one.' });
+            return res.status(400).json({ error: 'Your NBI Clearance is outdated. Please submit a valid one.' });
         }
 
         //remove the recent image
@@ -202,6 +193,20 @@ const updateClientBClearance  = async(req, res) =>{
             cloudinary_id: result?.public_id || clientBClearance.cloudinary_id,
             bClearanceIsVerified: "pending",
             message: []
+        }
+
+        // Check if the new data already exists, excluding the data corresponding to the parameter
+        const existingBClearance = await ClientBClearance.findOne({
+            _id: { $ne: req.params.id },
+            bClearanceExp: req.body.bClearanceExp, // Compare only the photo field for similarity
+            bClearanceIsVerified:{$in: ["false", "true", "pending"]},
+            isExpired:{$in: [0, 1]},
+            isDeleted: 0,
+            client_id:client_id 
+        });
+    
+        if (existingBClearance) {
+            return res.status(400).json({ message: 'Barangay Clearance already exists  to this user.' });
         }
 
         clientBClearance = await ClientBClearance.findByIdAndUpdate(req.params.id, 
