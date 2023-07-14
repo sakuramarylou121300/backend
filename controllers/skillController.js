@@ -1363,6 +1363,7 @@ const updateClientSkilledReqDate = async(req, res) =>{
     } else {
         console.log('No matching date found in SkilledDate collection');
     }
+
     const matchedDateId = findSkilledDate._id;
 
     // Update the date in the SkilledDate collection
@@ -1461,6 +1462,35 @@ const cancelClientSkilledReq = async(req, res) =>{
     }
 
     await ClientReq.updateOne({  _id: req.params.id }, { $unset: { message: 1 } });
+
+    // Find the ClientReq record based on the provided id
+    const clientReqFind = await ClientReq.findById({_id: req.params.id});
+
+    if (!clientReqFind) {
+        return res.status(404).json({ error: 'Request not found.' });
+    }
+
+    // Extract the reqDate from the clientReq record
+    const reqDateFind = clientReqFind.reqDate;
+
+    // Find the matching date in the SkilledDate collection
+    const findSkilledDate = await SkilledDate.findOne({
+        skilledDate: reqDateFind
+    });
+
+    //if it has corresponding date in the skilled date
+    let matchedDateId;
+    // Check if a matching date was found
+    if (findSkilledDate) {
+        matchedDateId = findSkilledDate._id;
+    } 
+   
+    // Update the date in the SkilledDate collection
+    const updatedSkilledDate = await SkilledDate.findByIdAndUpdate(
+        matchedDateId,
+        { isDeleted: 1 },
+        { new: true }
+    );
 
      //delete query
     const clientReq = await ClientReq.findOneAndUpdate(
