@@ -1126,7 +1126,7 @@ const adminGetAllClientBarangayDetail = async(req, res)=>{
         //get all query
         const barangay = await ClientBarangay.find({
             client_id: clientIdDoc._id,
-            isExpired:{$ne: 1}, 
+            bClearanceIsVerified: { $ne: "expired" },
             isDeleted: 0})
         .sort({createdAt: -1})
         .populate('client_id')
@@ -1144,11 +1144,12 @@ const adminGetAllClientBarangayDetail = async(req, res)=>{
         var currentDate = new Date();//date today
         await ClientBarangay.updateMany({ bClearanceExp: {$lt:currentDate} }, 
             {$set: 
-                { bClearanceIsVerified: "false", isExpired: 1 } });
+                { bClearanceIsVerified: "expired" } });
         const formattedSkilledBClearance = barangay.map((clearance) => ({
             ...clearance.toObject(),
             bClearanceExp: moment(clearance.bClearanceExp).tz('Asia/Manila').format('MM-DD-YYYY')
         }));
+
         res.status(200).json(formattedSkilledBClearance)
     }
     catch(error){
@@ -1169,7 +1170,7 @@ const adminGetAllClientNbiDetail = async(req, res)=>{
         //get all query
         const nbi = await ClientNbi.find({
             client_id: clientIdDoc._id,
-            isExpired:{$ne: 1}, 
+            nClearanceIsVerified: { $ne: "expired" },
             isDeleted: 0})
         .sort({createdAt: -1})
         .populate('client_id')
@@ -1186,7 +1187,7 @@ const adminGetAllClientNbiDetail = async(req, res)=>{
         var currentDate = new Date();//date today
         await ClientNbi.updateMany({ nClearanceExp: {$lt:currentDate} }, 
             {$set: 
-                { nClearanceIsVerified: "false", isExpired: 1 } });
+                { nClearanceIsVerified: "expired" } });
         
         const formattedSkilledNClearance = nbi.map((clearance) => ({
             ...clearance.toObject(),
@@ -1817,10 +1818,16 @@ const adminGetAllClientBarangayDetailExpired = async(req, res)=>{
         //get all query
         const barangay = await ClientBarangay.find({
             client_id: clientIdDoc._id,
-            isExpired:1, 
+            bClearanceIsVerified: "expired", 
             isDeleted: 0}).sort({updatedAt: 1})
         .populate('client_id')
-        res.status(200).json(barangay)
+
+        const formattedSkilledBClearance = barangay.map((clearance) => ({
+            ...clearance.toObject(),
+            bClearanceExp: moment(clearance.bClearanceExp).tz('Asia/Manila').format('MM-DD-YYYY')
+        }));
+
+        res.status(200).json(formattedSkilledBClearance)
     }
     catch(error){
         res.status(404).json({error: error.message})
@@ -1839,10 +1846,15 @@ const adminGetAllClientNbiDetailExpired = async(req, res)=>{
         //get all query
         const nbi = await ClientNbi.find({
             client_id: clientIdDoc._id,
-            isExpired:1, 
+            nClearanceIsVerified: "expired", 
             isDeleted: 0}).sort({updatedAt: 1})
         .populate('client_id')
-        res.status(200).json(nbi)
+
+        const formattedSkilledNClearance = nbi.map((clearance) => ({
+            ...clearance.toObject(),
+            nClearanceExp: moment(clearance.nClearanceExp).tz('Asia/Manila').format('MM-DD-YYYY')
+        }));
+        res.status(200).json(formattedSkilledNClearance)
     }
     catch(error){
         res.status(404).json({error: error.message})
@@ -1970,7 +1982,12 @@ const adminGetAllClientBarangayDeleted= async(req, res)=>{
             client_id: clientIdDoc._id,
             isDeleted: 1}).sort({updatedAt: 1})
         .populate('client_id')
-        res.status(200).json(barangay)
+
+        const formattedSkilledBClearance = barangay.map((clearance) => ({
+            ...clearance.toObject(),
+            bClearanceExp: moment(clearance.bClearanceExp).tz('Asia/Manila').format('MM-DD-YYYY')
+        }));
+        res.status(200).json(formattedSkilledBClearance)
     }
     catch(error){
         res.status(404).json({error: error.message})
@@ -1991,7 +2008,12 @@ const adminGetAllClientNbiDeleted = async(req, res)=>{
             client_id: clientIdDoc._id,
             isDeleted: 1}).sort({updatedAt: 1})
         .populate('client_id')
-        res.status(200).json(nbi)
+
+        const formattedSkilledNClearance = nbi.map((clearance) => ({
+            ...clearance.toObject(),
+            nClearanceExp: moment(clearance.nClearanceExp).tz('Asia/Manila').format('MM-DD-YYYY')
+        }));
+        res.status(200).json(formattedSkilledNClearance)
     }
     catch(error){
         res.status(404).json({error: error.message})

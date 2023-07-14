@@ -13,6 +13,7 @@ const jwt = require('jsonwebtoken')
 const mongoose = require('mongoose')
 
 //FINAL FILTERING
+//USED
 const getFilterSkilled = async (req, res) => {
     try {
 
@@ -20,13 +21,13 @@ const getFilterSkilled = async (req, res) => {
         var currentDate = new Date();//date today
         await ClientBClearance.updateMany({ bClearanceExp: {$lt:currentDate}}, 
             {$set: 
-                { bClearanceIsVerified: "false", isExpired: 1 } });
+                { bClearanceIsVerified: "expired" } });
 
         //update all expired nclearance
         var currentDate = new Date();//date today
         await ClientNClearance.updateMany({ nClearanceExp: {$lt:currentDate} }, 
             {$set: 
-                { nClearanceIsVerified: "false", isExpired: 1 } });
+                { nClearanceIsVerified: "expired" } });
         
             const clientInfo = await ClientInfo.find({ userIsVerified: {$in: [0, 1]}, isDeleted: 0 })
             .sort({ createdAt: -1 })
@@ -60,19 +61,19 @@ const getFilterSkilled = async (req, res) => {
         var currentDate = new Date();//date today
         await SkilledBClearance.updateMany({ bClearanceExp: {$lt:currentDate}}, 
             {$set: 
-                { bClearanceIsVerified: "false", isExpired: 1 } });
+                { bClearanceIsVerified: "expired" } });
 
         //update all expired nclearance
         var currentDate = new Date();//date today
         await SkilledNClearance.updateMany({ nClearanceExp: {$lt:currentDate} }, 
             {$set: 
-                { nClearanceIsVerified: "false", isExpired: 1 } });
+                { nClearanceIsVerified: "expired" } });
         
         //update all certificate
         var currentDate = new Date();//date today
         await Certificate.updateMany({ validUntil: {$lt:currentDate} }, 
             {$set: 
-                { skillIsVerified: "false", isExpired: 1 } });
+                { skillIsVerified: "expired" } });
                 
         const skilledInfo = await SkilledInfo.find({ userIsVerified: {$in: [0, 1]}, isDeleted: 0 })
             .sort({ createdAt: -1 })
@@ -568,6 +569,7 @@ const getFilterSkilledSkillTopRate = async (req, res) => {
     }
 };
 
+//USED
 const getFilterSkilledSkill = async (req, res) => {
     try {
         const skillId = req.params._id;
@@ -581,19 +583,19 @@ const getFilterSkilledSkill = async (req, res) => {
          var currentDate = new Date();//date today
          await SkilledBClearance.updateMany({ bClearanceExp: {$lt:currentDate}}, 
              {$set: 
-                 { bClearanceIsVerified: "false", isExpired: 1 } });
+                 { bClearanceIsVerified: "expired"} });
  
          //update all expired nclearance
          var currentDate = new Date();//date today
          await SkilledNClearance.updateMany({ nClearanceExp: {$lt:currentDate} }, 
              {$set: 
-                 { nClearanceIsVerified: "false", isExpired: 1 } });
+                 { nClearanceIsVerified: "expired" } });
         
         //update all certificate
         var currentDate = new Date();//date today
         await Certificate.updateMany({ validUntil: {$lt:currentDate} }, 
             {$set: 
-                { skillIsVerified: "false", isExpired: 1 } });
+                { skillIsVerified: "expired"} });
             
         const skilledInfoToVer = await SkilledInfo.find({ userIsVerified: {$in: [0, 1]}, isDeleted: 0 })
         .sort({ createdAt: -1 })

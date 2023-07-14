@@ -71,7 +71,6 @@ const createExp = async(req, res) => {
         refOrg:refOrg,
         refContactNo:refContactNo,
         expIsVerified:{$in: ["pending","false", "true"]},
-        isExpired: {$in: [0, 1]},
         skilled_id:skilled_id,
         isDeleted: 0
     })
@@ -321,7 +320,30 @@ const updateExp = async (req, res) => {
             expIsVerified: "pending",
             message: []
         };
-  
+        
+        //if existing
+        const expCheck = await SkilledExp.findOne({
+            _id: { $ne: req.params.id },
+            categorySkill:req.body.categorySkill,
+            isHousehold:req.body.isHousehold,
+            company:req.body.company,
+            isWorking:req.body.isWorking,
+            workStart:req.body.workStart,
+            workEnd:req.body.workEnd,
+            refLname:req.body.refLname, 
+            refFname:req.body.refFname,
+            refMname:req.body.refMname,
+            refPosition:req.body.refPosition,
+            refOrg:req.body.refOrg,
+            refContactNo:req.body.refContactNo,
+            expIsVerified:{$in: ["pending","false", "true"]},
+            skilled_id:skilled_id,
+            isDeleted: 0
+        })
+        
+        if(expCheck){
+            return res.status(400).json({error: "Work Experience already exists to this user."})
+        }
         const updatedSkilledExp = await SkilledExp.findByIdAndUpdate(
             req.params.id,
             data,

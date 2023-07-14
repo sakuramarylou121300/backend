@@ -11,6 +11,10 @@ const skilledDateSchema = new Schema({
         type: String,
         ref: 'SkilledInfo'
     },
+    client_id:{
+        type: String,
+        ref: 'ClientInfo'
+    },
     isDeleted:{
         type: Number,
         default: 0,

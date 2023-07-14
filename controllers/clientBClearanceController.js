@@ -39,12 +39,21 @@ const createClientBClearance = async(req, res)=>{
         const clientBClearanceCheck = await ClientBClearance.findOne({
             bClearanceExp:bClearanceExp,
             bClearanceIsVerified:{$in: ["false", "true", "pending", "expired"]},
-            isExpired:{$in: [0, 1]},
             isDeleted: 0,
             client_id:client_id
         })
         if(clientBClearanceCheck){
             return res.status(400).json({error: "Barangay Clearance already exists to this user."})
+        }
+
+        //if there is already verified atleast one then it should not allow the user to upload again
+        const nclearanceTrue = await ClientBClearance.findOne({
+            nClearanceIsVerified:{$in: ["false", "true", "pending", "expired"]},
+            isDeleted: 0,
+            client_id:client_id
+        })
+        if(nclearanceTrue){
+            return res.status(400).json({error: "You have recently added Barangay Clearance. Please wait for the admin to check your upload. You can only add new Barangay Clearance if recently added is expired."})
         }
         result = await cloudinary.uploader.upload(req.file.path)
         let clientBClearance = new ClientBClearance({
@@ -81,7 +90,8 @@ const getAllClientBClearance = async(req, res)=>{
         .find({
             client_id,
             isDeleted: 0,
-            isExpired:{$ne: 1}})
+            bClearanceIsVerified: { $ne: "expired" }
+        })
         .sort({createdAt:-1})
         .populate({
             path: 'message.message',
@@ -92,7 +102,7 @@ const getAllClientBClearance = async(req, res)=>{
         var currentDate = new Date();//date today
         await ClientBClearance.updateMany({ bClearanceExp: {$lt:currentDate}}, 
             {$set: 
-                { bClearanceIsVerified: "false", isExpired: 1 } });
+                { bClearanceIsVerified: "expired" } });
         
         const formattedSkilledBClearance = clientBClearance.map((clearance) => ({
             ...clearance.toObject(),
@@ -112,10 +122,10 @@ const getAllClientExpiredBClearance = async(req, res)=>{
         .find({
             client_id,
             isDeleted: 0,
-            isExpired:1})
+            bClearanceIsVerified: "expired" })
         .sort({createdAt:-1})
 
-        const formattedSkilledBClearance = skilledBClearance.map((clearance) => ({
+        const formattedSkilledBClearance = clientBClearance.map((clearance) => ({
             ...clearance.toObject(),
             bClearanceExp: moment(clearance.bClearanceExp).tz('Asia/Manila').format('MM-DD-YYYY')
         }));
@@ -199,8 +209,7 @@ const updateClientBClearance  = async(req, res) =>{
         const existingBClearance = await ClientBClearance.findOne({
             _id: { $ne: req.params.id },
             bClearanceExp: req.body.bClearanceExp, // Compare only the photo field for similarity
-            bClearanceIsVerified:{$in: ["false", "true", "pending"]},
-            isExpired:{$in: [0, 1]},
+            bClearanceIsVerified:{$in: ["false", "true", "pending", "expired"]},
             isDeleted: 0,
             client_id:client_id 
         });

@@ -51,8 +51,8 @@ const createSkilledNClearance = async(req, res)=>{
             return res.status(400).json({error: "NBI Clearance already exists  to this user."})
         }
 
-         //if there is already verified atleast one then it should not allow the user to upload again
-         const nclearanceTrue = await SkilledNClearance.findOne({
+        //if there is already verified atleast one then it should not allow the user to upload again
+        const nclearanceTrue = await SkilledNClearance.findOne({
             nClearanceIsVerified:{$in: ["false", "true", "pending", "expired"]},
             isDeleted: 0,
             skilled_id:skilled_id
@@ -244,7 +244,6 @@ const updateSkilledNClearance  = async(req, res) =>{
             _id: { $ne: req.params.id },
             nClearanceExp: req.body.nClearanceExp, // Compare only the photo field for similarity
             nClearanceIsVerified:{$in: ["false", "true", "pending", "expired"]},
-            isExpired:{$in: [0, 1]},
             isDeleted: 0,
             skilled_id:skilled_id
         });

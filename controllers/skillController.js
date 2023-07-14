@@ -985,22 +985,17 @@ const createClientReq = async (req, res) => {
             return;
         }
 
-        // Convert the reqDate string to a Date object
-        const dateFormat = 'MM-DD-YYYY';
-        const timeZone = 'America/New_York'; // Replace with the desired timezone identifier
+         //check if the date in the req.body is less than date today
+        const dateMoment = moment.utc(req.body.reqDate, 'YYYY-MM-DDTHH:mm:ss.SSSZ');
+        const validUntilDate = dateMoment.toDate();
 
-        const validUntilDate = moment.tz(reqDate, dateFormat, timeZone).utc();
-        const today = moment().utc().startOf('day');
-
-        // Check if the validUntil date is less than today's date
-        if (validUntilDate.isBefore(today, 'day')) {
-            res.status(400).json({ error: "Please enter today's date or a date in the future." });
-            return;
+        if (validUntilDate < new Date()) {
+            return res.status(400).json({ error: 'Your request date is outdated. Please enter date now or date in the future.' });
         }
 
         // Check if the requested date is already saved in skilledDate collection
         const existingSkilledDate = await SkilledDate.findOne({
-            skilledDate: validUntilDate.toDate(),
+            skilledDate: reqDate,
             skilled_id,
             isDeleted: 0
         });
@@ -1011,13 +1006,19 @@ const createClientReq = async (req, res) => {
         }
 
         let newRequest = await ClientReq({
-            reqDate: validUntilDate.toDate(),
+            reqDate: reqDate,
             skill_id: skill_id,
             skilled_id: skilled_id,
             client_id: client_id
         }).save();
+        //mark as unavailable the date added in the req
+        let newDate = await SkilledDate({
+            skilledDate: reqDate,
+            skilled_id: skilled_id,
+            client_id: client_id
+        }).save();
 
-         //this is for the notification
+        //this is for the notification
         // Get the name of the skilled user
         const clientInfo = await ClientInfo.findOne({ _id: client_id });
         const clientUsername = clientInfo.username;
@@ -1051,6 +1052,12 @@ const getAllSkilledReq = async(req, res)=>{
         .populate('skill_id')
         .populate('client_id')
 
+        //check skilled worker if verified before viewing pending request from client
+        const skilledInfo = await SkilledInfo.findOne({skilled_id})
+        if(skilledInfo.userIsVerified === 0)
+            return res.status(400).json({messg: 'Cannot view pending requests. Please check if your baranggay clearance, nbi clearance and address are verified.'
+        })
+     
         const pendingCount = clientReq.filter(clientReq => clientReq.reqStatus === "pending").length;
         const output = {
             clientReq,
@@ -1299,6 +1306,7 @@ const getAllClientReqCancelled = async(req, res)=>{
 }
 //update date, this is for pending
 const updateClientSkilledReqDate = async(req, res) =>{
+    
     const client_id = req.clientInfo._id;//this is for notification
     const {id, skilled_id} = req.params    
     const { reqDate } = req.body;
@@ -1313,22 +1321,17 @@ const updateClientSkilledReqDate = async(req, res) =>{
         return;
     }
 
-    // Convert the reqDate string to a Date object
-    const dateFormat = 'MM-DD-YYYY';
-    const timeZone = 'America/New_York'; // Replace with the desired timezone identifier
+    //check if the date in the req.body is less than date today
+    const dateMoment = moment.utc(req.body.reqDate, 'YYYY-MM-DDTHH:mm:ss.SSSZ');
+    const validUntilDate = dateMoment.toDate();
 
-    const validUntilDate = moment.tz(reqDate, dateFormat, timeZone).utc();
-    const today = moment().utc().startOf('day');
-
-    // Check if the validUntil date is less than today's date
-    if (validUntilDate.isBefore(today, 'day')) {
-        res.status(400).json({ error: "Please enter today's date or a date in the future." });
-        return;
+    if (validUntilDate < new Date()) {
+        return res.status(400).json({ error: 'Your request date is outdated. Please enter date now or date in the future.' });
     }
 
     // Check if the requested date is already saved in skilledDate collection
     const existingSkilledDate = await SkilledDate.findOne({
-        skilledDate: validUntilDate.toDate(),
+        skilledDate: reqDate,
         skilled_id,
         isDeleted: 0
     });
@@ -1338,13 +1341,44 @@ const updateClientSkilledReqDate = async(req, res) =>{
         return;
     }
 
-    //update query
-    const clientReq = await ClientReq.findOneAndUpdate({_id: id},{
-        reqDate: validUntilDate.toDate() //get new value
-    })
     
-     //check if not existing
-     if (!clientReq){
+    // Find the ClientReq record based on the provided id
+    const clientReqFind = await ClientReq.findById(id);
+
+    if (!clientReqFind) {
+        return res.status(404).json({ error: 'Request not found.' });
+    }
+
+    // Extract the reqDate from the clientReq record
+    const reqDateFind = clientReqFind.reqDate;
+
+    // Find the matching date in the SkilledDate collection
+    const findSkilledDate = await SkilledDate.findOne({
+        skilledDate: reqDateFind
+    });
+
+    // Check if a matching date was found
+    if (findSkilledDate) {
+        console.log('Matching date found in SkilledDate collection');
+    } else {
+        console.log('No matching date found in SkilledDate collection');
+    }
+    const matchedDateId = findSkilledDate._id;
+
+    // Update the date in the SkilledDate collection
+    const updatedSkilledDate = await SkilledDate.findByIdAndUpdate(
+        matchedDateId,
+        { skilledDate: reqDate },
+        { new: true }
+    );
+
+    //update client req date
+    const clientReq = await ClientReq.findOneAndUpdate({_id: id},{
+        reqDate: reqDate //get new value
+    })
+
+    //check if not existing
+    if (!clientReq){
         return res.status(404).json({error: 'Request not found.'})
     }
 

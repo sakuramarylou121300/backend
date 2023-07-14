@@ -106,6 +106,8 @@ const getAllSkilledDate = async(req, res)=>{
         //get all query
         const skilledDateGet = await SkilledDate.find({skilled_id, isDeleted: 0})
         .sort({skilledDate: 1})
+        .populate('skilled_id', 'username lname fname mname')
+        .populate('client_id', 'username lname fname mname')
 
         const formattedSkilledBClearance = skilledDateGet.map((clearance) => ({
             ...clearance.toObject(),

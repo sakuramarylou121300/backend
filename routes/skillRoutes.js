@@ -47,6 +47,7 @@ const{
   getAllReasonReq
 } = require('../controllers/clientCancelReqController')
 const {requireAuth} = require('../middleware/requireAuth')
+const skilledVerified = require('../middleware/skilledVerified')
 const {clientRequireAuth} = require('../middleware/clientRequireAuth')
 
 //instance of router
