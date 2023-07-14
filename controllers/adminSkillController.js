@@ -88,7 +88,7 @@ const updateSkill = async(req, res) =>{
     }
 
     const checkAdminSkill = await AdminSkill.findOne({skill})
-        if(checkAdminSkill) return res.status(400).json({messg: 'This skill already exists.'})
+        if(checkAdminSkill) return res.status(400).json({error: 'This skill already exists.'})
         
      //delete query
      const adminSkill = await AdminSkill.findOneAndUpdate({_id: id},{

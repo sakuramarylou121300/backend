@@ -175,7 +175,7 @@ const updateSkill = async(req, res) =>{
         return res.status(400).json({error: 'Please fill in all the blank fields.', emptyFields})
     }
     if(skillName==="Select"){
-        res.status(400).send({ message: "Please enter your skill." });
+        res.status(400).send({ error: "Please enter your skill." });
         return
     }
     const skillCheck = await Skill.findOne({
