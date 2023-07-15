@@ -735,7 +735,7 @@ const getFilterSkilledSkill = async (req, res) => {
     }} catch (error) {
         res.status(400).json({ error: error.message });
     }
-};
+}; 
 
 //ALL GET ONE
 //get one skilled worker, get skilled worker info
