@@ -83,7 +83,12 @@ const adminGetAllAdmin = async(req, res)=>{
         const adminInfo = await AdminInfo.find({isDeleted: 0})
         .select("-password")
         .sort({lname: 1})
-        .populate({path: 'roleCapabality', populate: [{path: 'capability_id'}, {path: 'adminInfo_id'}]})
+        .populate({path: 'roleCapabality', 
+        populate: [
+            {path: 'capability_id'}, 
+            {path: 'adminInfo_id'}
+        ],
+        match: { isDeleted: 0 }})
    
         res.status(200).json(adminInfo)
     }

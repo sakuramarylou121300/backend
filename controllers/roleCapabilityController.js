@@ -66,12 +66,51 @@ const getAllRoleCapability = async(req, res)=>{
     }  
 }
 
+//USED
+const createCapability = async(req, res)=>{
+    const {capability_id} = req.body
+    const _id = req.params._id;
+    
+    //check empty fields
+    let emptyFields = []
+    
+    if(!capability_id){
+        return res.status(400).json({error: 'Please select role.'})
+    }
+
+    //send message if there is an empty fields
+    if(emptyFields.length >0){
+        return res.status(400).json({error: 'Please fill in all the blank fields.', emptyFields})
+    }
+    
+    try{
+        const roleCapabilityCheck = await RoleCapability.findOne({
+            capability_id: capability_id,
+            adminInfo_id: _id,
+            isDeleted: 0
+        })
+        
+        if(roleCapabilityCheck){
+            return res.status(400).json({error: "This role with the same capability already assigned to admin"})
+        }
+        //create query
+        const roleCapability = await RoleCapability.create({
+            // role_id,
+            capability_id: capability_id,
+            adminInfo_id: _id
+        })
+        res.status(200).json({message: 'Successfully added.'})
+    }
+    catch(error){
+        res.status(404).json({error: error.message})
+    }
+}
 const getAllCapability = async(req, res)=>{
-    const username = req.params.username;
+    const _id = req.params._id;
     try{
         // Find skilled_id document based on username
         const adminIdDoc = await AdminInfo
-        .findOne({ username: username });
+        .findById(_id);
 
         // Check if skilled_id exists for the given username
         if (!adminIdDoc) {
@@ -83,7 +122,6 @@ const getAllCapability = async(req, res)=>{
             isDeleted: 0,
         })
         .sort({updatedAt: -1})
-
         .populate({
             path: 'capability_id',
             model: 'Capability',
@@ -92,6 +130,29 @@ const getAllCapability = async(req, res)=>{
         })
     
         res.status(200).json(roleCap)
+    }
+    catch(error){
+        res.status(404).json({error: error.message})
+    }  
+}
+
+const getOneAdminCapability = async(req, res)=>{
+    const {id} = req.params  
+    try{
+        //check if id is not existing
+        if(!mongoose.Types.ObjectId.isValid(id)){
+            return res.status(404).json({error: 'Invalid id.'})
+        }
+
+        //find query
+        const adminInfo = await AdminInfo.findById({_id: id})
+
+        //check if not existing
+        if (!adminInfo){
+            return res.status(404).json({error: 'Admin not found.'})
+        }
+    
+        res.status(200).json(adminInfo)
     }
     catch(error){
         res.status(404).json({error: error.message})
@@ -185,7 +246,9 @@ const deleteRoleCapability = async(req, res)=>{
 module.exports = {
     createRoleCapability,
     getAllRoleCapability,
+    createCapability,
     getAllCapability,
+    getOneAdminCapability,
     getOneRoleCapability,
     updateRoleCapability,
     deleteRoleCapability

@@ -2,7 +2,9 @@ const express = require('express')
 const {
     createRoleCapability, 
     getAllRoleCapability,
+    createCapability,
     getAllCapability,
+    getOneAdminCapability,
     getOneRoleCapability,
     updateRoleCapability,
     deleteRoleCapability
@@ -15,7 +17,11 @@ router = express.Router()
  
 router.post('/post/', adminAuth, adminControlAdmin, createRoleCapability)
 router.get('/getAll/', adminAuth, adminControlAdmin, getAllRoleCapability)
-router.get('/getAll/:username', adminAuth, adminControlAdmin, getAllCapability)
+
+//USED
+router.post('/post/:_id', adminAuth, adminControlAdmin, createCapability)
+router.get('/getAll/:_id', adminAuth, adminControlAdmin, getAllCapability)
+router.get('/getOne/admin/:id', adminAuth, adminControlAdmin, getOneAdminCapability)
 router.get('/getOne/:id', adminAuth, adminControlAdmin, getOneRoleCapability)
 router.patch('/update/:id', adminAuth, adminControlAdmin, updateRoleCapability)
 router.patch('/delete/:id', adminAuth, adminControlAdmin, deleteRoleCapability)

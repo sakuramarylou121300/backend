@@ -200,12 +200,12 @@ router.patch('/update/skill/:id', adminAuth, adminControlSkilled, updateSkill)
 // router.delete('/delete/skill/:id', adminAuth, adminControlSkilled, deleteSkill)
 
 //SKILLED WORKER SKILL TITLE
-router.post('/post/title', adminAuth, adminControlSkilled, createTitle)
-router.get('/getAll/title', adminAuth, adminControlSkilled, getAllTitle)
-router.get('/getAll/skillTitle/:skill_id', adminAuth, adminControlSkilled, getAllSkillTitle)
-router.get('/getOne/title/:id', adminAuth, adminControlSkilled, getOneTitle)
-router.patch('/update/title/:id', adminAuth, adminControlSkilled, updateSkillTitle)
-router.patch('/delete/title/:id', adminAuth, adminControlSkilled, deleteTitle)
+router.post('/post/title', adminAuth, adminControlAdmin, createTitle)
+router.get('/getAll/title', adminAuth, adminControlAdmin, getAllTitle)
+router.get('/getAll/skillTitle/:skill_id', adminAuth, adminControlAdmin, getAllSkillTitle)
+router.get('/getOne/title/:id', adminAuth, adminControlAdmin, getOneTitle)
+router.patch('/update/title/:id', adminAuth, adminControlAdmin, updateSkillTitle)
+router.patch('/delete/title/:id', adminAuth, adminControlAdmin, deleteTitle)
 router.get('/deleted/title/:skill_id/:title', adminAuth, adminControlAdmin, getAllSkillDeleted)
 router.patch('/restore/title/:id', adminAuth, adminControlAdmin, restoreSkill)
 //public
@@ -242,16 +242,16 @@ router.patch('/update/Client/:id', adminAuth, adminControlSkilled, adminUpdateCl
 router.patch('/delete/Client/:id', adminAuth, adminControlSkilled, adminDeleteClient)
 router.patch('/reactivate/Client/:username', adminAuth, adminControlSkilled, reactivateClientInfo)
 //SORT CLIENT
-router.get('/getAll/Client/Bclearance/sort', adminAuth, adminControlClient, adminGetAllBClearanceClientDetail)
-router.get('/getAll/Client/NClearance/sort', adminAuth, adminControlClient, adminGetAllNClearanceClientDetail)
+router.get('/getAll/Client/Bclearance/sort', adminAuth, adminControlSkilled, adminGetAllBClearanceClientDetail)
+router.get('/getAll/Client/NClearance/sort', adminAuth, adminControlSkilled, adminGetAllNClearanceClientDetail)
 
 //GET CLIENT USERNAME
-router.get('/getAll/Client/Bclearance/:username', adminAuth, adminControlClient, adminGetAllClientBarangayDetail)
-router.get('/getAll/Client/Nclearance/:username', adminAuth, adminControlClient, adminGetAllClientNbiDetail)
+router.get('/getAll/Client/Bclearance/:username', adminAuth, adminControlSkilled, adminGetAllClientBarangayDetail)
+router.get('/getAll/Client/Nclearance/:username', adminAuth, adminControlSkilled, adminGetAllClientNbiDetail)
 
 //UPDATE INFO CLIENT
-router.patch('/update/Client/Barangay/:id', adminAuth, adminControlClient, adminUpdateBarangayClient)
-router.patch('/update/Client/Nbi/:id', adminAuth, adminControlClient, adminUpdateNbiClient)
+router.patch('/update/Client/Barangay/:id', adminAuth, adminControlSkilled, adminUpdateBarangayClient)
+router.patch('/update/Client/Nbi/:id', adminAuth, adminControlSkilled, adminUpdateNbiClient)
 //NOTIFICATION
 router.get('/getAll/Notification/', adminAuth, getAllNotification)
 router.patch('/delete/Notification/:id', adminAuth, adminControlSkilled, deleteNotification)
@@ -267,32 +267,32 @@ router.get('/getAll/barangay/deleted/:username', adminAuth, adminControlSkilled,
 router.get('/getAll/nbi/deleted/:username', adminAuth, adminControlSkilled, adminGetAllSkilledNbiDeleted)
 
 //TABLES CLIENT
-router.get('/getAll/clientDeact', adminAuth, adminControlClient, adminGetAllClientDeact)
-router.get('/getAll/client/barangay/expired/:username', adminAuth, adminControlClient, adminGetAllClientBarangayDetailExpired)
-router.get('/getAll/nbi/client/expired/:username', adminAuth, adminControlClient, adminGetAllClientNbiDetailExpired)
-router.get('/getAll/barangay/client/deleted/:username', adminAuth, adminControlClient, adminGetAllClientBarangayDeleted)
-router.get('/getAll/nbi/client/deleted/:username', adminAuth, adminControlClient, adminGetAllClientNbiDeleted)
+router.get('/getAll/clientDeact', adminAuth, adminControlSkilled, adminGetAllClientDeact)
+router.get('/getAll/client/barangay/expired/:username', adminAuth, adminControlSkilled, adminGetAllClientBarangayDetailExpired)
+router.get('/getAll/nbi/client/expired/:username', adminAuth, adminControlSkilled, adminGetAllClientNbiDetailExpired)
+router.get('/getAll/barangay/client/deleted/:username', adminAuth, adminControlSkilled, adminGetAllClientBarangayDeleted)
+router.get('/getAll/nbi/client/deleted/:username', adminAuth, adminControlSkilled, adminGetAllClientNbiDeleted)
 
 //REASON FOR REQ
-router.post('/post/reason', adminAuth, adminControlSkilled, createReason)
-router.get('/getAll/reason', adminAuth, adminControlSkilled, getAllReason)
-router.get('/getOne/reason/:id', adminAuth, adminControlSkilled, getOneReason)
-router.patch('/update/reason/:id', adminAuth, adminControlSkilled, updateReason)
-router.patch('/delete/reason/:id', adminAuth, adminControlSkilled, deleteReason)
+router.post('/post/reason', adminAuth, adminControlAdmin, createReason)
+router.get('/getAll/reason', adminAuth, adminControlAdmin, getAllReason)
+router.get('/getOne/reason/:id', adminAuth, adminControlAdmin, getOneReason)
+router.patch('/update/reason/:id', adminAuth, adminControlAdmin, updateReason)
+router.patch('/delete/reason/:id', adminAuth, adminControlAdmin, deleteReason)
 
 //REASON FOR DEACT
-router.post('/post/reasonDeact', adminAuth, adminControlSkilled, createReasonDeact)
-router.get('/getAll/reasonDeact', adminAuth, adminControlSkilled, getAllReasonDeact)
-router.get('/getOne/reasonDeact/:id', adminAuth, adminControlSkilled, getOneReasonDeact)
-router.patch('/update/reasonDeact/:id', adminAuth, adminControlSkilled, updateReasonDeact)
-router.patch('/delete/reasonDeact/:id', adminAuth, adminControlSkilled, deleteReasonDeact)
+router.post('/post/reasonDeact', adminAuth, adminControlAdmin, createReasonDeact)
+router.get('/getAll/reasonDeact', adminAuth, adminControlAdmin, getAllReasonDeact)
+router.get('/getOne/reasonDeact/:id', adminAuth, adminControlAdmin, getOneReasonDeact)
+router.patch('/update/reasonDeact/:id', adminAuth, adminControlAdmin, updateReasonDeact)
+router.patch('/delete/reasonDeact/:id', adminAuth, adminControlAdmin, deleteReasonDeact)
 
 //REASON CLIENT REQ CANCEL
-router.post('/post/clientReqReason', adminAuth, adminControlClient, createReasonReq)
-router.get('/getAll/clientReqReason', adminAuth, adminControlClient,getAllReasonReq)
-router.get('/getOne/clientReqReason/:id', adminAuth, adminControlClient, getOneReasonReq)
-router.patch('/update/clientReqReason/:id', adminAuth, adminControlClient, updateReasonReq)
-router.patch('/delete/clientReqReason/:id', adminAuth, adminControlClient, deleteReasonReq)
+router.post('/post/clientReqReason', adminAuth, adminControlAdmin, createReasonReq)
+router.get('/getAll/clientReqReason', adminAuth, adminControlAdmin,getAllReasonReq)
+router.get('/getOne/clientReqReason/:id', adminAuth, adminControlAdmin, getOneReasonReq)
+router.patch('/update/clientReqReason/:id', adminAuth, adminControlAdmin, updateReasonReq)
+router.patch('/delete/clientReqReason/:id', adminAuth, adminControlAdmin, deleteReasonReq)
 
 //NOT YET
 router.get('/getAll/skilledBill', adminAuth, adminControlSkilled, adminGetAllSkilledBill)
