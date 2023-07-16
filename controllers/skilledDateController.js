@@ -195,15 +195,24 @@ const deleteSkilledDate = async(req, res)=>{
         return res.status(404).json({error: 'Invalid id.'})
     }
 
-    //delete query
-    const skilledDate = await SkilledDate.findOneAndUpdate({_id: id},
-        {isDeleted:1})
-    
-    //check if not existing
-    if (!skilledDate){
-        return res.status(404).json({error: 'Date not found.'})
+    // Find the skilled date
+    const skilledDate = await SkilledDate.findOne({ _id: id });
+
+    // Check if the skilled date exists
+    if (!skilledDate) {
+        return res.status(404).json({ error: 'Date not found.' });
     }
 
+    // Check if the skilled date has a client_id
+    if (skilledDate.client_id) {
+        return res.status(403).json({ error: 'The date you are trying to delete is set or reserved by your client.' });
+    }
+
+    //delete query
+    const skilledDateUpdate = await SkilledDate.findOneAndUpdate({_id: id},
+        {isDeleted:1})
+
+    
     res.status(200).json({message: "Successfully deleted."})
 
 }
