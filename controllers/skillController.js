@@ -1354,7 +1354,8 @@ const updateClientSkilledReqDate = async(req, res) =>{
 
     // Find the matching date in the SkilledDate collection
     const findSkilledDate = await SkilledDate.findOne({
-        skilledDate: reqDateFind
+        skilledDate: reqDateFind,
+        isDeleted: 0
     });
 
     // Check if a matching date was found
@@ -1475,7 +1476,8 @@ const cancelClientSkilledReq = async(req, res) =>{
 
     // Find the matching date in the SkilledDate collection
     const findSkilledDate = await SkilledDate.findOne({
-        skilledDate: reqDateFind
+        skilledDate: reqDateFind,
+        isDeleted: 0
     });
 
     //if it has corresponding date in the skilled date
