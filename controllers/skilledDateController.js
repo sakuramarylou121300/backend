@@ -109,11 +109,11 @@ const getAllSkilledDate = async(req, res)=>{
         .populate('skilled_id', 'username lname fname mname')
         .populate('client_id', 'username lname fname mname')
 
-        const formattedSkilledBClearance = skilledDateGet.map((clearance) => ({
-            ...clearance.toObject(),
-            skilledDate: moment(clearance.skilledDate).tz('Asia/Manila').format('MM-DD-YYYY')
-        }));
-        res.status(200).json(formattedSkilledBClearance)
+        // const formattedSkilledBClearance = skilledDateGet.map((clearance) => ({
+        //     ...clearance.toObject(),
+        //     skilledDate: moment(clearance.skilledDate).tz('Asia/Manila').format('MM-DD-YYYY')
+        // }));
+        res.status(200).json(skilledDateGet)
     }
     catch(error){
         res.status(404).json({error: error.message})
