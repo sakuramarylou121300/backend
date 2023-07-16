@@ -9,6 +9,7 @@ const SkilledBClearance = require('../models/skilledBClearance')
 const SkilledNClearance = require('../models/skilledNClearance') 
 const ClientBClearance = require('../models/clientBClearance') 
 const ClientNClearance = require('../models/clientNClearance') 
+const SkilledDate = require('../models/skilledDate') 
 const jwt = require('jsonwebtoken')
 const mongoose = require('mongoose')
 
@@ -842,6 +843,32 @@ const getClientSkilledExp = async(req, res)=>{
         res.status(404).json({error: error.message})
     }  
 } 
+
+//get one skilled date
+const getClientSkilledDate = async(req, res)=>{ 
+    try{
+        const skilledWorkerId  = req.params._id//this is to get the _id of skilled worker first
+
+       //find skill worker first
+        const skilledInfo = await SkilledInfo.findOne({_id: skilledWorkerId })
+        //check if not existing
+        if (!skilledInfo){
+            return res.status(404).json({error: 'Skilled Worker not found'})
+        }
+
+        const skilledDateFind = await SkilledDate
+        .find({
+            skilled_id: skilledInfo._id, 
+            isDeleted: 0
+        })
+        .populate('client_id')
+        .sort({skilledDate: 1})
+        res.status(200).json(skilledDateFind)
+    }
+    catch(error){
+        res.status(404).json({error: error.message})
+    }  
+} 
 module.exports = {
     getFilterSkilled,
     getFilterSkilledSkillDesc,
@@ -851,5 +878,6 @@ module.exports = {
     getClientSkilledInfo,
     getClientSkilledSkill,
     getClientSkilledCert,
-    getClientSkilledExp
+    getClientSkilledExp,
+    getClientSkilledDate
 }

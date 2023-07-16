@@ -899,7 +899,7 @@ const deleteSkilledReply = async(req, res)=>{
 
     res.status(200).json({ message: 'Successfully deleted.'})
 }
-//get one skilled skill first
+//get one skilled skill first, 3 params
 const getOneSkilledSkill = async(req, res)=>{
     const skilledWorkerId  = req.params._id//this is to get the _id of skilled worker first
     const skillId  = req.params.skillId; // Get the skill ID

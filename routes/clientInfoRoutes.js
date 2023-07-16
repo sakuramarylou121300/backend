@@ -31,7 +31,8 @@ const{
     getClientSkilledInfo,
     getClientSkilledSkill,
     getClientSkilledCert,
-    getClientSkilledExp
+    getClientSkilledExp,
+    getClientSkilledDate
 } = require('../controllers/clientFilterSkilledController')
 
 //get all skill for client
@@ -74,6 +75,7 @@ router.get('/getOne/skilledInfo/:id', clientRequireAuth, getClientSkilledInfo)
 router.get('/getOne/skilledInfo/skill/:_id', clientRequireAuth, getClientSkilledSkill)
 router.get('/getOne/skilledInfo/skillCert/:_id/:skillId', clientRequireAuth, getClientSkilledCert)
 router.get('/getOne/skilledInfo/skilledExp/:_id/:skillId', clientRequireAuth, getClientSkilledExp)
+router.get('/getOne/skilledInfo/skilledDate/:_id', clientRequireAuth, getClientSkilledDate)
 
 //get all skill, admin
 router.get('/getAll/client/skilledskill', clientRequireAuth, getAllSkill)
