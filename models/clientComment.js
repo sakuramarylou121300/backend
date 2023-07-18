@@ -32,7 +32,6 @@ const commentSchema = new Schema({
     // }],
     photo:{
         type: String,
-        required: true,
     },
     cloudinary_id:{
         type: String

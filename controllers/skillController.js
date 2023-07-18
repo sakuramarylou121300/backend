@@ -310,7 +310,17 @@ const createClientComment = async (req, res) => {
         //     uploadedPhotos.push({ url: result.secure_url, public_id: result.public_id });
         // }
 
-        result = await cloudinary.uploader.upload(req.file.path)
+        let photoUrl, cloudinaryId;
+
+        // Check if a file is uploaded
+        if (req.file) {
+          // Upload the file to Cloudinary
+          const result = await cloudinary.uploader.upload(req.file.path);
+          photoUrl = result.secure_url;
+          cloudinaryId = result.public_id;
+        }
+
+        // result = await cloudinary.uploader.upload(req.file.path)
         let clientComment = new ClientComment({
             comment,
             skilledId,
@@ -319,8 +329,8 @@ const createClientComment = async (req, res) => {
             star: star,
             // photo: uploadedPhotos,
             // cloudinary_id: uploadedPhotos[0].public_id // Use the public ID of the first photo in the array
-            photo: result.secure_url,     
-            cloudinary_id: result.public_id,
+            photo: photoUrl,     
+            cloudinary_id: cloudinaryId,
         });
         //saving of comment with photo
         clientComment = await clientComment.save();
