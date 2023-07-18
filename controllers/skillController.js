@@ -576,8 +576,8 @@ const updateClientComment = async (req, res) => {
         let data = {
             star: req.body.star || clientComment.star,
             comment: req.body.comment || clientComment.comment,
-            photo: uploadedPhotos.length > 0 ? uploadedPhotos : skilledExp.photo,
-            cloudinary_id: uploadedPhotos.length > 0 ? uploadedPhotos[0].public_id : skilledExp.cloudinary_id,
+            photo: uploadedPhotos.length > 0 ? uploadedPhotos : clientComment.photo,
+            cloudinary_id: uploadedPhotos.length > 0 ? uploadedPhotos[0].public_id : clientComment.cloudinary_id,
         };
 
         // Update the comment

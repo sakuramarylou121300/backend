@@ -117,13 +117,13 @@ router.patch('/cancel/client/req/:id', clientRequireAuth, cancelClientSkilledReq
 router.get('/getAll/cancel/clientReqReason', clientRequireAuth ,getAllReasonReq)
 
 // Error handling middleware
-// router.use((err, req, res, next) => {
-//     if (err.statusCode && err.statusCode === 400) {
-//       return res.status(400).json({ error: err.message });
-//     }
-//     // Handle other errors
-//     return res.status(500).json({ error: 'File is not supported. Please upload a photo with JPEG, JPG, PNG format only.' });
-// });
+router.use((err, req, res, next) => {
+    if (err.statusCode && err.statusCode === 400) {
+      return res.status(400).json({ error: err.message });
+    }
+    // Handle other errors
+    return res.status(500).json({ error: 'File is not supported. Please upload a photo with JPEG, JPG, PNG format only.' });
+});
 
 //export
 module.exports = router
