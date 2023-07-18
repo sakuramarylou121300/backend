@@ -24,7 +24,6 @@ const commentSchema = new Schema({
     },
     cloudinary_id:{
         type: String,
-        required: true,
     },
     photo: [{
         url: { type: String, required: true },
