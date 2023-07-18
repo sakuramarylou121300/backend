@@ -22,21 +22,20 @@ const commentSchema = new Schema({
         type: mongoose.Schema.Types.ObjectId, 
         ref: "SkilledInfo"
     },
-    // cloudinary_id:{
-    //     type: String,
-    //     required: true,
-    // },
-    // photo: [{
-    //     url: { type: String, required: true },
-    //     public_id: { type: String, required: true },
-    // }],
-    photo:{
+    cloudinary_id:{
         type: String,
         required: true,
     },
-    cloudinary_id:{
-        type: String
-    },
+    photo: [{
+        url: { type: String, required: true },
+        public_id: { type: String, required: true },
+    }],
+    // photo:{
+    //     type: String,
+    // },
+    // cloudinary_id:{
+    //     type: String
+    // },
     isDeleted:{
         type: Number,
         default: 0,
