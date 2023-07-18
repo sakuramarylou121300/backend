@@ -26,8 +26,12 @@ const commentSchema = new Schema({
         type: String,
     },
     photo: [{
-        url: { type: String, required: true },
-        public_id: { type: String, required: true },
+        url: { 
+            type: String
+        },
+        public_id: { 
+            type: String
+        },
     }],
     // photo:{
     //     type: String,

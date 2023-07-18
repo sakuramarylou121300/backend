@@ -301,14 +301,14 @@ const createClientComment = async (req, res) => {
             return res.status(400).json({error: 'Please select your rate before submitting.'});
         }
 
-        //get the photo then push first 
-        let uploadedPhotos = [];
+        // //get the photo then push first 
+        // let uploadedPhotos = [];
 
-        // Loop through uploaded files and upload to cloudinary
-        for (let file of req.files) {
-            let result = await cloudinary.uploader.upload(file.path);
-            uploadedPhotos.push({ url: result.secure_url, public_id: result.public_id });
-        }
+        // // Loop through uploaded files and upload to cloudinary
+        // for (let file of req.files) {
+        //     let result = await cloudinary.uploader.upload(file.path);
+        //     uploadedPhotos.push({ url: result.secure_url, public_id: result.public_id });
+        // }
 
         // let photoUrl, cloudinaryId;
 
@@ -320,20 +320,56 @@ const createClientComment = async (req, res) => {
         //   cloudinaryId = result.public_id;
         // }
 
-        // result = await cloudinary.uploader.upload(req.file.path)
-        let clientComment = new ClientComment({
-            comment,
-            skilledId,
-            client_id,
-            skill_id: skill_id,
-            star: star,
-            photo: uploadedPhotos,
-            cloudinary_id: uploadedPhotos[0].public_id // Use the public ID of the first photo in the array
-            // photo: photoUrl,     
-            // cloudinary_id: cloudinaryId,
-        });
+        // // result = await cloudinary.uploader.upload(req.file.path)
+        // let clientComment = new ClientComment({
+        //     comment,
+        //     skilledId,
+        //     client_id,
+        //     skill_id: skill_id,
+        //     star: star,
+        //     photo: uploadedPhotos,
+        //     cloudinary_id: uploadedPhotos[0].public_id // Use the public ID of the first photo in the array
+        //     // photo: photoUrl,     
+        //     // cloudinary_id: cloudinaryId,
+        // });
         //saving of comment with photo
-        clientComment = await clientComment.save();
+        // clientComment = await clientComment.save();
+
+        let clientComment;
+
+    // Check if the photo field is provided
+    if (req.files && req.files.length > 0) {
+      // Handle the case when photo is provided
+
+      // Loop through uploaded files and upload to cloudinary
+      let uploadedPhotos = [];
+      for (let file of req.files) {
+        let result = await cloudinary.uploader.upload(file.path);
+        uploadedPhotos.push({ url: result.secure_url, public_id: result.public_id });
+      }
+
+      clientComment = new ClientComment({
+        comment,
+        skilledId,
+        client_id,
+        skill_id,
+        star,
+        photo: uploadedPhotos,
+        cloudinary_id: uploadedPhotos[0].public_id // Use the public ID of the first photo in the array
+      });
+    } else {
+      // Handle the case when photo is not provided
+      clientComment = new ClientComment({
+        comment,
+        skilledId,
+        client_id,
+        skill_id,
+        star
+      });
+    }
+
+    // Saving the comment
+    clientComment = await clientComment.save();
 
         // Calculate the updated rating
         const comments = await ClientComment.find({ skill_id: skill_id, isDeleted:0 });
