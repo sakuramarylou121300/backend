@@ -10,7 +10,7 @@ const adminControlSkilled = async(req, res, next) =>{
         // console.log(adminInfo)
         let hasAccess = adminInfo.roleCapabality.some(capability => capability.capability_id.toString() === "63da858085bb5180f0eabba3")
         if(!hasAccess)
-            return res.status(400).json({messg: 'Admin access denied.'})
+            return res.status(400).json({error: 'Admin access denied.'})
         next()
     }
     catch(err){
