@@ -48,7 +48,7 @@ const createSkilledBClearance = async(req, res)=>{
 
         //if there is already verified atleast one then it should not allow the user to upload again
         const bclearanceTrue = await SkilledBClearance.findOne({
-            bClearanceIsVerified:{$in: ["false", "true", "pending", "expired"]},
+            bClearanceIsVerified:{$in: ["false", "true", "pending"]},
             isDeleted: 0,
             skilled_id:skilled_id
         })

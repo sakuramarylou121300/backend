@@ -53,7 +53,7 @@ const createSkilledNClearance = async(req, res)=>{
 
         //if there is already verified atleast one then it should not allow the user to upload again
         const nclearanceTrue = await SkilledNClearance.findOne({
-            nClearanceIsVerified:{$in: ["false", "true", "pending", "expired"]},
+            nClearanceIsVerified:{$in: ["false", "true", "pending"]},
             isDeleted: 0,
             skilled_id:skilled_id
         })
