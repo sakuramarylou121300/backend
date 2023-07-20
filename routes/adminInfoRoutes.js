@@ -2,6 +2,13 @@ const express = require('express')
 
 //controller functions
 const{
+    createAppDetail,
+    getAllAppDetail,
+    getOneAppDetail,
+    updateAppDetail
+} = require('../controllers/appDetailController')
+
+const{
     adminLogIn,
     adminSignUp,  
     adminGetAllAdmin,
@@ -41,6 +48,7 @@ const{
     adminUpdateBarangayClient,
     adminUpdateNbiClient,
     updateExpIsRead,
+    adminGetAllAdminDeact,
     adminGetAllSkilledDeact, 
     adminGetAllClientDeact,
     adminGetAllSkilledCertDetailExpired,
@@ -56,6 +64,7 @@ const{
     adminGetAllClientNbiDeleted,
     adminGetAllClientBarangayDetail,
     adminGetAllClientNbiDetail,
+    reactivateAdminInfo,
     reactivateSkilledInfo,
     reactivateClientInfo,
     adminGetAllSkilledBill,
@@ -158,6 +167,14 @@ const router = express.Router()
 
 //log in route
 router.post('/login', adminLogIn)
+//this is for the user
+router.get('/user/getAll/appDetail', getAllAppDetail) 
+
+//APP DETAIL
+router.post('/post/appDetail', adminAuth, adminControlAdmin, createAppDetail)
+router.get('/getAll/appDetail', adminAuth, adminControlAdmin, getAllAppDetail) 
+router.get('/getOne/appDetail/:id', adminAuth, adminControlAdmin, getOneAppDetail)
+router.patch('/update/appDetail/:id', adminAuth, adminControlAdmin, updateAppDetail)
 
 //ONLY SUPER ADMIN CAN ACCESS
 router.post('/signup', adminAuth, adminControlAdmin, adminSignUp)
@@ -167,6 +184,10 @@ router.patch('/update/adminUserName/:id', adminAuth, adminControlAdmin, adminUpd
 router.patch('/update/adminPass/:id', adminAuth, adminControlAdmin, adminUpdatePass)
 router.patch('/update/adminInfo/:id', adminAuth, adminControlAdmin, adminUpdateInfo)
 router.patch('/delete/adminInfo/:id', adminAuth, adminControlAdmin, adminDeleteInfo)
+
+//DEACT AND REACTIVATE ADMIN
+router.get('/getAll/adminDeact', adminAuth, adminControlAdmin, adminGetAllAdminDeact)
+router.patch('/reactivate/Admin/:username', adminAuth, adminControlAdmin, reactivateAdminInfo)
 
 router.post('/post/adminRoleCap', adminAuth, adminControlAdmin, createAdminRoleCapability)
 router.get('/getAll/adminRoleCap', adminAuth, adminControlAdmin, getAllAdminRoleCapability) 

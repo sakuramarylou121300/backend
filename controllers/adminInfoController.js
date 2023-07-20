@@ -1639,6 +1639,19 @@ const adminUpdateNbiClient = async (req, res) => {
       }
 }
 
+const reactivateAdminInfo = async(req, res) =>{
+    const {username} = req.params 
+    try{
+        // await ClientInfo.updateOne({username:username}, { $unset: { message: 1 } })
+        const clientInfo = await AdminInfo.findOneAndUpdate({username:username},
+            {isDeleted:0})
+        res.status(200).json({ message: 'Admin Reactivated.'})
+    }
+    catch(error){
+        res.status(400).json({error:error.message})
+    }
+}
+
 const reactivateSkilledInfo = async(req, res) =>{
     const {username} = req.params 
     try{
@@ -1654,7 +1667,7 @@ const reactivateSkilledInfo = async(req, res) =>{
 const reactivateClientInfo = async(req, res) =>{
     const {username} = req.params 
     try{
-        // await ClientInfo.updateOne({username:username}, { $unset: { message: 1 } })
+        await ClientInfo.updateOne({username:username}, { $unset: { message: 1 } })
         const clientInfo = await ClientInfo.findOneAndUpdate({username:username},
             {isDeleted:0})
         res.status(200).json({ message: 'Client Reactivated.'})
@@ -1721,6 +1734,21 @@ const adminGetAllClientDeact = async(req, res)=>{
             options: { lean: true },
         })
         res.status(200).json(clientInfo)
+    }
+    catch(error){
+        res.status(404).json({error: error.message})
+    }  
+}
+
+const adminGetAllAdminDeact = async(req, res)=>{
+
+    try{
+        //this is to find skill for specific user
+        //get all query
+        const adminInfo = await AdminInfo.find({isDeleted: 1})
+        .sort({updatedAt: -1})
+    
+        res.status(200).json(adminInfo)
     }
     catch(error){
         res.status(404).json({error: error.message})
@@ -2176,6 +2204,7 @@ module.exports = {
     adminUpdateBarangayClient,
     adminUpdateNbiClient,
     updateExpIsRead,
+    adminGetAllAdminDeact,
     adminGetAllSkilledDeact,
     adminGetAllClientDeact,
     adminGetAllSkilledCertDetailExpired,
@@ -2191,6 +2220,7 @@ module.exports = {
     adminGetAllClientNbiDeleted,
     adminGetAllClientBarangayDetail,
     adminGetAllClientNbiDetail,
+    reactivateAdminInfo,
     reactivateSkilledInfo,
     reactivateClientInfo,
     adminEditSkilledBill,
