@@ -1058,7 +1058,7 @@ const getAllSkilledReq = async(req, res)=>{
 
     try{
         //this is to find skill for specific user
-        const skilled_id = req.skilledInfo._id
+        let skilled_id = req.skilledInfo._id
         //get all query
         const clientReq = await ClientReq.
         find({skilled_id, reqStatus:"pending", isDeleted: 0})
@@ -1068,9 +1068,9 @@ const getAllSkilledReq = async(req, res)=>{
         .populate('client_id')
 
         //check skilled worker if verified before viewing pending request from client
-        const skilledInfo = await SkilledInfo.findOne({skilled_id})
+        const skilledInfo = await SkilledInfo.findOne({_id:req.skilledInfo.id})
         if(skilledInfo.userIsVerified === 0)
-            return res.status(400).json({messg: 'Cannot view pending requests. Please check if your baranggay clearance, nbi clearance and address are verified.'
+            return res.status(400).json({error: 'Cannot view pending requests. Please check if your baranggay clearance, nbi clearance and address are verified.'
         })
      
         const pendingCount = clientReq.filter(clientReq => clientReq.reqStatus === "pending").length;
