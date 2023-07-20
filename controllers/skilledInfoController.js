@@ -127,7 +127,7 @@ const updateSkilledUserName = async(req, res) =>{
         }
 
         //check if strong password
-        if(username.length <7){
+        if(username.length <6){
             throw Error('Please enter atleast 6 characters in username.')
         }
 
@@ -191,7 +191,7 @@ const updateSkilledPass = async(req, res) =>{
         }
 
         //check if strong password
-        if(newpass.length <8){
+        if(newpass.length <6){
             throw Error('Please enter atleast 6 characters in password.')
         }
 
