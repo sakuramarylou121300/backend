@@ -282,7 +282,10 @@ const deleteSkilledNClearance = async(req, res)=>{
 
     //delete query
     const skilledNClearance = await SkilledNClearance.findOneAndUpdate({_id: id},
-        {isDeleted:1})
+        {
+            isDeleted:1,
+            nClearanceIsVerified: "false"
+        })
     
     //check if not existing
     if (!skilledNClearance){

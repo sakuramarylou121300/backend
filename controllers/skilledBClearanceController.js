@@ -275,7 +275,10 @@ const deleteSkilledBClearance = async(req, res)=>{
 
     //delete query
     const skilledBClearance = await SkilledBClearance.findOneAndUpdate({_id: id},
-        {isDeleted:1})
+        {
+            isDeleted:1,
+            bClearanceIsVerified:"false"
+        })
     
     //check if not existing
     if (!skilledBClearance){

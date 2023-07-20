@@ -278,7 +278,10 @@ const deleteClientNClearance = async(req, res)=>{
 
     //delete query
     const clientNClearance = await ClientNClearance.findOneAndUpdate({_id: id},
-        {isDeleted:1})
+        {
+            isDeleted:1,
+            nClearanceIsVerified: "false"
+        })
     
     //check if not existing
     if (!clientNClearance){
