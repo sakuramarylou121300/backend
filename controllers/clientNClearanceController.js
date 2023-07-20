@@ -200,7 +200,7 @@ const updateClientNClearance  = async(req, res) =>{
 
         if (trueNbi) {
             return res.status(400).json({
-                message: "You cannot update verified NBI Clearance."
+                error: "You cannot update verified NBI Clearance."
             });
         }
 
@@ -245,7 +245,7 @@ const updateClientNClearance  = async(req, res) =>{
         });
     
         if (existingNClearance) {
-            return res.status(400).json({ message: 'NBI Clearance already exists  to this user.' });
+            return res.status(400).json({ error: 'NBI Clearance already exists  to this user.' });
         }
         clientNClearance = await ClientNClearance.findByIdAndUpdate(req.params.id, 
             data, {new: true})

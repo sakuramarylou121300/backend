@@ -178,7 +178,7 @@ const updateClientBClearance  = async(req, res) =>{
 
         if (trueBClearance) {
             return res.status(400).json({
-                message: "You cannot update verified barangay clearance."
+                error: "You cannot update verified barangay clearance."
             });
         }
 
@@ -215,7 +215,7 @@ const updateClientBClearance  = async(req, res) =>{
         });
     
         if (existingBClearance) {
-            return res.status(400).json({ message: 'Barangay Clearance already exists  to this user.' });
+            return res.status(400).json({ error: 'Barangay Clearance already exists  to this user.' });
         }
 
         clientBClearance = await ClientBClearance.findByIdAndUpdate(req.params.id, 
