@@ -1333,6 +1333,11 @@ const updateClientSkilledReqDate = async(req, res) =>{
     if(!mongoose.Types.ObjectId.isValid(id)){
         return res.status(404).json({error: 'Invalid id.'})
     }
+
+    // If empty
+    if (!reqDate) {
+        return res.status(404).json({ error: 'Please enter a date.' });
+    }
     // If empty
     if (reqDate === "") {
         res.status(404).json({ error: "Please enter a date." });
