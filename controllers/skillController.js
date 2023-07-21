@@ -494,6 +494,14 @@ const getOneClientComment = async(req, res)=>{
 
     //find query
     const clientComment = await ClientComment.findById({_id: id})
+    .populate({
+        path: "skill_id",
+        match: { isDeleted: 0 },
+        populate: {
+          path: "skillName",
+          select: "skill", // Assuming 'skill' is the field in 'AdminSkill' model that holds the skill name
+        },
+    })
 
     //check if not existing
     if (!clientComment){
@@ -1067,7 +1075,15 @@ const getAllSkilledReq = async(req, res)=>{
         find({skilled_id, reqStatus:"pending", isDeleted: 0})
         .sort({createdAt: -1})
         .populate('skilled_id')
-        .populate('skill_id')
+        // .populate('skill_id')
+        .populate({
+            path: "skill_id",
+            match: { isDeleted: 0 },
+            populate: {
+              path: "skillName",
+              select: "skill", // Assuming 'skill' is the field in 'AdminSkill' model that holds the skill name
+            },
+        })
         .populate('client_id')
 
         //check skilled worker if verified before viewing pending request from client
@@ -1099,7 +1115,15 @@ const getAllSkilledReqAccepted = async(req, res)=>{
         find({skilled_id, reqStatus:"reqAccepted", isDeleted: 0})
         .sort({createdAt: -1})
         .populate('skilled_id')
-        .populate('skill_id')
+        // .populate('skill_id')
+        .populate({
+            path: "skill_id",
+            match: { isDeleted: 0 },
+            populate: {
+              path: "skillName",
+              select: "skill", // Assuming 'skill' is the field in 'AdminSkill' model that holds the skill name
+            },
+        })
         .populate('client_id')
 
         const acceptCount = clientReq.filter(clientReq => clientReq.reqStatus === "reqAccepted").length;
@@ -1125,7 +1149,15 @@ const getAllSkilledReqCompleted = async(req, res)=>{
         find({skilled_id, reqStatus:"reqCompleted", isDeleted: 0})
         .sort({createdAt: -1})
         .populate('skilled_id')
-        .populate('skill_id')
+        // .populate('skill_id')
+        .populate({
+            path: "skill_id",
+            match: { isDeleted: 0 },
+            populate: {
+              path: "skillName",
+              select: "skill", // Assuming 'skill' is the field in 'AdminSkill' model that holds the skill name
+            },
+        })
         .populate('client_id')
         
         const completeCount = clientReq.filter(clientReq => clientReq.reqStatus === "reqCompleted").length;
@@ -1150,7 +1182,15 @@ const getAllSkilledReqCancelled = async(req, res)=>{
         .find({skilled_id, reqStatus:"reqCancelled", isDeleted: 0})
         .sort({createdAt: -1})
         .populate('skilled_id', 'username lname fname mname regionAddr cityAddr barangayAddr')
-        .populate('skill_id')
+        // .populate('skill_id')
+        .populate({
+            path: "skill_id",
+            match: { isDeleted: 0 },
+            populate: {
+              path: "skillName",
+              select: "skill", // Assuming 'skill' is the field in 'AdminSkill' model that holds the skill name
+            },
+        })
         .populate('client_id')
         .populate({
             path: 'message.message',
@@ -1222,7 +1262,15 @@ const getAllClientReq = async(req, res)=>{
         .find({client_id, reqStatus:"pending", isDeleted: 0})
         .sort({createdAt: -1})
         .populate('skilled_id', 'username lname fname mname regionAddr cityAddr barangayAddr')
-        .populate('skill_id')
+        // .populate('skill_id')
+        .populate({
+            path: "skill_id",
+            match: { isDeleted: 0 },
+            populate: {
+              path: "skillName",
+              select: "skill", // Assuming 'skill' is the field in 'AdminSkill' model that holds the skill name
+            },
+        })
         .populate('client_id')
 
         //this is for count
@@ -1249,7 +1297,15 @@ const getAllClientReqAccepted = async(req, res)=>{
         .find({client_id, reqStatus:"reqAccepted", isDeleted: 0})
         .sort({createdAt: -1})
         .populate('skilled_id', 'username lname fname mname regionAddr cityAddr barangayAddr contact')
-        .populate('skill_id')
+        // .populate('skill_id')
+        .populate({
+            path: "skill_id",
+            match: { isDeleted: 0 },
+            populate: {
+              path: "skillName",
+              select: "skill", // Assuming 'skill' is the field in 'AdminSkill' model that holds the skill name
+            },
+        })
         .populate('client_id')
 
         const acceptedCount = clientReq.filter(clientReq => clientReq.reqStatus === "reqAccepted").length;
@@ -1275,7 +1331,15 @@ const getAllClientReqCompleted = async(req, res)=>{
         .find({client_id, reqStatus:"reqCompleted", isDeleted: 0})
         .sort({createdAt: -1})
         .populate('skilled_id', 'username lname fname mname regionAddr cityAddr barangayAddr')
-        .populate('skill_id')
+        // .populate('skill_id')
+        .populate({
+            path: "skill_id",
+            match: { isDeleted: 0 },
+            populate: {
+              path: "skillName",
+              select: "skill", // Assuming 'skill' is the field in 'AdminSkill' model that holds the skill name
+            },
+        })
         .populate('client_id')
 
         const completeCount = clientReq.filter(clientReq => clientReq.reqStatus === "reqCompleted").length;
@@ -1301,7 +1365,15 @@ const getAllClientReqCancelled = async(req, res)=>{
         .find({client_id, reqStatus:"reqCancelled", isDeleted: 0})
         .sort({createdAt: -1})
         .populate('skilled_id', 'username lname fname mname regionAddr cityAddr barangayAddr')
-        .populate('skill_id')
+        // .populate('skill_id')
+        .populate({
+            path: "skill_id",
+            match: { isDeleted: 0 },
+            populate: {
+              path: "skillName",
+              select: "skill", // Assuming 'skill' is the field in 'AdminSkill' model that holds the skill name
+            },
+        })
         .populate('client_id')
         .populate({
             path: 'message.message',
