@@ -300,6 +300,8 @@ router.get('/getAll/reason', adminAuth, adminControlAdmin, getAllReason)
 router.get('/getOne/reason/:id', adminAuth, adminControlAdmin, getOneReason)
 router.patch('/update/reason/:id', adminAuth, adminControlAdmin, updateReason)
 router.patch('/delete/reason/:id', adminAuth, adminControlAdmin, deleteReason)
+//THIS IS FOR SUB ADMIN
+router.get('/getAll/reason/subAdmin', adminAuth, adminControlSkilled, getAllReason)
 
 //REASON FOR DEACT
 router.post('/post/reasonDeact', adminAuth, adminControlAdmin, createReasonDeact)
@@ -307,6 +309,8 @@ router.get('/getAll/reasonDeact', adminAuth, adminControlAdmin, getAllReasonDeac
 router.get('/getOne/reasonDeact/:id', adminAuth, adminControlAdmin, getOneReasonDeact)
 router.patch('/update/reasonDeact/:id', adminAuth, adminControlAdmin, updateReasonDeact)
 router.patch('/delete/reasonDeact/:id', adminAuth, adminControlAdmin, deleteReasonDeact)
+//THIS IS FOR SUB ADMIN
+router.get('/getAll/reasonDeact/subAdmin', adminAuth, adminControlSkilled, getAllReasonDeact)
 
 //REASON CLIENT REQ CANCEL
 router.post('/post/clientReqReason', adminAuth, adminControlAdmin, createReasonReq)
