@@ -995,6 +995,9 @@ const createClientReq = async (req, res) => {
         const { reqDate } = req.body;
 
         // If empty
+        if (!reqDate) {
+            return res.status(404).json({ error: 'Please enter a date.' });
+        }
         if (reqDate === "") {
             res.status(404).json({ error: "Please enter a date." });
             return;
