@@ -61,6 +61,10 @@ const createSkilledDates = async (req, res) => {
 const createSkilledDate = async (req, res) => {
     const { skilledDate } = req.body;
     const skilled_id = req.skilledInfo._id;
+
+    if (!skilledDate) {
+        return res.status(404).json({ error: 'Please enter a date.' });
+    }
     // If empty
     if (skilledDate === "") {
         res.status(404).json({ error: "Please enter a date." });
@@ -154,7 +158,9 @@ const updateSkilledDate = async(req, res) =>{
     if(!mongoose.Types.ObjectId.isValid(id)){
         return res.status(404).json({error: 'Invalid id.'})
     }
-
+    if (!skilledDate) {
+        return res.status(404).json({ error: 'Please enter a date.' });
+    }
     // If empty
     if (skilledDate === "") {
         res.status(404).json({ error: "Please enter a date." });
