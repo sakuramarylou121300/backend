@@ -553,7 +553,7 @@ const adminDeleteSkilled = async (req, res) => {
     const notification = await Notification.create({
         skilled_id,
         message: messageNotif,
-        urlReact:`/temporary`
+        urlReact:`/Profile/Setting`
     });
       res.status(200).json({ message: 'Skilled Worker deactivated.'})
       } catch (error) {
@@ -678,7 +678,7 @@ const adminDeleteClient = async (req, res) => {
     const notification = await ClientNotification.create({
         client_id,
         message: messageNotif,
-        urlReact:`/temporary`
+        urlReact:`/Profile/Setting`
     });
       res.status(200).json({ message: 'Client deactivated.'})
       } catch (error) {
