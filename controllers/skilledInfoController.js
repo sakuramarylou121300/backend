@@ -355,7 +355,7 @@ const generateOTP = async(req, res) =>{
         const notification = await Notification.create({
             skilled_id: req.skilledInfo._id,
             message: `${skilledUserName} requested OTP.`,
-            urlReact:`/viewSkilled`
+            urlReact:`/SkilledWorker/Information`
         });
 
         res.status(200).json({ message: 'Request Sent. OTP will be send via snail mail.'})

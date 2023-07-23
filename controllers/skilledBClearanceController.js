@@ -91,7 +91,7 @@ const createSkilledBClearance = async(req, res)=>{
             skilled_id,
             message: `${skilledUserName} added new barangay clearance.`,
             // url: `https://samplekasawapp.onrender.com/api/admin/getOne/Barangay/${skilledBClearance._id}`,
-            urlReact:`/viewSkilled/brgyClearance/${skilledUserName}`
+            urlReact:`/SkilledWorker/Information`
         });
         res.status(200).json({ message: 'Successfully added.'})
     }
@@ -254,7 +254,7 @@ const updateSkilledBClearance  = async(req, res) =>{
             skilled_id,
             message: `${skilledUserName} updated barangay clearance.`,
             url: `https://samplekasawapp.onrender.com/api/admin/getOne/Barangay/${skilledBClearance._id}`,
-            urlReact:`/viewSkilled/brgyClearance/${skilledUserName}`
+            urlReact:`/SkilledWorker/Information`
         
         });
 

@@ -73,7 +73,7 @@ const createClientBClearance = async(req, res)=>{
             client_id,
             message: `${clientUserName} has added new barangay clearance.`,
             // url: `https://samplekasawapp.onrender.com/api/admin/getOne/Barangay/${clientBClearance._id}`,
-            urlReact:`/temporary/${clientUserName}`
+            urlReact:`/Client/Information`
         });
         res.status(200).json({ message: 'Successfully added.'})
     }
@@ -230,7 +230,7 @@ const updateClientBClearance  = async(req, res) =>{
             client_id,
             message: `${clientUserName} updated barangay clerance.`,
             url: `https://samplekasawapp.onrender.com/api/admin/getOne/Barangay/${clientBClearance._id}`,
-            urlReact:`/temporary/${clientUserName}`
+            urlReact:`/Client/Information`
         
         });
 

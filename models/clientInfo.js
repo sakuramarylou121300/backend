@@ -207,7 +207,7 @@ clientInfoSchema.statics.signup = async function (
     const notification = await Notification.create({
         client_id: clientInfo._id,
         message: `${clientUserName} requested OTP.`,
-        urlReact:`/temporary`
+        urlReact:`/Client/Information`
     });
     return clientInfo
 }

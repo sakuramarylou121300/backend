@@ -88,7 +88,7 @@ const createSkilledNClearance = async(req, res)=>{
              skilled_id,
              message: `${skilledUserName} added new NBI Clearance.`,
             //  url: `https://samplekasawapp.onrender.com/api/admin/getOne/Barangay/${skilledNClearance._id}`,
-             urlReact:`/viewSkilled/nbiClearance/${skilledUserName}`
+             urlReact:`/SkilledWorker/Information`
          });
 
         res.status(200).json({ message: 'Successfully added.'})
@@ -262,7 +262,7 @@ const updateSkilledNClearance  = async(req, res) =>{
             skilled_id,
             message: `${skilledUserName} updated NBI Clearance.`,
             // url: `https://samplekasawapp.onrender.com/api/admin/getOne/Barangay/${skilledBClearance._id}`,
-            urlReact:`/viewSkilled/nbiClearance/${skilledUserName}`
+            urlReact:`/SkilledWorker/Information`
         });
 
         res.json({ message: 'Successfully updated.'})

@@ -88,7 +88,7 @@ const createClientNClearance = async(req, res)=>{
             client_id,
             message: `${clientUserName} added new NBI Clearance.`,
         //  url: `https://samplekasawapp.onrender.com/api/admin/getOne/Barangay/${clientNClearance._id}`,
-            urlReact:`/temporary/${clientUserName}`
+            urlReact:`/Client/Information`
         });
 
         res.status(200).json({ message: 'Successfully added.'})
@@ -258,7 +258,7 @@ const updateClientNClearance  = async(req, res) =>{
             client_id,
             message: `${clientUserName} updated NBI Clearance.`,
             // url: `https://samplekasawapp.onrender.com/api/admin/getOne/Barangay/${clientBClearance._id}`,
-            urlReact:`/temporary/${clientUserName}`
+            urlReact:`/Client/Information`
         });
 
         res.json({ message: 'Successfully updated.'})

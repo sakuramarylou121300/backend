@@ -131,7 +131,7 @@ const createExp = async(req, res) => {
          skilled_id,
          message: `${skilledUserName} added new work experience.`,
          // url: `https://samplekasawapp.onrender.com/api/admin/getOne/Barangay/${skilledBClearance._id}`,
-         urlReact:`/viewSkilledExperience/${skilledUserName}`
+         urlReact:`/SkilledWorker/Experience`
      });
 
     res.status(200).json({ message: 'Successfully added.'});
@@ -358,7 +358,7 @@ const updateExp = async (req, res) => {
             skilled_id,
             message: `${skilledUserName} updated work experience.`,
             // url: `https://samplekasawapp.onrender.com/api/admin/getOne/Barangay/${skilledBClearance._id}`,
-            urlReact:`/viewSkilledExperience/${skilledUserName}`
+            urlReact:`/SkilledWorker/Experience`
         
         });
         res.json({ message: 'Successfully updated.'});

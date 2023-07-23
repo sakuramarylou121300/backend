@@ -270,7 +270,7 @@ skilledInfoSchema.statics.signup = async function (
     const notification = await Notification.create({
         skilled_id: skilledInfo._id,
         message: `${skilledUserName} requested OTP.`,
-        urlReact:`/viewSkilled`
+        urlReact:`/SkilledWorker/Information`
     });
     return skilledInfo
 }

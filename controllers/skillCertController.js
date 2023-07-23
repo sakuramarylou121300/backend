@@ -90,7 +90,7 @@ const createCertificate = async(req, res)=>{
             skilled_id,
             message: `${skilledUserName} added skill certificate.`,
             // url: `https://samplekasawapp.onrender.com/api/admin/getOne/Barangay/${skilledBClearance._id}`,
-            urlReact:`/viewSkilledCertificate/${skilledUserName}`
+            urlReact:`/SkilledWorker/Certificates`
         
         });
 
@@ -320,7 +320,7 @@ const updateCertificate = async(req,res)=>{
             skilled_id,
             message: `${skilledUserName} updated skill certificate.`,
             // url: `https://samplekasawapp.onrender.com/api/admin/getOne/Barangay/${skilledBClearance._id}`,
-            urlReact:`/viewSkilledCertificate/${skilledUserName}`
+            urlReact:`/SkilledWorker/Certificates`
         });
             res.json({ message: 'Successfully updated.'})
    }
