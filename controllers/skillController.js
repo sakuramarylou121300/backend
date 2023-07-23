@@ -1054,7 +1054,7 @@ const createClientReq = async (req, res) => {
             skilled_id,
             message: `${clientUsername} sent you a labor request.`,
             // url: `https://samplekasawapp.onrender.com/api/admin/getOne/Barangay/${skilledBClearance._id}`,
-            urlReact:`/viewAllSkilledRequest`
+            urlReact:`/Request/View`
         });
 
         res.status(200).json({ message: 'Successfully added.'});
@@ -1247,7 +1247,7 @@ const updateSkilledReqCompleted = async(req, res) =>{
         client_id,
         message: `${skilledUsername} accepted your request.`,
         // url: `https://samplekasawapp.onrender.com/api/admin/getOne/Barangay/${skilledBClearance._id}`,
-        urlReact:`/viewAllClientRequest`
+        urlReact:`/Request/View`
     });
     res.status(200).json({ message: 'Successfully updated.'})
 }
@@ -1489,7 +1489,7 @@ const updateClientSkilledReqDate = async(req, res) =>{
         skilled_id: skilled_idNotif,
         message: `${clientUsername} updated labor date.`,
         // url: `https://samplekasawapp.onrender.com/api/admin/getOne/Barangay/${skilledBClearance._id}`,
-        urlReact:`/viewAllSkilledRequest`
+        urlReact:`/Request/View`
     });
     res.status(200).json({ message: 'Successfully updated.'})
 }
@@ -1529,7 +1529,7 @@ const updateClientSkilledReqCompleted = async(req, res) =>{
         skilled_id,
         message: `${clientUsername} marked the labor completed.`,
         // url: `https://samplekasawapp.onrender.com/api/admin/getOne/Barangay/${skilledBClearance._id}`,
-        urlReact:`/viewAllSkilledRequest`
+        urlReact:`/Request/View`
     });
     res.status(200).json({ message: 'Successfully updated.'})
 }
@@ -1627,7 +1627,7 @@ const cancelClientSkilledReq = async(req, res) =>{
         skilled_id,
         message: messageNotif,
         // url: `https://samplekasawapp.onrender.com/api/admin/getOne/Barangay/${skilledBClearance._id}`,
-        urlReact:`/viewAllSkilledRequest`
+        urlReact:`/Request/View`
     });
 
     res.status(200).json({ message: 'Successfully updated.'})

@@ -1280,7 +1280,7 @@ const adminUpdateExperience = async (req, res) => {
         const notification = await Notification.create({
             skilled_id,
             message: messageNotif,
-            urlReact: `/profileSkilled/${skillName}`,
+            urlReact: `/Profile/Setting`,
         });
   
         res.status(200).json({ message: 'Successfully updated.' });
@@ -1356,7 +1356,7 @@ const adminUpdateCertificate = async (req, res) => {
         const notification = await Notification.create({
             skilled_id,
             message: messageNotif,
-            urlReact:`/profileSkilledCert/${skillName}/${username}`
+            urlReact:`/Profile/Setting`
         });
         res.status(200).json({ message: 'Successfully updated.'})
         } catch (error) {
@@ -1425,7 +1425,7 @@ const adminUpdateBarangay = async (req, res) => {
     const notification = await Notification.create({
         skilled_id,
         message: messageNotif,
-        urlReact:`/profileSkilled`
+        urlReact:`/Profile/Setting`
     });
       res.status(200).json({ message: 'Successfully updated.'})
       } catch (error) {
@@ -1493,7 +1493,7 @@ const adminUpdateNbi = async (req, res) => {
     const notification = await Notification.create({
         skilled_id,
         message: messageNotif,
-        urlReact:`/profileSkilled`
+        urlReact:`/Profile/Setting`
     });
         res.status(200).json({ message: 'Successfully updated.'})
       } catch (error) {
@@ -1563,7 +1563,7 @@ const adminUpdateBarangayClient = async (req, res) => {
     const notification = await ClientNotification.create({
         client_id,
         message: messageNotif,
-        urlReact:`/profileClient`
+        urlReact:`/Profile/Setting`
     });
       res.status(200).json({ message: 'Successfully updated.'})
       } catch (error) {
@@ -1631,7 +1631,7 @@ const adminUpdateNbiClient = async (req, res) => {
     const notification = await ClientNotification.create({
         client_id,
         message: messageNotif,
-        urlReact:`/profileClient`
+        urlReact:`/Profile/Setting`
     });
         res.status(200).json({ message: 'Successfully updated.'})
       } catch (error) {
