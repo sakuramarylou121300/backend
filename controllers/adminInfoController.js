@@ -213,6 +213,19 @@ const adminUpdateInfo = async(req, res) =>{
             throw Error('Please fill in all the blank fields.')
         }
 
+        //if existing information
+        const adminInfoCheck = await AdminInfo.findOne({
+            fname: fname,
+            mname: mname,
+            lname: lname,
+            contact: contact,
+            isDeleted:{$in: [0, 1]}
+        })
+        
+        if(adminInfoCheck){
+            return res.status(400).json({error: "You have entered the same personal information, please try again."})
+        }
+
         const mobileNumberRegex = /^09\d{9}$|^639\d{9}$/;
         
         if (!mobileNumberRegex.test(contact)) {
@@ -283,7 +296,7 @@ const updateAdminUserName = async(req, res) =>{
         }
 
         //check if strong password
-        if(username.length <7){
+        if(username.length <6){
             throw Error('Please enter atleast 6 characters in username.')
         }
 
@@ -347,7 +360,7 @@ const updateAdminPass = async(req, res) =>{
         }
 
         //check if strong password
-        if(newpass.length <7){
+        if(newpass.length <6){
             throw Error('Please enter atleast 6 characters in password.')
         }
 
@@ -382,6 +395,19 @@ const updateAdminInfo = async(req, res) =>{
         //validation
         if (!lname || !fname || !contact ){
             throw Error('Please fill in all the blank fields.')
+        }
+
+        //if existing information
+        const adminInfoCheck = await AdminInfo.findOne({
+            fname: fname,
+            mname: mname,
+            lname: lname,
+            contact: contact,
+            isDeleted:{$in: [0, 1]}
+        })
+        
+        if(adminInfoCheck){
+            return res.status(400).json({error: "You have entered the same personal information, please try again."})
         }
 
         const mobileNumberRegex = /^09\d{9}$|^639\d{9}$/;
