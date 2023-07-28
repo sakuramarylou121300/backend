@@ -15,7 +15,7 @@ const createAppDetail = async(req, res)=>{
 
         //if existing
         const appDetailCheck = await AppDetail.findOne({
-            appRule, 
+            // appRule, 
             contact,
             isDeleted:0
         })
@@ -81,7 +81,7 @@ const updateAppDetail = async(req, res) =>{
 
     //if existing
     const appDetailCheck = await AppDetail.findOne({
-        appRule, 
+        // appRule, 
         contact,
         isDeleted:0
     })

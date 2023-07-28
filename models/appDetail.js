@@ -4,8 +4,7 @@ const Schema = mongoose.Schema
 
 const appDetailSchema = new Schema({
     appRule:{
-        type: String,
-        required: true
+        type: String
     },
     contact:{
         type: String,
