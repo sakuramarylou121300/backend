@@ -71,8 +71,8 @@ router.get('/filter/skilled/skill/asc/:_id', clientRequireAuth, clientVerified, 
 router.get('/filter/skilled/skill/toprate/:_id', clientRequireAuth, clientVerified, getFilterSkilledSkillTopRate)
 router.get('/filter/skilled/:_id', clientRequireAuth, clientVerified, getFilterSkilledSkill);
 //all get one
-router.get('/getOne/skilledInfo/:id', clientRequireAuth, getClientSkilledInfo)
-router.get('/getOne/skilledInfo/skill/:_id', clientRequireAuth, getClientSkilledSkill)
+router.get('/getOne/skilledInfo/:id', clientRequireAuth, clientVerified, getClientSkilledInfo)
+router.get('/getOne/skilledInfo/skill/:_id', clientRequireAuth, clientVerified, getClientSkilledSkill)
 router.get('/getOne/skilledInfo/skillCert/:_id/:skillId', clientRequireAuth, getClientSkilledCert)
 router.get('/getOne/skilledInfo/skilledExp/:_id/:skillId', clientRequireAuth, getClientSkilledExp)
 router.get('/getOne/skilledInfo/skilledDate/:_id', clientRequireAuth, getClientSkilledDate)

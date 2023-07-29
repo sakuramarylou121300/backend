@@ -49,6 +49,7 @@ const{
 const {requireAuth} = require('../middleware/requireAuth')
 const skilledVerified = require('../middleware/skilledVerified')
 const {clientRequireAuth} = require('../middleware/clientRequireAuth')
+const clientVerified = require('../middleware/clientVerified')
 
 //instance of router
 router = express.Router()
@@ -103,8 +104,8 @@ router.patch('/delete/skilledReply/:id', requireAuth, deleteSkilledReply)
 
 //this is for the labor req
 router.post('/post/req/:skill_id/:skilled_id', clientRequireAuth, createClientReq)
-router.get('/getAll/client/req', clientRequireAuth ,getAllClientReq)
-router.get('/getAll/client/req/accepted', clientRequireAuth ,getAllClientReqAccepted)
+router.get('/getAll/client/req', clientRequireAuth, getAllClientReq)
+router.get('/getAll/client/req/accepted', clientRequireAuth ,clientVerified, getAllClientReqAccepted)
 router.get('/getAll/client/req/completed', clientRequireAuth ,getAllClientReqCompleted)
 router.get('/getAll/client/req/cancelled', clientRequireAuth ,getAllClientReqCancelled)
 router.patch('/update/client/req/date/:id/:skilled_id', clientRequireAuth, updateClientSkilledReqDate)

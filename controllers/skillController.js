@@ -1237,6 +1237,12 @@ const updateSkilledReqCompleted = async(req, res) =>{
         return res.status(404).json({error: 'Request not found.'})
     }
 
+    //check skilled worker if verified before viewing pending request from client
+    const skilledInfoCheckVerified = await SkilledInfo.findOne({_id:req.skilledInfo.id})
+    if(skilledInfoCheckVerified.userIsVerified === 0)
+        return res.status(400).json({error: 'Cannot accept pending requests. Please check if your baranggay clearance, nbi clearance and address are verified.'
+    })
+
     //this is for the notification
     // Get the name of the skilled user
     const skilledInfo = await SkilledInfo.findOne({ _id: skilled_id });
