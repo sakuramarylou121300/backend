@@ -1,7 +1,8 @@
 const ClientInfo = require('../models/clientInfo')
 const AdminInfo = require('../models/adminInfo')    
 const SkilledInfo = require('../models/skilledInfo')  
-const AdminSkill = require('../models/adminSkill')      
+const AdminSkill = require('../models/adminSkill')  
+const Notification = require('../models/adminNotification')    
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
 const validator = require('validator')
@@ -272,7 +273,8 @@ const updateClientAddress = async(req, res) =>{
             barangayAddr: barangayAddr,
             cityAddr: cityAddr,
             provinceAddr: provinceAddr,
-            regionAddr: regionAddr
+            regionAddr: regionAddr,
+            client_id: req.clientInfo._id
         })
         
         if(clientInfoCheck){
@@ -297,9 +299,16 @@ const updateClientAddress = async(req, res) =>{
             { addIsVerified: 0, otp: req.app.locals.OTP }
         );
 
-
+        //create notification when verification is successful
+        const clientInfoNotif = await ClientInfo.findOne({ _id: req.clientInfo._id });
+        const clientUserName = clientInfoNotif.username;
+        const notification = await Notification.create({
+            client_id: req.clientInfo._id,
+            message: `${clientUserName} requested OTP.`,
+            urlReact:`/Client/Information`
+        });
         //success
-        res.status(200).json({message: "Successfully updated."})
+        res.status(200).json({message: "Successfully updated. Please verify your address again. OTP will be send via snailmail."})
     }
     catch(error){
 
@@ -314,6 +323,15 @@ const generateOTP = async(req, res) =>{
         const clientInfo = await ClientInfo.findOneAndUpdate({ _id: req.clientInfo._id },
             { addIsVerified: 0, otp: req.app.locals.OTP }
         );
+        
+        //create notification when verification is successful
+        const clientInfoNotif = await ClientInfo.findOne({ _id: req.clientInfo._id });
+        const clientUserName = clientInfoNotif.username;
+        const notification = await Notification.create({
+            client_id: req.clientInfo._id,
+            message: `${clientUserName} requested OTP.`,
+            urlReact:`/Client/Information`
+        });
 
         res.status(200).json({ message: 'Request Sent. Your requested OTP will be send via snail mail.'})
     }

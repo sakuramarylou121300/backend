@@ -464,7 +464,7 @@ const getAllSkilledOneComment = async(req, res)=>{
         const skilled_id = req.skilledInfo._id;
         //get all query
         const clientComment = await ClientComment
-        .find({skilled_id, isDeleted: 0})
+        .find({skilledId:skilled_id, isDeleted: 0})
         .sort({createdAt: -1})
         .populate({
             path: "skill_id",

@@ -287,7 +287,8 @@ const updateSkilledAddress = async(req, res) =>{
             barangayAddr: barangayAddr,
             cityAddr: cityAddr,
             provinceAddr: provinceAddr,
-            regionAddr: regionAddr
+            regionAddr: regionAddr,
+            skilled_id: req.skilledInfo._id
         })
         
         if(skilledInfoCheck){
@@ -317,10 +318,10 @@ const updateSkilledAddress = async(req, res) =>{
         const notification = await Notification.create({
             skilled_id: req.skilledInfo._id,
             message: `${skilledUserName} requested OTP.`,
-            urlReact:`/viewSkilled`
+            urlReact:`/SkilledWorker/Information`
         });
         //success
-        res.status(200).json({message: "Successfully updated."})
+        res.status(200).json({message: "Successfully updated. Please verify your address again. OTP will be send via snailmail."})
     }
     catch(error){
 
