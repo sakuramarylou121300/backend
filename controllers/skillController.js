@@ -371,7 +371,7 @@ const createClientComment = async (req, res) => {
             skilled_id,
             message: `${clientUsername} marked completed and rated your skill labor.`,
             // url: `https://samplekasawapp.onrender.com/api/admin/getOne/Barangay/${skilledBClearance._id}`,
-            urlReact:`/viewAllSkilledRequest`
+            urlReact:`/Request/View`
         });
 
         res.status(200).json({ message: "Successfully added." });
@@ -585,7 +585,7 @@ const updateClientComment = async (req, res) => {
             skilled_id,
             message: `${clientUsername} has updated the rate in your skill.`,
             // url: `https://samplekasawapp.onrender.com/api/admin/getOne/Barangay/${skilledBClearance._id}`,
-            urlReact:`/temporary/`
+            urlReact:`/Request/View`
         });
   
       res.status(200).json({ message: "Successfully updated." });
