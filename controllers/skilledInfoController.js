@@ -24,8 +24,11 @@ const skilledLogIn = async(req, res) =>{
         )
             //create token
             const token = skilledCreateToken(skilledInfo._id)
+            
+            // Exclude 'otp' from the skilledInfo object
+            const { otp, ...skilledInfoWithoutOTP } = skilledInfo.toObject();
 
-        res.status(200).json({username, skilledInfo, token})
+        res.status(200).json({username, skilledInfo: skilledInfoWithoutOTP, token})
     }
     catch(error){
         res.status(400).json({error:error.message})
@@ -68,7 +71,11 @@ const skilledSignUp = async(req, res) =>{
 
             //create token
             const token = skilledCreateToken(skilledInfo._id)
-        res.status(200).json({skilledInfo, token})
+
+            // Exclude 'otp' from the skilledInfo object
+            const { otp, ...skilledInfoWithoutOTP } = skilledInfo.toObject();
+
+            res.status(200).json({ skilledInfo: skilledInfoWithoutOTP, token})
     }
     catch(error){
         res.status(400).json({error:error.message})
