@@ -104,7 +104,7 @@ const getFilterSkilled = async (req, res) => {
         const updatedSkilledInfoResults = await Promise.all(updatedSkilledInfo);
         const skilledInfoUpdated = await SkilledInfo.find({ userIsVerified: 1, isDeleted: 0 })
         .sort({ createdAt: -1 })
-        .select("-password")
+        .select("-password -otp -contact")
         .populate({
             path: "skills",
             match: { isDeleted: 0 },
@@ -600,7 +600,7 @@ const getFilterSkilledSkill = async (req, res) => {
             
         const skilledInfoToVer = await SkilledInfo.find({ userIsVerified: {$in: [0, 1]}, isDeleted: 0 })
         .sort({ createdAt: -1 })
-        .select("-password")
+        .select("-password -otp -contact")
         .populate("skillBarangay")
         .populate("skillNbi");
   
@@ -712,7 +712,7 @@ const getFilterSkilledSkill = async (req, res) => {
             lname: worker.lname,
             fname: worker.fname,
             mname: worker.mname,
-            contact: worker.contact,
+            // contact: worker.contact,
             houseNo: worker.houseNo,
             street: worker.street,
             barangayAddr: worker.barangayAddr,
@@ -720,7 +720,7 @@ const getFilterSkilledSkill = async (req, res) => {
             provinceAddr: worker.provinceAddr,
             regionAddr: worker.regionAddr,
             addIsVerified: worker.addIsVerified,
-            otp: worker.otp,
+            // otp: worker.otp,
             idIsVerified: worker.idIsVerified,
             userIsVerified: worker.userIsVerified,
             isDeleted: worker.isDeleted,
