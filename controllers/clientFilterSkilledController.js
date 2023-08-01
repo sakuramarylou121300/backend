@@ -751,7 +751,7 @@ const getClientSkilledInfo = async(req, res)=>{
     //find query
     const skilledInfo = await SkilledInfo
     .findById({_id: id})
-    .select("-password -otp")
+    .select("-password -otp -contact")
 
     //check if not existing
     if (!skilledInfo){
