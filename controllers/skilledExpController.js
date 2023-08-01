@@ -192,7 +192,11 @@ const getAllExpSkill = async(req, res)=>{
             isDeleted: 0,
             isExpired:{$ne: 1}})
         .sort({createdAt: -1})
-        .populate('skilled_id')
+        // .populate('skilled_id')
+        .populate({
+            path: 'skilled_id',
+            select: '-otp', // Exclude 'otp' field from the populated skilled_id object
+        })
         .populate({
             path: 'message.message',
             model: 'Reason',
