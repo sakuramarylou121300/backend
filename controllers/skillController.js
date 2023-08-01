@@ -498,7 +498,7 @@ const getAllSkilledOneComment = async(req, res)=>{
         })
         // .populate('skilledId')
         .populate({
-            path: 'skilled_id',
+            path: 'skilledId',
             select: '-otp -contact'
         })
 
