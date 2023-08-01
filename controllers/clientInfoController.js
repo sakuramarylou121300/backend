@@ -86,7 +86,7 @@ const getClientInfo = async(req, res) =>{
 
     try{
         const clientInfo = await ClientInfo.findById(req.clientInfo._id)
-        .select("-password")
+        .select("-password, -otp")
         .populate({
             path: 'clientBarangay',
             match: { isDeleted: 0} 
