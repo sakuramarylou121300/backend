@@ -381,7 +381,6 @@ const updateClientAccount = async (req, res) => {
         // Find the document by its _id
         const clientInfo = await ClientInfo
         .findById(req.clientInfo._id)
-        .select("-password, -otp")
         .populate('clientBarangay')
         .populate('clientNbi');
      

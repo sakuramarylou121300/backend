@@ -409,7 +409,6 @@ const updateSkilledAccount = async (req, res) => {
         // Find the document by its _id
         const skilledInfo = await SkilledInfo
         .findById(req.skilledInfo._id)
-        .select("-password, -otp")
         .populate('skillBarangay')
         .populate('skillNbi');
      
