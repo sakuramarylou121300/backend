@@ -105,7 +105,10 @@ const getAllSkill = async(req, res)=>{
         .find({skilled_id, isDeleted: 0})
         // .sort({skillName: -1})
         .populate('skillName', 'skill')
-        .populate('skilled_id')
+        .populate({
+            path: 'skilled_id',
+            select: '-otp', // Exclude 'otp' field from the populated skilled_id object
+        })
         .populate('comments')
         .populate({
             path: "comments",

@@ -87,7 +87,7 @@ const getSkilledInfo = async(req, res) =>{
 
     try{
         const skilledInfo = await SkilledInfo.findById(req.skilledInfo._id)
-        .select("-password, -otp")
+        .select("-password -otp")
         .populate({
             path: "skills",
             match: { isDeleted: 0 },
