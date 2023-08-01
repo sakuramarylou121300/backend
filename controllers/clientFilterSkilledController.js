@@ -749,7 +749,9 @@ const getClientSkilledInfo = async(req, res)=>{
     }
 
     //find query
-    const skilledInfo = await SkilledInfo.findById({_id: id})
+    const skilledInfo = await SkilledInfo
+    .findById({_id: id})
+    .select("-password -otp")
 
     //check if not existing
     if (!skilledInfo){
@@ -774,7 +776,11 @@ const getClientSkilledSkill = async(req, res)=>{
         skilled_id: skilledInfo._id, 
         isDeleted: 0})
     .populate('skillName')
-    .populate('skilled_id')
+    // .populate('skilled_id')
+    .populate({
+        path: 'skilled_id',
+        select: '-otp -contact'
+    })
 
     res.status(200).json(skilledWorkerSkill)   
 }
@@ -803,7 +809,11 @@ const getClientSkilledCert = async(req, res)=>{
             isDeleted: 0,
             isExpired:{$ne: 1},})
         .populate('categorySkill')
-        .populate('skilled_id')
+        // .populate('skilled_id')
+        .populate({
+            path: 'skilled_id',
+            select: '-otp -contact'
+        })
         .sort({createdAt: -1})
         res.status(200).json(skillCert)
     }
@@ -835,7 +845,11 @@ const getClientSkilledExp = async(req, res)=>{
             expIsVerified: "true",
             isDeleted: 0})
         .populate('categorySkill')
-        .populate('skilled_id')
+        // .populate('skilled_id')
+        .populate({
+            path: 'skilled_id',
+            select: '-otp -contact'
+        })
         .sort({createdAt: -1})
         res.status(200).json(skilledExp)
     }
@@ -861,7 +875,12 @@ const getClientSkilledDate = async(req, res)=>{
             skilled_id: skilledInfo._id, 
             isDeleted: 0
         })
-        .populate('client_id')
+        // .populate('client_id')
+        .populate({
+            path:'client_id',
+            select: '-otp -contact'
+        })
+
         .sort({skilledDate: 1})
         res.status(200).json(skilledDateFind)
     }
