@@ -86,7 +86,7 @@ const getClientInfo = async(req, res) =>{
 
     try{
         const clientInfo = await ClientInfo.findById(req.clientInfo._id)
-        .select("-password, -otp")
+        .select("-password -otp")
         .populate({
             path: 'clientBarangay',
             match: { isDeleted: 0} 
@@ -390,12 +390,21 @@ const updateClientAccount = async (req, res) => {
                 clientInfo.clientBarangay.some(brgy => brgy.bClearanceIsVerified === "true") &&
                 clientInfo.clientNbi.some(nbi => nbi.nClearanceIsVerified === "true")) {
                 const clientInfoVerified = await ClientInfo.findByIdAndUpdate(req.clientInfo._id, { $set: { userIsVerified: 1 } }, { new: true });
-                return res.status(200).json(clientInfoVerified);
+                
+                //exclude otp
+                const { otp, ...clientWithoutOTP } = clientInfoVerified.toObject();
+
+                return res.status(200).json(clientWithoutOTP);
+
             } else if (clientInfo.addIsVerified === 0 ||
                 clientInfo.clientBarangay.every(brgy => brgy.bClearanceIsVerified === "false") ||
                 clientInfo.clientNbi.every(nbi => nbi.nClearanceIsVerified === "false")) {
                 const clientInfoNotVerified = await ClientInfo.findByIdAndUpdate(req.clientInfo._id, { $set: { userIsVerified: 0 } }, { new: true });
-                return res.status(200).json(clientInfoNotVerified);
+                
+                //exclude otp
+                const { otp, ...clientWithoutOTP } = clientInfoNotVerified.toObject();
+
+                return res.status(200).json(clientWithoutOTP);
             }
         } else {
             return res.status(404).json({ message: "User not found" });
