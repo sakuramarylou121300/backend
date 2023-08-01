@@ -415,8 +415,18 @@ const getAllClientComment = async(req, res)=>{
             ],
             
         })
-        .populate('skilledId')
-        .populate('client_id')
+        // .populate('skilledId')
+        .populate({
+            path: 'skilledId',
+            select: '-otp -contact'
+        })
+
+        // .populate('client_id')
+        .populate({
+            path:'client_id',
+            select: '-otp -contact'
+        })
+
 
         //count number of reviews
         const countComment = clientComment.filter(clientComment => clientComment.isDeleted === 0).length;
