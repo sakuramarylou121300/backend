@@ -22,10 +22,13 @@ const clientLogIn = async(req, res) =>{
             username, 
             password
         )
-
             //create token
             const token = clientCreateToken(clientInfo._id)
-        res.status(200).json({username, clientInfo, token})
+            
+            // Exclude 'otp' from the skilledInfo object
+            const { otp, ...clientWithoutOTP } = clientInfo.toObject();
+
+            res.status(200).json({username, clientInfo:clientWithoutOTP, token})
     }
     catch(error){
         res.status(400).json({error:error.message})
@@ -67,7 +70,11 @@ const clientSignUp = async(req, res) =>{
 
             //create token
             const token = clientCreateToken(clientInfo._id)
-        res.status(200).json({username, clientInfo, token})
+            
+            // Exclude 'otp' from the skilledInfo object
+            const { otp, ...clientInfoWithoutOTP } = clientInfo.toObject();
+
+            res.status(200).json({username, clientInfo:clientInfoWithoutOTP, token})
     }
     catch(error){
         res.status(400).json({error:error.message})
