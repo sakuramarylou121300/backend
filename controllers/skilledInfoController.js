@@ -429,7 +429,7 @@ const updateSkilledAccount = async (req, res) => {
                 const skilledInfoNotVerified = await SkilledInfo.findByIdAndUpdate(req.skilledInfo._id, { $set: { userIsVerified: 0 } }, { new: true });
                 
                 //exclude otp
-                const { otp, ...skilledInfoWithoutOTP } = skilledInfoVerified.toObject();
+                const { otp, ...skilledInfoWithoutOTP } = skilledInfoNotVerified.toObject();
 
                 return res.status(200).json(skilledInfoWithoutOTP);
             }
