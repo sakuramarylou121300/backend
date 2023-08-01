@@ -358,7 +358,8 @@ const generateOTP = async(req, res) =>{
             { addIsVerified: 0, otp: req.app.locals.OTP }
         );
         
-        const skilledInfoNotif = await SkilledInfo.findOne({ _id: req.skilledInfo._id });
+        const skilledInfoNotif = await SkilledInfo
+        .findOne({ _id: req.skilledInfo._id });
         const skilledUserName = skilledInfoNotif.username;
         const notification = await Notification.create({
             skilled_id: req.skilledInfo._id,
@@ -406,7 +407,9 @@ const verifyOTP = async(req, res) =>{
 const updateSkilledAccount = async (req, res) => {
     try {
         // Find the document by its _id
-        const skilledInfo = await SkilledInfo.findById(req.skilledInfo._id)
+        const skilledInfo = await SkilledInfo
+        .findById(req.skilledInfo._id)
+        .select("-password, -otp")
         .populate('skillBarangay')
         .populate('skillNbi');
      
