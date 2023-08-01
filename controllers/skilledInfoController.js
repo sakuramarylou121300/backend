@@ -418,12 +418,20 @@ const updateSkilledAccount = async (req, res) => {
                 skilledInfo.skillBarangay.some(brgy => brgy.bClearanceIsVerified === "true") &&
                 skilledInfo.skillNbi.some(nbi => nbi.nClearanceIsVerified === "true")) {
                 const skilledInfoVerified = await SkilledInfo.findByIdAndUpdate(req.skilledInfo._id, { $set: { userIsVerified: 1 } }, { new: true });
-                return res.status(200).json(skilledInfoVerified);
+                
+                //exclude otp
+                const { otp, ...skilledInfoWithoutOTP } = skilledInfoVerified.toObject();
+
+                return res.status(200).json(skilledInfoWithoutOTP);
             } else if (skilledInfo.addIsVerified === 0 ||
                 skilledInfo.skillBarangay.every(brgy => brgy.bClearanceIsVerified === "false") ||
                 skilledInfo.skillNbi.every(nbi => nbi.nClearanceIsVerified === "false")) {
                 const skilledInfoNotVerified = await SkilledInfo.findByIdAndUpdate(req.skilledInfo._id, { $set: { userIsVerified: 0 } }, { new: true });
-                return res.status(200).json(skilledInfoNotVerified);
+                
+                //exclude otp
+                const { otp, ...skilledInfoWithoutOTP } = skilledInfoVerified.toObject();
+
+                return res.status(200).json(skilledInfoWithoutOTP);
             }
         } else {
             return res.status(404).json({ message: "Skilled worker not found" });
