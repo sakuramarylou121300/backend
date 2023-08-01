@@ -450,8 +450,17 @@ const getAllClientOneComment = async(req, res)=>{
                 select: "skill",
             },
         })
-        .populate('skilledId')
-        .populate('client_id')
+        // .populate('skilledId')
+        .populate({
+            path: 'skilledId',
+            select: '-otp -contact'
+        })
+
+        // .populate('client_id')
+        .populate({
+            path:'client_id',
+            select: '-otp -contact'
+        })
         
         res.status(200).json(clientComment)
     }
@@ -477,8 +486,17 @@ const getAllSkilledOneComment = async(req, res)=>{
                 select: "skill",
             },
         })
-        .populate('skilledId')
-        .populate('client_id')
+        // .populate('skilledId')
+        .populate({
+            path: 'skilled_id',
+            select: '-otp -contact'
+        })
+
+        // .populate('client_id')
+        .populate({
+            path:'client_id',
+            select: '-otp -contact'
+        })
         
         res.status(200).json(clientComment)
     }
@@ -1077,7 +1095,10 @@ const getAllSkilledReq = async(req, res)=>{
         const clientReq = await ClientReq.
         find({skilled_id, reqStatus:"pending", isDeleted: 0})
         .sort({createdAt: -1})
-        .populate('skilled_id')
+        .populate({
+            path: 'skilled_id',
+            select: '-otp -contact'
+        })
         // .populate('skill_id')
         .populate({
             path: "skill_id",
@@ -1087,7 +1108,10 @@ const getAllSkilledReq = async(req, res)=>{
               select: "skill", // Assuming 'skill' is the field in 'AdminSkill' model that holds the skill name
             },
         })
-        .populate('client_id')
+        .populate({
+            path:'client_id',
+            select: '-otp -contact'
+        })
 
         //check skilled worker if verified before viewing pending request from client
         const skilledInfo = await SkilledInfo.findOne({_id:req.skilledInfo.id})
@@ -1117,7 +1141,11 @@ const getAllSkilledReqAccepted = async(req, res)=>{
         const clientReq = await ClientReq.
         find({skilled_id, reqStatus:"reqAccepted", isDeleted: 0})
         .sort({createdAt: -1})
-        .populate('skilled_id')
+        // .populate('skilled_id')
+        .populate({
+            path: 'skilled_id',
+            select: '-otp -contact'
+        })
         // .populate('skill_id')
         .populate({
             path: "skill_id",
@@ -1127,7 +1155,11 @@ const getAllSkilledReqAccepted = async(req, res)=>{
               select: "skill", // Assuming 'skill' is the field in 'AdminSkill' model that holds the skill name
             },
         })
-        .populate('client_id')
+        // .populate('client_id')
+        .populate({
+            path:'client_id',
+            select: '-otp -contact'
+        })
 
         const acceptCount = clientReq.filter(clientReq => clientReq.reqStatus === "reqAccepted").length;
         const output = {
@@ -1151,7 +1183,11 @@ const getAllSkilledReqCompleted = async(req, res)=>{
         const clientReq = await ClientReq.
         find({skilled_id, reqStatus:"reqCompleted", isDeleted: 0})
         .sort({createdAt: -1})
-        .populate('skilled_id')
+        // .populate('skilled_id')
+        .populate({
+            path: 'skilled_id',
+            select: '-otp -contact'
+        })
         // .populate('skill_id')
         .populate({
             path: "skill_id",
@@ -1161,7 +1197,11 @@ const getAllSkilledReqCompleted = async(req, res)=>{
               select: "skill", // Assuming 'skill' is the field in 'AdminSkill' model that holds the skill name
             },
         })
-        .populate('client_id')
+        // .populate('client_id')
+        .populate({
+            path:'client_id',
+            select: '-otp -contact'
+        })
         
         const completeCount = clientReq.filter(clientReq => clientReq.reqStatus === "reqCompleted").length;
         const output = {
@@ -1194,7 +1234,11 @@ const getAllSkilledReqCancelled = async(req, res)=>{
               select: "skill", // Assuming 'skill' is the field in 'AdminSkill' model that holds the skill name
             },
         })
-        .populate('client_id')
+        // .populate('client_id')
+        .populate({
+            path:'client_id',
+            select: '-otp -contact'
+        })
         .populate({
             path: 'message.message',
             model: 'ClientCancelReq',
@@ -1280,7 +1324,11 @@ const getAllClientReq = async(req, res)=>{
               select: "skill", // Assuming 'skill' is the field in 'AdminSkill' model that holds the skill name
             },
         })
-        .populate('client_id')
+        // .populate('client_id')
+        .populate({
+            path:'client_id',
+            select: '-otp -contact'
+        })
 
         //this is for count
         const pendingCount = clientReq.filter(clientReq => clientReq.reqStatus === "pending").length;
@@ -1315,7 +1363,11 @@ const getAllClientReqAccepted = async(req, res)=>{
               select: "skill", // Assuming 'skill' is the field in 'AdminSkill' model that holds the skill name
             },
         })
-        .populate('client_id')
+        // .populate('client_id')
+        .populate({
+            path:'client_id',
+            select: '-otp -contact'
+        })
 
         const acceptedCount = clientReq.filter(clientReq => clientReq.reqStatus === "reqAccepted").length;
         const output = {
@@ -1349,7 +1401,12 @@ const getAllClientReqCompleted = async(req, res)=>{
               select: "skill", // Assuming 'skill' is the field in 'AdminSkill' model that holds the skill name
             },
         })
-        .populate('client_id')
+        // .populate('client_id')
+        .populate({
+            path:'client_id',
+            select: '-otp -contact'
+        })
+
 
         const completeCount = clientReq.filter(clientReq => clientReq.reqStatus === "reqCompleted").length;
         const output = {
@@ -1383,7 +1440,11 @@ const getAllClientReqCancelled = async(req, res)=>{
               select: "skill", // Assuming 'skill' is the field in 'AdminSkill' model that holds the skill name
             },
         })
-        .populate('client_id')
+        // .populate('client_id')
+        .populate({
+            path:'client_id',
+            select: '-otp -contact'
+        })
         .populate({
             path: 'message.message',
             model: 'ClientCancelReq',
