@@ -1,6 +1,7 @@
 const mongoose = require('mongoose')    
 const bcrypt = require('bcrypt')
 const validator = require('validator') 
+const cloudinary = require("../utils/cloudinary")
 
 const Schema = mongoose.Schema
 
@@ -115,6 +116,10 @@ const skilledInfoSchema = new Schema({
         type: Number,
         default: 0
     },
+    profilePicture: {
+        type: String,
+        default: '' // Default value for the profile picture
+    },
     // validId:{
     //     type:String
     // },
@@ -187,9 +192,10 @@ skilledInfoSchema.statics.signup = async function (
     barangayAddr,
     cityAddr,
     provinceAddr,
-    regionAddr
+    regionAddr,
+    profilePictureFile  
 ){
-    // await userExists(username);
+
     //validation
     if (!username || !password || !lname || !fname || !contact || !street || 
         !barangayAddr || !cityAddr || !provinceAddr || !regionAddr){
@@ -248,7 +254,25 @@ skilledInfoSchema.statics.signup = async function (
 
     //this is for the otp
     const OTP = await otpGenerator.generate(8, {specialChars: false});
+    
+    //to upload profile picture
+    let profilePicture = '';
 
+    if (profilePictureFile) {
+    try {
+        // Upload profile picture to Cloudinary
+        const result = await cloudinary.uploader.upload(profilePictureFile.path, {
+            folder: 'profile_pictures', // Optional folder name in your Cloudinary account
+            use_filename: true,
+            unique_filename: false
+        });
+
+        profilePicture = result.secure_url;
+    } 
+    catch (error) {
+        throw new Error('Error uploading profile picture to Cloudinary.');
+    }
+  }
     const skilledInfo = await this.create({
         username, 
         password: hash,// defining the value to password password with hash 
@@ -262,7 +286,8 @@ skilledInfoSchema.statics.signup = async function (
         cityAddr,
         provinceAddr,
         regionAddr,
-        otp: OTP
+        otp: OTP,
+        profilePicture: profilePicture // Assign the Cloudinary image URL
     })
 
     //this is notification

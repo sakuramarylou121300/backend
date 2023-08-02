@@ -7,6 +7,9 @@ const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
 const validator = require('validator')
 const otpGenerator = require('otp-generator')
+const cloudinary = require("../utils/cloudinary")
+
+
 
 //to generate json webtoken
 const skilledCreateToken = (_id)=>{
@@ -49,10 +52,11 @@ const skilledSignUp = async(req, res) =>{
         barangayAddr,
         cityAddr,
         provinceAddr,
-        regionAddr
+        regionAddr,
         } = req.body
         
     try{
+        
         //just call the function from the model
         const skilledInfo = await SkilledInfo.signup(
             username, 
@@ -66,7 +70,8 @@ const skilledSignUp = async(req, res) =>{
             barangayAddr,
             cityAddr,
             provinceAddr,
-            regionAddr
+            regionAddr,
+            req.file
             )
 
             //create token
@@ -226,10 +231,12 @@ const updateSkilledInfo = async(req, res) =>{
     try{
         
         //get info
-        const {lname,
+        const {
+                lname,
                 fname,
                 mname,
-                contact} = req.body
+                contact
+            } = req.body
 
         //validation
         if (!lname || !fname || !contact){
@@ -252,14 +259,41 @@ const updateSkilledInfo = async(req, res) =>{
         if (!mobileNumberRegex.test(contact)) {
             throw new Error('Please check your contact number.');
         }
+        //update photo
+        let profilePicture = '';
+
+        if (req.file) {
+            try {
+                // Upload profile picture to Cloudinary
+                const result = await cloudinary.uploader.upload(req.file.path, {
+                folder: 'profile_pictures', // Optional folder name in your Cloudinary account
+                use_filename: true,
+                unique_filename: false
+                });
+
+                profilePicture = result.secure_url;
+            } catch (error) {
+                // Handle upload error
+                console.error("Error uploading profile picture to Cloudinary:", error);
+            }
+        }
+
+        // Update info
+        const updateFields = {
+            lname,
+            fname,
+            mname,
+            contact
+        };
+
+        if (profilePicture) {
+            updateFields.profilePicture = profilePicture;
+        }
 
         //update info
         const skilledInfo = await SkilledInfo.findOneAndUpdate(
             {_id: req.skilledInfo._id},
-            {lname,
-            fname,
-            mname,
-            contact
+            {updateFields
         })
 
         //success

@@ -1,4 +1,5 @@
 const express = require('express')
+const upload = require("../utils/multer")
 
 //controller functions
 const{
@@ -38,11 +39,11 @@ const {requireAuth, localVariables} = require('../middleware/requireAuth')
 const router = express.Router()
 
 router.post('/login', skilledLogIn)
-router.post('/signup', skilledSignUp)
+router.post('/signup', upload.single('profilePicture'), skilledSignUp)
 router.get('/get', requireAuth, getSkilledInfo)
 router.patch('/update/username', requireAuth, updateSkilledUserName)
 router.patch('/update/password', requireAuth, updateSkilledPass)
-router.patch('/update', requireAuth, updateSkilledInfo)
+router.patch('/update', requireAuth, upload.single('profilePicture'), updateSkilledInfo)
 router.patch('/update/address', requireAuth, updateSkilledAddress)
 router.put('/edit/address', requireAuth, editAddress)
 router.put('/edit/bill', requireAuth, editBill)
