@@ -455,7 +455,7 @@ const adminGetAllSkilled = async(req, res)=>{
     try{
         //get all query
         const skilledInfo = await SkilledInfo.find({isDeleted: 0})
-        .sort({lastname: 1})
+        .sort({createdAt: -1})
         .select("-password")
         .populate({
             path: 'skills',
@@ -593,7 +593,7 @@ const adminGetAllClient = async(req, res)=>{
     try{
         //get all query
         const clientInfo = await ClientInfo.find({isDeleted: 0})
-        .sort({lname: 1})
+        .sort({createdAt: -1})
         .select("-password")
         .populate({
             path: 'clientBarangay',
