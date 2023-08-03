@@ -86,7 +86,7 @@ const createClientNClearance = async(req, res)=>{
         // Create a notification after successfully creating new nbi
         const notification = await Notification.create({
             client_id,
-            message: `${clientUserName} added new NBI Clearance.`,
+            message: `added new NBI Clearance.`,
         //  url: `https://samplekasawapp.onrender.com/api/admin/getOne/Barangay/${clientNClearance._id}`,
             urlReact:`/Client/Information`
         });
@@ -256,7 +256,7 @@ const updateClientNClearance  = async(req, res) =>{
     
         const notification = await Notification.create({
             client_id,
-            message: `${clientUserName} updated NBI Clearance.`,
+            message: `updated NBI Clearance.`,
             // url: `https://samplekasawapp.onrender.com/api/admin/getOne/Barangay/${clientBClearance._id}`,
             urlReact:`/Client/Information`
         });

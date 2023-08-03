@@ -129,7 +129,7 @@ const createExp = async(req, res) => {
      // Create a notification after successfully creating new exp
      const notification = await Notification.create({
          skilled_id,
-         message: `${skilledUserName} added new work experience.`,
+         message: `added new work experience.`,
          // url: `https://samplekasawapp.onrender.com/api/admin/getOne/Barangay/${skilledBClearance._id}`,
          urlReact:`/SkilledWorker/Experience`
      });
@@ -360,7 +360,7 @@ const updateExp = async (req, res) => {
         // Create a notification after successfully creating new skills
         const notification = await Notification.create({
             skilled_id,
-            message: `${skilledUserName} updated work experience.`,
+            message: `updated work experience.`,
             // url: `https://samplekasawapp.onrender.com/api/admin/getOne/Barangay/${skilledBClearance._id}`,
             urlReact:`/SkilledWorker/Experience`
         

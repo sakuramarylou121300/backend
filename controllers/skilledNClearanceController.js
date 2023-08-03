@@ -86,7 +86,7 @@ const createSkilledNClearance = async(req, res)=>{
          // Create a notification after successfully creating new nbi
          const notification = await Notification.create({
              skilled_id,
-             message: `${skilledUserName} added new NBI Clearance.`,
+             message: `added new NBI Clearance.`,
             //  url: `https://samplekasawapp.onrender.com/api/admin/getOne/Barangay/${skilledNClearance._id}`,
              urlReact:`/SkilledWorker/Information`
          });
@@ -260,7 +260,7 @@ const updateSkilledNClearance  = async(req, res) =>{
     
         const notification = await Notification.create({
             skilled_id,
-            message: `${skilledUserName} updated NBI Clearance.`,
+            message: `updated NBI Clearance.`,
             // url: `https://samplekasawapp.onrender.com/api/admin/getOne/Barangay/${skilledBClearance._id}`,
             urlReact:`/SkilledWorker/Information`
         });

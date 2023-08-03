@@ -88,7 +88,7 @@ const createCertificate = async(req, res)=>{
         // Create a notification after successfully creating new skills
         const notification = await Notification.create({
             skilled_id,
-            message: `${skilledUserName} added skill certificate.`,
+            message: `added skill certificate.`,
             // url: `https://samplekasawapp.onrender.com/api/admin/getOne/Barangay/${skilledBClearance._id}`,
             urlReact:`/SkilledWorker/Certificates`
         
@@ -326,7 +326,7 @@ const updateCertificate = async(req,res)=>{
         // Create a notification after successfully creating new skills
         const notification = await Notification.create({
             skilled_id,
-            message: `${skilledUserName} updated skill certificate.`,
+            message: `updated skill certificate.`,
             // url: `https://samplekasawapp.onrender.com/api/admin/getOne/Barangay/${skilledBClearance._id}`,
             urlReact:`/SkilledWorker/Certificates`
         });
