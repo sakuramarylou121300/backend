@@ -255,9 +255,14 @@ skilledInfoSchema.statics.signup = async function (
     //this is for the otp
     const OTP = await otpGenerator.generate(8, {specialChars: false});
     
+    //check if there is photo
+    //photo is required
+    if (!profilePictureFile) {
+        throw new Error('Please upload a photo.')
+    }
     //to upload profile picture
     let profilePicture = '';
-
+    
     if (profilePictureFile) {
     try {
         // Upload profile picture to Cloudinary
