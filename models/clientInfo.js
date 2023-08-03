@@ -1,6 +1,7 @@
 const mongoose = require('mongoose')    
 const bcrypt = require('bcrypt')
 const validator = require('validator') 
+const cloudinary = require("../utils/cloudinary")
 
 const Schema = mongoose.Schema
 
@@ -94,6 +95,10 @@ const clientInfoSchema = new Schema({
         type: Number,
         default: 0
     },
+    profilePicture: {
+        type: String,
+        default: '' // Default value for the profile picture
+    },
  
 },{
     toJSON: { virtuals: true }, // So `res.json()` and other `JSON.stringify()` functions include virtuals
@@ -126,7 +131,8 @@ clientInfoSchema.statics.signup = async function (
     barangayAddr,
     cityAddr,
     provinceAddr,
-    regionAddr
+    regionAddr,
+    profilePictureFile 
 ){
     // await userExists(username);
     //validation
@@ -186,6 +192,30 @@ clientInfoSchema.statics.signup = async function (
     const hash = await bcrypt.hash(password, salt)
 
     const OTP = await otpGenerator.generate(8, {specialChars: false});
+    
+    //photo is required
+    if (!profilePictureFile) {
+        throw new Error('Please upload a photo.')
+    }
+    //to upload profile picture
+    let profilePicture = '';
+    
+    if (profilePictureFile) {
+        try {
+            // Upload profile picture to Cloudinary
+            const result = await cloudinary.uploader.upload(profilePictureFile.path, {
+                folder: 'profile_pictures', // Optional folder name in your Cloudinary account
+                use_filename: true,
+                unique_filename: false
+            });
+
+            profilePicture = result.secure_url;
+        } 
+        catch (error) {
+            throw new Error('Error uploading profile picture to Cloudinary.');
+        }
+    }
+    
     const clientInfo = await this.create({
         username, 
         password: hash,// defining the value to password password with hash 
@@ -199,7 +229,8 @@ clientInfoSchema.statics.signup = async function (
         cityAddr,
         provinceAddr,
         regionAddr,
-        otp: OTP
+        otp: OTP,
+        profilePicture: profilePicture // Assign the Cloudinary image URL
     })
     //this is notification
     const clientUserName = clientInfo.username;

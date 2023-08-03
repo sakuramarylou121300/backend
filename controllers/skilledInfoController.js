@@ -225,85 +225,6 @@ const updateSkilledPass = async(req, res) =>{
     }
 }
 
-//update skilled info
-// const updateSkilledInfo = async(req, res) =>{
-  
-//     try{
-        
-//         //get info
-//         const {
-//                 lname,
-//                 fname,
-//                 mname,
-//                 contact
-//             } = req.body
-
-//         //validation
-//         if (!lname || !fname || !contact){
-//             throw Error('Please fill in all the blank fields.')
-//         }
-//         const skilledInfoCheck = await SkilledInfo.findOne({
-//             fname: fname,
-//             mname: mname,
-//             lname: lname,
-//             contact: contact,
-//             isDeleted:{$in: [0, 1]}
-//         })
-        
-//         if(skilledInfoCheck){
-//             return res.status(400).json({error: "You have entered the same personal information, please try again."})
-//         }
-//         //check if valid contact no
-//         const mobileNumberRegex = /^09\d{9}$|^639\d{9}$/;
-        
-//         if (!mobileNumberRegex.test(contact)) {
-//             throw new Error('Please check your contact number.');
-//         }
-//         //update photo
-//         let profilePicture = '';
-
-//         if (req.file) {
-//             try {
-//                 // Upload profile picture to Cloudinary
-//                 const result = await cloudinary.uploader.upload(req.file.path, {
-//                 folder: 'profile_pictures', // Optional folder name in your Cloudinary account
-//                 use_filename: true,
-//                 unique_filename: false
-//                 });
-
-//                 profilePicture = result.secure_url;
-//             } catch (error) {
-//                 // Handle upload error
-//                 console.error("Error uploading profile picture to Cloudinary:", error);
-//             }
-//         }
-
-//         // Update info
-//         const updateFields = {
-//             lname,
-//             fname,
-//             mname,
-//             contact
-//         };
-
-//         if (profilePicture) {
-//             updateFields.profilePicture = profilePicture;
-//         }
-
-//         //update info
-//         const skilledInfo = await SkilledInfo.findOneAndUpdate(
-//             {_id: req.skilledInfo._id},
-//             {updateFields
-//         })
-
-//         //success
-//         res.status(200).json({message: "Successfully updated."})
-//     }
-//     catch(error){
-
-//         res.status(400).json({error:error.message})
-//     }
-// }
 const updateSkilledInfo = async(req, res) =>{
   
     try{
@@ -320,6 +241,7 @@ const updateSkilledInfo = async(req, res) =>{
         }
 
         const skilledInfoCheck = await SkilledInfo.findOne({
+            _id: { $ne: req.skilledInfo._id },
             fname: fname,
             mname: mname,
             lname: lname,
@@ -358,7 +280,6 @@ const updateSkilledInfo = async(req, res) =>{
                 throw new Error('Error uploading profile picture to Cloudinary.');
             }
         }
-
 
         //update info
         const skilledInfo = await SkilledInfo.findOneAndUpdate(

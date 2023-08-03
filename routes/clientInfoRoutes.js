@@ -1,4 +1,5 @@
 const express = require('express')
+const upload = require("../utils/multer")
 
 //controller functions
 const{
@@ -49,11 +50,13 @@ const { updateAddress } = require('../controllers/skilledInfoController')
 
 const router = express.Router()
 router.post('/login', clientLogIn)
-router.post('/signup', clientSignUp)
+// router.post('/signup', upload.single('profilePicture'), clientSignUp)
+router.post('/signup', upload.single('profilePicture'), clientSignUp);
+
 router.get('/get', clientRequireAuth, getClientInfo)
 router.patch('/update/username', clientRequireAuth, updateClientUsername)
 router.patch('/update/password', clientRequireAuth, updateClientPass)
-router.patch('/update', clientRequireAuth, updateClientInfo)
+router.patch('/update', clientRequireAuth, upload.single('profilePicture'), updateClientInfo)
 router.delete('/delete', clientRequireAuth, deleteClientInfo)
 router.patch('/update/address', clientRequireAuth, updateClientAddress)
 router.get('/generateOTP', localVariables, clientRequireAuth, generateOTP)

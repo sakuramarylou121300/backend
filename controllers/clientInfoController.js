@@ -7,6 +7,7 @@ const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
 const validator = require('validator')
 const otpGenerator = require('otp-generator')
+const cloudinary = require("../utils/cloudinary")
 
 //to generate json webtoken
 const clientCreateToken = (_id)=>{
@@ -49,7 +50,7 @@ const clientSignUp = async(req, res) =>{
         barangayAddr,
         cityAddr,
         provinceAddr,
-        regionAddr
+        regionAddr,
     } = req.body
     try{
         //just call the function from the model
@@ -65,7 +66,8 @@ const clientSignUp = async(req, res) =>{
             barangayAddr,
             cityAddr,
             provinceAddr,
-            regionAddr
+            regionAddr, 
+            req.file
         )
 
             //create token
@@ -230,13 +232,35 @@ const updateClientInfo = async(req, res) =>{
             throw new Error('Please check your contact number.');
         }
 
+        // Update info, including profile picture if provided
+        let updateData = {
+            lname,
+            fname,
+            mname,
+            contact
+        };
+
+        if (req.file) {
+            try {
+                // Upload updated profile picture to Cloudinary
+                const result = await cloudinary.uploader.upload(req.file.path, {
+                    folder: 'profile_pictures', // Optional folder name in your Cloudinary account
+                    use_filename: true,
+                    unique_filename: false
+                });
+
+                updateData.profilePicture = result.secure_url;
+            } catch (error) {
+                throw new Error('Error uploading profile picture to Cloudinary.');
+            }
+        }
+
         //update info
         const clientInfo = await ClientInfo.findOneAndUpdate(
             {_id: req.clientInfo._id},
-            {lname,
-            fname,
-            mname,
-            contact})
+            updateData,
+            { new: true }
+        )
 
         //success
         res.status(200).json({message: "Successfully updated."})
