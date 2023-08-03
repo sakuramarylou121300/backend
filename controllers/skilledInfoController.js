@@ -450,8 +450,8 @@ const updateSkilledAccount = async (req, res) => {
 
                 return res.status(200).json(skilledInfoWithoutOTP);
             } else if (skilledInfo.addIsVerified === 0 ||
-                skilledInfo.skillBarangay.every(brgy => brgy.bClearanceIsVerified === "false") ||
-                skilledInfo.skillNbi.every(nbi => nbi.nClearanceIsVerified === "false")) {
+                skilledInfo.skillBarangay.every(brgy => brgy.bClearanceIsVerified === "false" || brgy.bClearanceIsVerified === "pending") ||
+                skilledInfo.skillNbi.every(nbi => nbi.nClearanceIsVerified === "false" || nbi.nClearanceIsVerified === "pending")) {
                 const skilledInfoNotVerified = await SkilledInfo.findByIdAndUpdate(req.skilledInfo._id, { $set: { userIsVerified: 0 } }, { new: true });
                 
                 //exclude otp
