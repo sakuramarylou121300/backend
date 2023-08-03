@@ -421,8 +421,8 @@ const updateClientAccount = async (req, res) => {
                 return res.status(200).json(clientWithoutOTP);
 
             } else if (clientInfo.addIsVerified === 0 ||
-                clientInfo.clientBarangay.every(brgy => brgy.bClearanceIsVerified === "false") ||
-                clientInfo.clientNbi.every(nbi => nbi.nClearanceIsVerified === "false")) {
+                clientInfo.clientBarangay.every(brgy => brgy.bClearanceIsVerified === "false" || brgy.bClearanceIsVerified === "pending") ||
+                clientInfo.clientNbi.every(nbi => nbi.nClearanceIsVerified === "false" || nbi.nClearanceIsVerified === "pending")) {
                 const clientInfoNotVerified = await ClientInfo.findByIdAndUpdate(req.clientInfo._id, { $set: { userIsVerified: 0 } }, { new: true });
                 
                 //exclude otp
