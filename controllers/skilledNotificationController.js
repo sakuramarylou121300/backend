@@ -10,7 +10,7 @@ const getAllNotification = async(req, res)=>{
         const notification = await Notification
         .find({isDeleted: 0, skilled_id})
         .sort({createdAt: -1})
-        // .populate('skilled_id')
+        .populate('client_id')
    
         const unreadCount = notification.filter(notification => notification.isRead === 0).length;
         const output = {

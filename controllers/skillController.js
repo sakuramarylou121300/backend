@@ -1082,6 +1082,7 @@ const createClientReq = async (req, res) => {
         const skilled_id_notif = newRequest.skilled_id;
         // Create a notification after successfully creating new exp
         const notification = await SkilledNotification.create({
+            client_id,
             skilled_id,
             message: `${clientUsername} sent you a labor request.`,
             // url: `https://samplekasawapp.onrender.com/api/admin/getOne/Barangay/${skilledBClearance._id}`,
@@ -1307,6 +1308,7 @@ const updateSkilledReqCompleted = async(req, res) =>{
     const client_id = clientReq.client_id;
     // Create a notification after successfully creating new exp
     const notification = await ClientNotification.create({
+        skilled_id,
         client_id,
         message: `${skilledUsername} accepted your request.`,
         // url: `https://samplekasawapp.onrender.com/api/admin/getOne/Barangay/${skilledBClearance._id}`,
@@ -1566,6 +1568,7 @@ const updateClientSkilledReqDate = async(req, res) =>{
     const skilled_idNotif = clientReq.skilled_id;
     // Create a notification after successfully creating new exp
     const notification = await SkilledNotification.create({
+        client_id,
         skilled_id: skilled_idNotif,
         message: `${clientUsername} updated labor date.`,
         // url: `https://samplekasawapp.onrender.com/api/admin/getOne/Barangay/${skilledBClearance._id}`,
@@ -1606,6 +1609,7 @@ const updateClientSkilledReqCompleted = async(req, res) =>{
     const skilled_id = clientReq.skilled_id;
     // Create a notification after successfully creating new exp
     const notification = await SkilledNotification.create({
+        client_id,
         skilled_id,
         message: `${clientUsername} marked the labor completed.`,
         // url: `https://samplekasawapp.onrender.com/api/admin/getOne/Barangay/${skilledBClearance._id}`,
@@ -1704,6 +1708,7 @@ const cancelClientSkilledReq = async(req, res) =>{
 
     // Create a notification after successfully creating new exp
     const notification = await SkilledNotification.create({
+        client_id,
         skilled_id,
         message: messageNotif,
         // url: `https://samplekasawapp.onrender.com/api/admin/getOne/Barangay/${skilledBClearance._id}`,

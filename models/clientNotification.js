@@ -20,6 +20,10 @@ const clientNotificationSchema = new Schema({
         required: true,
         ref: 'ClientInfo'
     }, 
+    skilled_id:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'SkilledInfo'
+    }, 
     isRead:{
         type: Number,
         default: 0,
