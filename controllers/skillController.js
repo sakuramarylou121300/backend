@@ -373,7 +373,7 @@ const createClientComment = async (req, res) => {
         const notification = await SkilledNotification.create({
             client_id,
             skilled_id,
-            message: `${clientUsername} marked completed and rated your skill labor.`,
+            message: `marked completed and rated your skill labor.`,
             // url: `https://samplekasawapp.onrender.com/api/admin/getOne/Barangay/${skilledBClearance._id}`,
             urlReact:`/Request/View`
         });
@@ -614,8 +614,9 @@ const updateClientComment = async (req, res) => {
         const skilled_id = updatedSkill.skilled_id;
         // Create a notification after successfully creating new exp
         const notification = await SkilledNotification.create({
+            client_id,
             skilled_id,
-            message: `${clientUsername} has updated the rate in your skill.`,
+            message: `has updated the rate in your skill.`,
             // url: `https://samplekasawapp.onrender.com/api/admin/getOne/Barangay/${skilledBClearance._id}`,
             urlReact:`/Request/View`
         });
@@ -1085,7 +1086,7 @@ const createClientReq = async (req, res) => {
         const notification = await SkilledNotification.create({
             client_id,
             skilled_id,
-            message: `${clientUsername} sent you a labor request.`,
+            message: `sent you a labor request.`,
             // url: `https://samplekasawapp.onrender.com/api/admin/getOne/Barangay/${skilledBClearance._id}`,
             urlReact:`/Request/View`
         });
@@ -1311,7 +1312,7 @@ const updateSkilledReqCompleted = async(req, res) =>{
     const notification = await ClientNotification.create({
         skilled_id,
         client_id,
-        message: `${skilledUsername} accepted your request.`,
+        message: `accepted your request.`,
         // url: `https://samplekasawapp.onrender.com/api/admin/getOne/Barangay/${skilledBClearance._id}`,
         urlReact:`/Request/View`
     });
@@ -1571,7 +1572,7 @@ const updateClientSkilledReqDate = async(req, res) =>{
     const notification = await SkilledNotification.create({
         client_id,
         skilled_id: skilled_idNotif,
-        message: `${clientUsername} updated labor date.`,
+        message: `updated labor date.`,
         // url: `https://samplekasawapp.onrender.com/api/admin/getOne/Barangay/${skilledBClearance._id}`,
         urlReact:`/Request/View`
     });
@@ -1612,7 +1613,7 @@ const updateClientSkilledReqCompleted = async(req, res) =>{
     const notification = await SkilledNotification.create({
         client_id,
         skilled_id,
-        message: `${clientUsername} marked the labor completed.`,
+        message: `marked the labor completed.`,
         // url: `https://samplekasawapp.onrender.com/api/admin/getOne/Barangay/${skilledBClearance._id}`,
         urlReact:`/Request/View`
     });
@@ -1705,7 +1706,7 @@ const cancelClientSkilledReq = async(req, res) =>{
         const clientUsername = clientInfo.username;
         const skilled_id = clientReq.skilled_id;
 
-        messageNotif = `${clientUsername} cancelled request. Reasons: ${messages.join(', ')}.`;
+        messageNotif = `cancelled request. Reasons: ${messages.join(', ')}.`;
 
     // Create a notification after successfully creating new exp
     const notification = await SkilledNotification.create({
