@@ -188,10 +188,10 @@ const updateSkilledNClearance  = async(req, res) =>{
         const skilled_id = req.skilledInfo._id
         let skilledNClearance = await SkilledNClearance.findById(req.params.id)  
         
-        // //check if the photo field is empty
-        // if (!req.files || req.files.length === 0) {
-        //     return res.status(400).json({error: 'Please upload a photo either local or international NBI Clearance.'});
-        // }
+        //check if the photo field is empty
+        if (!req.files || req.files.length === 0) {
+            return res.status(400).json({error: 'Please upload a photo either local or international NBI Clearance.'});
+        }
 
         //check if the photo is greater than 2
         if (!req.files || req.files.length >=3) {

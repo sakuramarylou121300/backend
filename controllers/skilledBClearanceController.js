@@ -191,10 +191,10 @@ const updateSkilledBClearance  = async(req, res) =>{
         const skilled_id = req.skilledInfo._id
         let skilledBClearance = await SkilledBClearance.findById(req.params.id)  
         
-        // //photo is required
-        // if (!req.file) {
-        //     return res.status(400).json({error: 'Please upload a photo.'})
-        // }
+        //photo is required
+        if (!req.file) {
+            return res.status(400).json({error: 'Please upload a photo.'})
+        }
 
         const trueBClearance = await SkilledBClearance.findOne({
             _id: req.params.id,
