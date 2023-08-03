@@ -371,6 +371,7 @@ const createClientComment = async (req, res) => {
         const skilled_id = finalSkillRate.skilled_id;
         // Create a notification after successfully creating new exp
         const notification = await SkilledNotification.create({
+            client_id,
             skilled_id,
             message: `${clientUsername} marked completed and rated your skill labor.`,
             // url: `https://samplekasawapp.onrender.com/api/admin/getOne/Barangay/${skilledBClearance._id}`,
