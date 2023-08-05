@@ -230,23 +230,6 @@ skilledInfoSchema.statics.signup = async function (
         throw Error('Username already in use.')
     }
 
-    const skilledInfoWithSameDetails = await this.findOne({
-        fname: fname,
-        mname: mname,
-        lname: lname,
-        contact: contact,
-        houseNo: houseNo,
-        street: street,
-        barangayAddr: barangayAddr,
-        cityAddr: cityAddr,
-        provinceAddr: provinceAddr,
-        regionAddr: regionAddr,
-        isDeleted:{$in: [0, 1]}
-    });
-
-    if (skilledInfoWithSameDetails) {
-    throw Error("User already exist.");
-    }
 
     //salt for additional security of the system
     const salt = await bcrypt.genSalt(10)
@@ -294,13 +277,41 @@ skilledInfoSchema.statics.signup = async function (
         profilePicture: profilePicture // Assign the Cloudinary image URL
     })
 
+    //find if it has the same info with the other user
+    const skilledInfoWithSameDetails = await this.findOne({
+        fname: fname,
+        mname: mname,
+        lname: lname,
+        contact: contact,
+        houseNo: houseNo,
+        street: street,
+        barangayAddr: barangayAddr,
+        cityAddr: cityAddr,
+        provinceAddr: provinceAddr,
+        regionAddr: regionAddr,
+        isDeleted:{$in: [0, 1]}
+    });
+
+    // if (skilledInfoWithSameDetails) {
+    // throw Error("User already exist.");
+    // }
+    //if has the same info then notify admin
+    if (skilledInfoWithSameDetails) {
+        const notification = await Notification.create({
+            skilled_id: skilledInfo._id,
+            message: `has same information with the other skilled worker account.`,
+            urlReact:`/SkilledWorker/Information`
+        });
+    }
+
     //this is notification
     const skilledUserName = skilledInfo.username;
     const notification = await Notification.create({
         skilled_id: skilledInfo._id,
-        message: `${skilledUserName} requested OTP.`,
+        message: `requested OTP.`,
         urlReact:`/SkilledWorker/Information`
     });
+
     return skilledInfo
 }
 

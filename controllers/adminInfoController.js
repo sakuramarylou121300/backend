@@ -504,26 +504,39 @@ const adminGetOneSkilled = async(req, res)=>{
 
 }
 
-//this is not being used
-const adminUpdateSkilled = async(req, res) =>{
-    const {id} = req.params    
+const adminUpdateSkilledPass = async(req, res) =>{
+    const {id} = req.params 
+    try{
+        
+        //get info
+        const {newpass} = req.body
 
-    //check if id is not existing
-    if(!mongoose.Types.ObjectId.isValid(id)){
-        return res.status(404).json({error: 'Invalid id.'})
+        //validation
+        if (!newpass){
+            throw Error('Please enter password.')
+        }
+
+        //check if strong password
+        if(newpass.length <6){
+            throw Error('Please enter atleast 6 characters in password.')
+        }
+
+        //salt for additional security of the system
+        const salt = await bcrypt.genSalt(10)
+        const hash = await bcrypt.hash(newpass, salt)
+
+        //update info
+        const skilledInfo = await SkilledInfo.findOneAndUpdate(
+            {_id:id},
+            {password:hash})
+
+        //success
+        res.status(200).json({message: "Successfully updated."})
     }
+    catch(error){
 
-     //delete query
-     const skilledInfo = await SkilledInfo.findOneAndUpdate({_id: id},{
-         ...req.body //get new value
-     })
-    
-     //check if not existing
-     if (!skilledInfo){
-        return res.status(404).json({error: 'Skilled Worker not found.'})
+        res.status(400).json({error:error.message})
     }
-
-    res.status(200).json({message: "Successfully updated."})
 }
 
 const adminDeleteSkilled = async (req, res) => {
@@ -587,6 +600,29 @@ const adminDeleteSkilled = async (req, res) => {
       }
 }
 
+//this is not being used
+const adminUpdateSkilled = async(req, res) =>{
+    const {id} = req.params    
+
+    //check if id is not existing
+    if(!mongoose.Types.ObjectId.isValid(id)){
+        return res.status(404).json({error: 'Invalid id.'})
+    }
+
+     //delete query
+     const skilledInfo = await SkilledInfo.findOneAndUpdate({_id: id},{
+         ...req.body //get new value
+     })
+    
+     //check if not existing
+     if (!skilledInfo){
+        return res.status(404).json({error: 'Skilled Worker not found.'})
+    }
+
+    res.status(200).json({message: "Successfully updated."})
+}
+
+
 //DEPENDING ON THE ROLE OF THE ADMIN CLIENT
 const adminGetAllClient = async(req, res)=>{
 
@@ -630,26 +666,40 @@ const adminGetOneClient = async(req, res)=>{
 
 }
 
-//this is not being used
-const adminUpdateClient = async(req, res) =>{
-    const {id} = req.params    
 
-    //check if id is not existing
-    if(!mongoose.Types.ObjectId.isValid(id)){
-        return res.status(404).json({error: 'Invalid id'})
+const adminUpdateClientPass = async(req, res) =>{
+    const {id} = req.params 
+    try{
+        
+        //get info
+        const {newpass} = req.body
+
+        //validation
+        if (!newpass){
+            throw Error('Please enter password.')
+        }
+
+        //check if strong password
+        if(newpass.length <6){
+            throw Error('Please enter atleast 6 characters in password.')
+        }
+
+        //salt for additional security of the system
+        const salt = await bcrypt.genSalt(10)
+        const hash = await bcrypt.hash(newpass, salt)
+
+        //update info
+        const skilledInfo = await ClientInfo.findOneAndUpdate(
+            {_id:id},
+            {password:hash})
+
+        //success
+        res.status(200).json({message: "Successfully updated."})
     }
+    catch(error){
 
-     //delete query
-     const clientInfo = await ClientInfo.findOneAndUpdate({_id: id},{
-         ...req.body //get new value
-     })
-    
-     //check if not existing
-     if (!clientInfo){
-        return res.status(404).json({error: 'Client not found.'})
+        res.status(400).json({error:error.message})
     }
-
-    res.status(200).json({message: "Successfully updated."})
 }
 
 const adminDeleteClient = async (req, res) => {
@@ -710,6 +760,28 @@ const adminDeleteClient = async (req, res) => {
       } catch (error) {
           res.status(400).json({ error: error.message })
       }
+}
+
+//this is not being used
+const adminUpdateClient = async(req, res) =>{
+    const {id} = req.params    
+
+    //check if id is not existing
+    if(!mongoose.Types.ObjectId.isValid(id)){
+        return res.status(404).json({error: 'Invalid id'})
+    }
+
+     //delete query
+     const clientInfo = await ClientInfo.findOneAndUpdate({_id: id},{
+         ...req.body //get new value
+     })
+    
+     //check if not existing
+     if (!clientInfo){
+        return res.status(404).json({error: 'Client not found.'})
+    }
+
+    res.status(200).json({message: "Successfully updated."})
 }
 
 //SORT BY RECENTLY ADDED SKILLED
@@ -2205,10 +2277,12 @@ module.exports = {
     adminGetAllSkilled,
     adminGetOneSkilled,
     adminUpdateSkilled,
+    adminUpdateSkilledPass,
     adminDeleteSkilled,
     adminGetAllClient,
     adminGetOneClient,
     adminUpdateClient,
+    adminUpdateClientPass,
     adminDeleteClient,
     adminGetAllSkill,
     adminGetAllSkilledBill,

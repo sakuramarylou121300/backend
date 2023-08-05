@@ -169,24 +169,6 @@ clientInfoSchema.statics.signup = async function (
         throw Error('Username already in use.')
     }
 
-    const clientInfoWithSameDetails = await this.findOne({
-        fname: fname,
-        mname: mname,
-        lname: lname,
-        contact: contact,
-        houseNo: houseNo,
-        street: street,
-        barangayAddr: barangayAddr,
-        cityAddr: cityAddr,
-        provinceAddr: provinceAddr,
-        regionAddr: regionAddr,
-        isDeleted:{$in: [0, 1]}
-    });
-
-    if (clientInfoWithSameDetails) {
-    throw Error("User already exist.");
-    }
-
     //salt for additional security of the system
     const salt = await bcrypt.genSalt(10)
     const hash = await bcrypt.hash(password, salt)
@@ -232,11 +214,39 @@ clientInfoSchema.statics.signup = async function (
         otp: OTP,
         profilePicture: profilePicture // Assign the Cloudinary image URL
     })
+
+    //find if it has the same info with the other client
+    const clientInfoWithSameDetails = await this.findOne({
+        fname: fname,
+        mname: mname,
+        lname: lname,
+        contact: contact,
+        houseNo: houseNo,
+        street: street,
+        barangayAddr: barangayAddr,
+        cityAddr: cityAddr,
+        provinceAddr: provinceAddr,
+        regionAddr: regionAddr,
+        isDeleted:{$in: [0, 1]}
+    });
+
+    // if (clientInfoWithSameDetails) {
+    // throw Error("User already exist.");
+    // }
+    //if it has then notify admin
+    if (clientInfoWithSameDetails) {
+        const notification = await Notification.create({
+            client_id: clientInfo._id,
+            message: `has same information with the other client account.`,
+            urlReact:`/Client/Information`
+        });
+    }
+
     //this is notification
     const clientUserName = clientInfo.username;
     const notification = await Notification.create({
         client_id: clientInfo._id,
-        message: `${clientUserName} requested OTP.`,
+        message: `requested OTP.`,
         urlReact:`/Client/Information`
     });
     return clientInfo

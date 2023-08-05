@@ -25,10 +25,12 @@ const{
     adminGetAllSkilled,
     adminGetOneSkilled,
     adminUpdateSkilled,
+    adminUpdateSkilledPass,
     adminDeleteSkilled,
     adminGetAllClient,
     adminGetOneClient,
     adminUpdateClient,
+    adminUpdateClientPass,
     adminDeleteClient,
     adminGetAllSkill,
     adminGetAllExpSkilledDetail,
@@ -211,6 +213,7 @@ router.get('/getAll/Skilled/detail/bclearance', adminAuth, adminControlSkilled, 
 router.get('/getAll/Skilled/detail/nclearance', adminAuth, adminControlSkilled, adminGetAllNClearanceSkilledDetail)
 router.get('/getOne/Skilled/:id', adminAuth, adminControlSkilled, adminGetOneSkilled)
 router.patch('/update/Skilled/:id', adminAuth, adminControlSkilled, adminUpdateSkilled)
+router.patch('/update/Skilled/password/:id', adminAuth, adminControlSkilled, adminUpdateSkilledPass)
 router.patch('/delete/Skilled/:id', adminAuth, adminControlSkilled, adminDeleteSkilled)
 router.patch('/reactivate/Skilled/:username', adminAuth, adminControlSkilled, reactivateSkilledInfo)
 
@@ -260,6 +263,7 @@ router.patch('/delete/Nbi/:id', adminAuth, adminControlSkilled, deleteSkilledNCl
 router.get('/getAll/Client', adminAuth, adminControlSkilled, adminGetAllClient)
 router.get('/getOne/Client/:id', adminAuth, adminControlSkilled, adminGetOneClient)
 router.patch('/update/Client/:id', adminAuth, adminControlSkilled, adminUpdateClient)
+router.patch('/update/Client/password/:id', adminAuth, adminControlSkilled, adminUpdateClientPass)
 router.patch('/delete/Client/:id', adminAuth, adminControlSkilled, adminDeleteClient)
 router.patch('/reactivate/Client/:username', adminAuth, adminControlSkilled, reactivateClientInfo)
 //SORT CLIENT
