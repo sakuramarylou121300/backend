@@ -249,7 +249,12 @@ const updateSkilledInfo = async(req, res) =>{
             isDeleted:{$in: [0, 1]}
         })
         if(skilledInfoCheck){
-            return res.status(400).json({error: "You have entered the same personal information, please try again."})
+            // return res.status(400).json({error: "You have entered the same personal information, please try again."})
+            const notification = await Notification.create({
+                skilled_id: req.skilledInfo._id,
+                message: `updated information has same information with the other skilled worker account.`,
+                urlReact:`/SkilledWorker/Information`
+            });
         }
         //check if valid contact no
         const mobileNumberRegex = /^09\d{9}$|^639\d{9}$/;
