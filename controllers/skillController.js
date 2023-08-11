@@ -1102,6 +1102,12 @@ const createClientReq = async (req, res) => {
 const getAllSkilledReq = async(req, res)=>{
 
     try{
+        //update many if reqDate less than or equal to date today
+        var currentDate = new Date();//date today
+        await ClientReq.updateMany({ reqDate: {$lt:currentDate} }, 
+            {$set: 
+                { reqStatus: "reqCancelled"} });
+        
         //this is to find skill for specific user
         let skilled_id = req.skilledInfo._id
         //get all query
