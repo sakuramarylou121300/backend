@@ -9,7 +9,6 @@ const messageSchema = new Schema({
         default: ''
     }
 })
-
 const skilledExp = new Schema({
     
     categorySkill:{

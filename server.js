@@ -22,6 +22,9 @@ const adminBarangayRoutes = require('./routes/adminBarangayRoutes')
 const roleRoutes = require('./routes/roleRoutes')
 const capabilityRoutes = require('./routes/capabilityRoutes')
 const roleCapabilityRoutes = require('./routes/roleCapabilityRoutes')
+const otherSkillRoutes = require('./routes/otherSkillRoutes')
+const reasonSkillRoutes = require('./routes/reasonSkillRoutes')
+
 //SKILLED
 const skilledInfoRoutes = require('./routes/skilledInfoRoutes')
 const skilledBarangayRoutes = require('./routes/skilledBarangayRoutes')
@@ -94,6 +97,8 @@ app.use('/api/admin', adminAddressRoutes)
 app.use('/api/role', roleRoutes)
 app.use('/api/capability', capabilityRoutes)
 app.use('/api/roleCapability', roleCapabilityRoutes)
+app.use('/api/otherSkill', otherSkillRoutes)
+app.use('/api/reasonSkill', reasonSkillRoutes)
 
 //SKILLED
 app.use('/api/skilledInfo', skilledInfoRoutes)
