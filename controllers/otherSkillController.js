@@ -83,11 +83,55 @@ const createOtherSkills = async (req, res) => {
     }
 };
 
-//GET all otherSkill
+//GET all otherSkill, pending
 const getAllOtherSkill = async(req, res)=>{     
     try{
         const otherSkill = await OtherSkill
-        .find({isDeleted: 0})
+        .find({isDeleted: 0, skillIsVerified: "pending"})
+        .sort({createdAt: -1})
+        .populate({
+            path: 'skilled_id'
+        })
+        .populate({
+            path: 'message.message',
+            model: 'ReasonSkill',
+            select: 'reason',
+            options: { lean: true },
+        })
+        res.status(200).json(otherSkill)
+    }
+    catch(error){
+        res.status(404).json({error: error.message})
+    }  
+}
+
+//GET all otherSkill, true
+const getAllOtherSkillTrue = async(req, res)=>{     
+    try{
+        const otherSkill = await OtherSkill
+        .find({isDeleted: 0, skillIsVerified: "true"})
+        .sort({createdAt: -1})
+        .populate({
+            path: 'skilled_id'
+        })
+        .populate({
+            path: 'message.message',
+            model: 'ReasonSkill',
+            select: 'reason',
+            options: { lean: true },
+        })
+        res.status(200).json(otherSkill)
+    }
+    catch(error){
+        res.status(404).json({error: error.message})
+    }  
+}
+
+//GET all otherSkill, false
+const getAllOtherSkillFalse = async(req, res)=>{     
+    try{
+        const otherSkill = await OtherSkill
+        .find({isDeleted: 0, skillIsVerified: "false"})
         .sort({createdAt: -1})
         .populate({
             path: 'skilled_id'
@@ -241,6 +285,8 @@ const updateOtherSkill = async (req, res) => {
 module.exports = {
     createOtherSkills,
     getAllOtherSkill,
+    getAllOtherSkillTrue, 
+    getAllOtherSkillFalse,
     updateOtherSkillAccepted,
     updateOtherSkill,
 }

@@ -18,7 +18,6 @@ const skillCertSchema = new Schema({
     },
     title:{
         type: String,
-        required: true,
         trim: true
     },
     validUntil:{

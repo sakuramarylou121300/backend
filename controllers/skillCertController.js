@@ -4,6 +4,7 @@ const Title = require('../models/skillTitle')
 const Skill = require('../models/skill')
 const Notification = require('../models/adminNotification')
 const SkilledInfo = require('../models/skilledInfo')
+const OtherTitle = require('../models/otherTitle')
 const mongoose = require('mongoose')
 const cloudinary = require("../utils/cloudinary"); 
 const moment = require('moment');
@@ -14,26 +15,67 @@ const path = require('path')
 const createCertificate = async(req, res)=>{
     const {categorySkill,
         title,
-        validUntil
+        validUntil,
+        otherTitles
     } = req.body
+
+    //this is to assign the job to a specific client user, get id from clientInfo
+    const skilled_id = req.skilledInfo._id
     
     //check empty fields
-    let emptyFields = []
     if(!categorySkill){
-        emptyFields.push('categorySkill')
+        return res.status(400).json({error: 'Please enter the skill category of the certificate.'})
     }
-    if(!title){
-        emptyFields.push('title')
+    if ((!title || title.length === 0) && (!otherTitles || otherTitles.length === 0)) {
+        res.status(400).send({ error: "Please select certificate title or refer certificate title to admin." });
+        return;
     }
     if(!validUntil){
-        emptyFields.push('validUntil')
+        return res.status(400).json({error: 'Please enter the expiration of the certificate.'})
     }
 
-    //send message if there is an empty fields
-    if(emptyFields.length >0){
-        return res.status(400).json({error: 'Please fill in all the blank fields.', emptyFields})
+    //for other skills
+    if (otherTitles && otherTitles.length > 0) {
+        //find if existing in otherSkill model
+        const existingOtherSkill = await OtherTitle.findOne({
+            categorySkill: categorySkill,
+            otherTitles: otherTitles
+        })
+        //find the value of categorySkill
+        const categorySkillValue = await AdminSkill.findOne({
+            _id: categorySkill
+        })
+
+        if (existingOtherSkill) {
+
+            //if pending
+            if (existingOtherSkill.titleIsVerified === 'pending') {
+                res.status(400).send({ error: `${otherTitles} is already requested with the same skill ${categorySkillValue.skill}, please wait for it to be approve.` });
+                return;
+            }
+
+            //if false
+            if (existingOtherSkill.titleIsVerified === 'false') {
+                res.status(400).send({ error: `${otherTitles} with the same skill ${categorySkillValue.skill} is already requested and it was not qualified.` });
+                return;
+            }
+            
+        }
+
+        const otherTitleAdd = await OtherTitle.create({
+            categorySkill: categorySkill,
+            otherTitles:otherTitles
+        })
+
+        // Create a notification after adding otherSkills
+         const notification = await Notification.create({
+            skilled_id,
+            message: `requested certificate title.`,
+            // url: `https://samplekasawapp.onrender.com/api/admin/getOne/Barangay/${skilledBClearance._id}`,
+            urlReact:`/SkilledWorker/Experience`
+        });
     }
-    
+
     if (!req.file) {
         return res.status(400).json({error: 'Please upload a photo.'})
     }
@@ -47,22 +89,22 @@ const createCertificate = async(req, res)=>{
     }
 
     try{
-        //this is to assign the job to a specific client user, get id from clientInfo
-        const skilled_id = req.skilledInfo._id
 
         //if existing
-        const certCheck = await Certificate.findOne({
-            categorySkill:categorySkill,
-            title:title,
-            validUntil: validUntil,
-            skilled_id:skilled_id,
-            skillIsVerified:{$in: ["pending", "false", "true"]},
-            isExpired: {$in: [0, 1]},
-            isDeleted: 0
-        })
-        
-        if(certCheck){
-            return res.status(400).json({error: "Skill Certificate already exists to this user."})
+        if (title !== "") {
+            const certCheck = await Certificate.findOne({
+                categorySkill:categorySkill,
+                title:title,
+                validUntil: validUntil,
+                skilled_id:skilled_id,
+                skillIsVerified:{$in: ["pending", "false", "true"]},
+                isExpired: {$in: [0, 1]},
+                isDeleted: 0
+            })
+            
+            if(certCheck){
+                return res.status(400).json({error: "Skill Certificate already exists to this user."})
+            }
         }
         
         if (categorySkill === "Select") {

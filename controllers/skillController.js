@@ -74,6 +74,7 @@ const createSkills = async (req, res) => {
                 }
             }
 
+            //insert the other skill in the document
             const otherSkillsToAdd = uniqueOtherSkills.map(otherSkill => ({
                 skilled_id,
                 otherSkills: otherSkill
