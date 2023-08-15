@@ -6,6 +6,7 @@ const ClientInfo = require('../models/clientInfo')
 const ClientComment = require('../models/clientComment')
 const SkilledNotification = require('../models/skilledNotification')
 const ClientNotification = require('../models/clientNotification')
+const AdminNotification = require('../models/adminNotification')
 const ClientReq = require('../models/clientReq')
 const AdminSkill = require('../models/adminSkill')
 const ReasonCancelled = require('../models/clientCancelReq')
@@ -19,8 +20,14 @@ const mongoose = require('mongoose')
 
 const createSkills = async (req, res) => {
     try {
-        const { otherSkills } = req.body;
+        const { otherSkills, skills } = req.body;
         const skilled_id = req.skilledInfo._id;
+
+        // Check if both otherSkills and skills are empty
+        if ((!otherSkills || otherSkills.length === 0) && (!skills || skills.length === 0)) {
+            res.status(400).send({ error: "Please select skill or refer skill to admin." });
+            return;
+        }
         
         //OTHER SKILL
         // Create multiple OtherSkill objects if otherSkills is provided
@@ -50,7 +57,7 @@ const createSkills = async (req, res) => {
 
                     //if false
                     if (existingOtherSkill.skillIsVerified === 'false') {
-                        res.status(400).send({ error: `Skill "${skill}" is already requested and disapproved.` });
+                        res.status(400).send({ error: `Skill "${skill}" is already requested and it was not qualified.` });
                         return;
                     }
                     
@@ -67,43 +74,45 @@ const createSkills = async (req, res) => {
                 }
             }
 
-
             const otherSkillsToAdd = uniqueOtherSkills.map(otherSkill => ({
                 skilled_id,
                 otherSkills: otherSkill
             }));
             const otherSkillsAdded = await OtherSkill.insertMany(otherSkillsToAdd);
-        }
 
+        // Create a notification after adding otherSkills
+        const notification = await AdminNotification.create({
+            skilled_id,
+            message: `requested skill.`,
+            // url: `https://samplekasawapp.onrender.com/api/admin/getOne/Barangay/${skilledBClearance._id}`,
+            urlReact:`/SkilledWorker/Experience`
+        });
+        }
         //SKILL
-        const skillsToAdd = req.body.skills.map(skillName => ({ ...skillName, skilled_id }));
-
-        // Check for empty skill names and duplicate skill names
-        const existingSkills = await Skill.find({ skilled_id });
-        const existingSkillNames = existingSkills.map(skill => skill.skillName);
-        const newSkills = [];
-
-        if (skillsToAdd.length === 0) {
-            res.status(400).send({ error: "Please select skill." });
-            return;
-        }
-
-        for (const skill of skillsToAdd) {
-            if (!skill.skillName || skill.skillName === "Select") {
-                res.status(400).send({ error: "Please select skill." });
-                return;
+        const skillsToAdd = [];
+        if (skills && skills.length > 0 && Array.isArray(skills)) {
+            for (const skillName of skills) {
+                if (skillName.skillName && skillName.skillName !== "Select") {
+                    skillsToAdd.push({ ...skillName, skilled_id });
+                }
             }
 
-            if (existingSkillNames.includes(skill.skillName)) {
-                res.status(400).send({ error: `Please remove repeating skill. ` });
-                return;
+            const existingSkills = await Skill.find({ skilled_id });
+            const existingSkillNames = existingSkills.map(skill => skill.skillName);
+            const newSkills = [];
+
+            for (const skill of skillsToAdd) {
+                if (existingSkillNames.includes(skill.skillName)) {
+                    res.status(400).send({ error: `Please remove repeating skill.` });
+                    return;
+                }
+
+                existingSkillNames.push(skill.skillName);
+                newSkills.push(skill);
             }
 
-            existingSkillNames.push(skill.skillName);
-            newSkills.push(skill);
+            const skillsSaved = await Skill.insertMany(newSkills);
         }
-
-        const skills = await Skill.insertMany(newSkills);
 
         res.status(201).send({ message: 'Successfully added.' });
     } catch (error) {
@@ -111,7 +120,6 @@ const createSkills = async (req, res) => {
     }
 };
 
-// CREATE skill 
 const createSkill = async(req, res)=>{
     const {skillName} = req.body
 

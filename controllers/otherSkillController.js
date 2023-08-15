@@ -5,9 +5,83 @@ const ClientInfo = require('../models/clientInfo')
 const AdminSkill = require('../models/adminSkill')
 const SkilledNotification = require('../models/skilledNotification')
 const ClientNotification = require('../models/clientNotification')
-
+const AdminNotification = require('../models/adminNotification')
 const mongoose = require('mongoose')
 
+//create otherSkill for client
+const createOtherSkills = async (req, res) => {
+    try {
+        const { otherSkills } = req.body;
+        const client_id = req.clientInfo._id;
+        
+        //OTHER SKILL
+        //if other skill is empty
+        if (!otherSkills) {
+            res.status(400).send({ error: "Please enter skill you want to request." });
+            return;
+        }
+
+        const uniqueOtherSkills = [...new Set(otherSkills)]; // Remove duplicates
+        if (uniqueOtherSkills.length !== otherSkills.length) {
+            res.status(400).send({ error: "Please remove repeating request skill." });
+            return;
+        }
+
+         //if otherSkills exists to both OtherSkill and AdminSkill documents
+         for (const skill of uniqueOtherSkills) {
+            // Check if the otherSkill is already saved in OtherSkill
+            const existingOtherSkill = await OtherSkill.findOne({
+                otherSkills: skill
+            });
+
+            if (existingOtherSkill) {
+
+                //if pending
+                if (existingOtherSkill.skillIsVerified === 'pending') {
+                    res.status(400).send({ error: `Skill "${skill}" is already requested, please wait for it to be approve.` });
+                    return;
+                }
+
+                //if false
+                if (existingOtherSkill.skillIsVerified === 'false') {
+                    res.status(400).send({ error: `Skill "${skill}" is already requested and it was not qualified.` });
+                    return;
+                }
+                
+            }
+
+            // Check if the otherSkill is already saved in AdminSkill
+            const existingAdminSkill = await AdminSkill.findOne({
+                skill: skill
+            });
+
+            if (existingAdminSkill) {
+                res.status(400).send({ error: `Skill "${skill}" already exists in the list of skills.` });
+                return;
+            }
+        }
+
+        const otherSkillsToAdd = uniqueOtherSkills.map(otherSkill => ({
+            client_id,
+            otherSkills: otherSkill
+        }));
+
+        // Use the create method to insert the array of documents
+        const otherSkillsAdded = await OtherSkill.create(otherSkillsToAdd);
+
+        // Create a notification after adding otherSkills
+        const notification = await AdminNotification.create({
+            client_id,
+            message: `requested skill.`,
+            // url: `https://samplekasawapp.onrender.com/api/admin/getOne/Barangay/${skilledBClearance._id}`,
+            urlReact:`/SkilledWorker/Experience`
+        });
+
+        res.status(201).send({ message: 'Successfully added.' });
+    } catch (error) {
+        res.status(400).send(error);
+    }
+};
 
 //GET all otherSkill
 const getAllOtherSkill = async(req, res)=>{     
@@ -165,6 +239,7 @@ const updateOtherSkill = async (req, res) => {
 };
 
 module.exports = {
+    createOtherSkills,
     getAllOtherSkill,
     updateOtherSkillAccepted,
     updateOtherSkill,

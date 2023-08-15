@@ -20,6 +20,10 @@ const otherSkillSchema = new Schema({
         type: String,
         ref: 'SkilledInfo'
     },
+    client_id:{
+        type: String,
+        ref: 'ClientInfo'
+    },
     skillIsVerified:{
         type: String,
         default: "pending"
