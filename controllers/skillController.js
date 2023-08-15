@@ -17,55 +17,6 @@ const upload = require("../utils/multer")
 const moment = require('moment-timezone');
 const mongoose = require('mongoose')
 
-// const createSkills = async(req, res)=>{ 
-//     try {
-//         const {otherSkills} = req.body
-//         const skilled_id = req.skilledInfo._id;
-//         const skillsToAdd = req.body.map(skillName => ({ ...skillName, skilled_id }));
-
-//         // Check for empty skill names and duplicate skill names
-//         const existingSkills = await Skill.find({ skilled_id });
-//         //now find the skill corresponds to the skilled_id
-//         const existingSkillNames = existingSkills.map(skill => skill.skillName);
-//         const newSkills = [];
-
-//         if (skillsToAdd.length === 0) {
-//             res.status(400).send({ error: "Please select skill." });
-//             return;
-//         }
-
-//         for (const skill of skillsToAdd) {
-//             //if the value in the drop down is Select
-//             if (!skill.skillName || skill.skillName === "Select") {
-//                 res.status(400).send({ error: "Please select skill." });
-//                 return;
-//             }
-           
-//             if (existingSkillNames.includes(skill.skillName)) {
-//                 res.status(400).send({ error: `Please remove repeating skill. ` });
-//                 return;
-//             }
-           
-//             existingSkillNames.push(skill.skillName);
-//             newSkills.push(skill);
-//         }
-
-//         const skills = await Skill.insertMany(newSkills);
-
-//         // //OTHER SKILL
-//         // // Create a other skill 
-//         //     const otherSkillToAdd = await OtherSkill.create({
-//         //     skilled_id,
-//         //     otherSkills: otherSkills
-//         // });
-//         // console.log(otherSkillToAdd)
-
-//         res.status(201).send({ message: 'Successfully added.'});
-//     } catch (error) {
-//       res.status(400).send(error);
-//     }
-// }
-
 const createSkills = async (req, res) => {
     try {
         const { otherSkills } = req.body;
@@ -74,24 +25,48 @@ const createSkills = async (req, res) => {
         //OTHER SKILL
         // Create multiple OtherSkill objects if otherSkills is provided
         if (otherSkills && otherSkills.length > 0) {
+
+            //find skill that has the same value in the body
             const uniqueOtherSkills = [...new Set(otherSkills)]; // Remove duplicates
             if (uniqueOtherSkills.length !== otherSkills.length) {
                 res.status(400).send({ error: "Please remove repeating request skill." });
                 return;
             }
 
+            //if otherSkills exists to both OtherSkill and AdminSkill documents
             for (const skill of uniqueOtherSkills) {
-                // Check if the otherSkill is already saved
+                // Check if the otherSkill is already saved in OtherSkill
                 const existingOtherSkill = await OtherSkill.findOne({
-                    skilled_id,
                     otherSkills: skill
                 });
 
                 if (existingOtherSkill) {
-                    res.status(400).send({ error: `Skill "${skill}" has already been requested.` });
+
+                    //if pending
+                    if (existingOtherSkill.skillIsVerified === 'pending') {
+                        res.status(400).send({ error: `Skill "${skill}" is already requested, please wait for it to be approve.` });
+                        return;
+                    }
+
+                    //if false
+                    if (existingOtherSkill.skillIsVerified === 'false') {
+                        res.status(400).send({ error: `Skill "${skill}" is already requested and disapproved.` });
+                        return;
+                    }
+                    
+                }
+
+                // Check if the otherSkill is already saved in AdminSkill
+                const existingAdminSkill = await AdminSkill.findOne({
+                    skill: skill
+                });
+
+                if (existingAdminSkill) {
+                    res.status(400).send({ error: `Skill "${skill}" already exists in the list of skills.` });
                     return;
                 }
             }
+
 
             const otherSkillsToAdd = uniqueOtherSkills.map(otherSkill => ({
                 skilled_id,

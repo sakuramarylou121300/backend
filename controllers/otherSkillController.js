@@ -1,7 +1,10 @@
 const OtherSkill = require('../models/otherSkill')
 const ReasonSkill = require('../models/reasonSkill')
 const SkilledInfo = require('../models/skilledInfo')
+const ClientInfo = require('../models/clientInfo')
+const AdminSkill = require('../models/adminSkill')
 const SkilledNotification = require('../models/skilledNotification')
+const ClientNotification = require('../models/clientNotification')
 
 const mongoose = require('mongoose')
 
@@ -47,18 +50,35 @@ const updateOtherSkillAccepted = async (req, res) => {
             },
             { new: true }
         );
-  
-        //find skilled_id
-        const skilled_id = otherSkill.skilled_id;
-        //find requested skill
-        const otherSkillsValue = otherSkill.otherSkills;//not used
-  
-        // Create a notification after updating creating barangay
-        const notification = await SkilledNotification.create({
-            skilled_id,
-            message: `The skill you have requested is accepted.`,
-            urlReact: `/Profile/Setting`,
-        });
+
+        //add the other skill to skill list
+        //create query
+        const adminSkill = await AdminSkill.create({
+            skill: otherSkills
+        })
+
+        //notification for all 
+        // Fetch all skilled workers and clients
+        const skilledWorkers = await SkilledInfo.find();
+        const clients = await ClientInfo.find();
+ 
+        // Create notifications for all skilled workers
+        for (const skilledWorker of skilledWorkers) {
+            await SkilledNotification.create({
+                skilled_id: skilledWorker._id,
+                message: `${otherSkills} is added in the list of skills.`,
+                urlReact: `/Profile/Setting`,
+            });
+        }
+
+        // Create notifications for all clients
+        for (const client of clients) {
+            await ClientNotification.create({
+                client_id: client._id,
+                message: `${otherSkills} is added in the list of skills.`,
+                urlReact: `/Profile/Setting`,
+            });
+        }
   
         res.status(200).json({ message: 'Successfully updated.' });
     } catch (error) {
@@ -68,7 +88,7 @@ const updateOtherSkillAccepted = async (req, res) => {
 
 //if not accepted
 const updateOtherSkill = async (req, res) => {
-    const { skillIsVerified, message } = req.body;
+    const { message } = req.body;
   
     try {
         // Check for duplicate messages in request body
@@ -96,7 +116,7 @@ const updateOtherSkill = async (req, res) => {
             { _id: req.params.id },
             {
                 $push: { message },
-                $set: { skillIsVerified },
+                $set: { skillIsVerified: "false" },
             },
             { new: true }
         );
@@ -112,8 +132,8 @@ const updateOtherSkill = async (req, res) => {
         //     isVerifiedValue = 'approved';
         //     messageNotif = `The skill you have requested has been ${isVerifiedValue}.`;
         // } else 
-        if (isVerified === 'false') {
-            isVerifiedValue = 'disapproved';
+        // if (isVerified === 'false') {
+        //     isVerifiedValue = 'disapproved';
     
             const messages = await Promise.all(
             messageIds.map(async (msgId) => {
@@ -125,8 +145,8 @@ const updateOtherSkill = async (req, res) => {
             })
             );
   
-            messageNotif = `The skill you have requested has been ${isVerifiedValue}. Reason ${messages.filter(msg => msg !== null).join(', ')}.`;
-        }
+            messageNotif = `The skill you have requested is not approved. Reason ${messages.filter(msg => msg !== null).join(', ')}.`;
+        // }
   
         const skilled_id = otherSkillNotif.skilled_id;
         const skilledInfo = await SkilledInfo.findOne({ _id: skilled_id });
