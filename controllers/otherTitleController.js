@@ -19,6 +19,9 @@ const getAllOtherTitle = async(req, res)=>{
             path: 'skilled_id'
         })
         .populate({
+            path: 'categorySkill'
+        })
+        .populate({
             path: 'message.message',
             model: 'ReasonSkill',
             select: 'reason',
@@ -41,6 +44,9 @@ const getAllOtherTitleTrue = async(req, res)=>{
             path: 'skilled_id'
         })
         .populate({
+            path: 'categorySkill'
+        })
+        .populate({
             path: 'message.message',
             model: 'ReasonSkill',
             select: 'reason',
@@ -61,6 +67,9 @@ const getAllOtherTitleFalse = async(req, res)=>{
         .sort({createdAt: -1})
         .populate({
             path: 'skilled_id'
+        })
+        .populate({
+            path: 'categorySkill'
         })
         .populate({
             path: 'message.message',
