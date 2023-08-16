@@ -24,6 +24,9 @@ const clientInfoSchema = new Schema({
         type: String,
         required: true,
     },
+    passwordUpdated:{
+        type: Date,
+    },
     lname:{
         type: String,
         required: true,
@@ -197,10 +200,13 @@ clientInfoSchema.statics.signup = async function (
             throw new Error('Error uploading profile picture to Cloudinary.');
         }
     }
-    
+
+    //save the value of updated password
+    const currentDate = new Date();
     const clientInfo = await this.create({
         username, 
         password: hash,// defining the value to password password with hash 
+        passwordUpdated: currentDate,
         lname,
         fname,
         mname,

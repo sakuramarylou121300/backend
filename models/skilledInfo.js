@@ -48,6 +48,9 @@ const skilledInfoSchema = new Schema({
         type: String,
         required: true,
     },
+    passwordUpdated:{
+        type: Date,
+    },
     lname:{
         type: String,
         required: true,
@@ -195,12 +198,13 @@ skilledInfoSchema.statics.signup = async function (
     regionAddr,
     profilePictureFile  
 ){
-
+    console.log('data',lname)
     //validation
     if (!username || !password || !lname || !fname || !contact || !street || 
         !barangayAddr || !cityAddr || !provinceAddr || !regionAddr){
         throw Error('Please fill in all the blank fields.')
     }
+
 
     //check  length
     if(username.length <6){
@@ -210,6 +214,8 @@ skilledInfoSchema.statics.signup = async function (
     if(password.length <6){
         throw Error('Please enter atleast 6 characters in password.')
     }
+
+    //check phone number
     const mobileNumberRegex = /^09\d{9}$|^639\d{9}$/;
         
     if (!mobileNumberRegex.test(contact)) {
@@ -260,9 +266,12 @@ skilledInfoSchema.statics.signup = async function (
         throw new Error('Error uploading profile picture to Cloudinary.');
     }
   }
+    //save the value of updated password
+    const currentDate = new Date();
     const skilledInfo = await this.create({
         username, 
         password: hash,// defining the value to password password with hash 
+        passwordUpdated: currentDate,
         lname,
         fname,
         mname,

@@ -56,6 +56,15 @@ const adminSignUp = async(req, res) =>{
         } = req.body
         
     try{
+        //check if password is not empty
+        if (!req.body.retypePassword) {
+            throw new Error('Please confirm your password.');
+        }
+
+         //check if password is match to retype password
+        if (password!== req.body.retypePassword) {
+            throw new Error('Passwords do not match.');
+        }
         //just call the function from the model
         const adminInfo = await AdminInfo.signup(
             username, 
@@ -166,9 +175,18 @@ const adminUpdateUserName = async(req, res) =>{
 const adminUpdatePass = async(req, res) =>{
     const {id} = req.params 
     try{
-        
         //get info
         const {newpass} = req.body
+
+        //check if password is not empty
+        if (!req.body.retypePassword) {
+            throw new Error('Please confirm your password.');
+        }
+
+         //check if password is match to retype password
+        if (newpass!== req.body.retypePassword) {
+            throw new Error('Passwords do not match.');
+        }
 
         //validation
         if (!newpass){
@@ -339,24 +357,46 @@ const updateAdminPass = async(req, res) =>{
         //get info
         const {oldpass, newpass, username} = req.body
 
-        //validation
-        if (!oldpass || !newpass || !username){
-            throw Error('Please fill in all the blank fields.')
-        }
-
-        if (oldpass===newpass){
-            throw Error('Please do not enter the same current and new password.')
-        }
-
+        //find the user first
         const admin_Info = await AdminInfo.findOne({username})
         if (!admin_Info){
             throw Error('Incorrect username.')
+        }
+
+        //the user can updated password after 30 days
+        // Calculate the time difference between passwordUpdated and the current date
+        const currentTime = new Date();
+        const passwordUpdatedTime = admin_Info.passwordUpdated;
+
+        // Calculate the difference in milliseconds
+        const timeDifference = currentTime - passwordUpdatedTime;
+
+        // Calculate the difference in days
+        const daysDifference = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
+
+        // Calculate the date when the user can update the password again
+        const nextUpdateDate = new Date(passwordUpdatedTime);
+        nextUpdateDate.setDate(nextUpdateDate.getDate() + 30);
+
+        // Allow password update only if 30 days have passed since passwordUpdated
+        if (daysDifference < 30) {
+            // throw Error('You can update your password only after 30 days of the last update.');
+            throw Error(`You can only update password after 30 days of your last update. Next update will be on ${nextUpdateDate.toDateString()}.`);
+        }
+
+        //validation
+        if (!oldpass || !newpass || !username){
+            throw Error('Please fill in all the blank fields.')
         }
         //check if the password and password hash in match
         const match = await bcrypt.compare(oldpass, admin_Info.password)
         //if not match
         if(!match){
             throw Error('Incorrect password.')
+        }
+
+        if (oldpass===newpass){
+            throw Error('Please do not enter the same current and new password.')
         }
 
         //check if strong password
@@ -369,9 +409,13 @@ const updateAdminPass = async(req, res) =>{
         const hash = await bcrypt.hash(newpass, salt)
 
         //update info
+        //update info
+        const currentDate = new Date();//if greater than or equal to 30, update the passwordUpdated to the current date
         const adminInfo = await AdminInfo.findOneAndUpdate(
             {_id: req.adminInfo._id},
-            {password:hash})
+            {
+                password:hash,
+                passwordUpdated: currentDate})
 
         //success
         res.status(200).json({message: "Successfully updated."})
@@ -510,6 +554,16 @@ const adminUpdateSkilledPass = async(req, res) =>{
         
         //get info
         const {newpass} = req.body
+
+        //check if password is not empty
+        if (!req.body.retypePassword) {
+            throw new Error('Please confirm your password.');
+        }
+
+         //check if password is match to retype password
+        if (newpass!== req.body.retypePassword) {
+            throw new Error('Passwords do not match.');
+        }
 
         //validation
         if (!newpass){
@@ -673,6 +727,16 @@ const adminUpdateClientPass = async(req, res) =>{
         
         //get info
         const {newpass} = req.body
+
+        //check if password is not empty
+        if (!req.body.retypePassword) {
+            throw new Error('Please confirm your password.');
+        }
+
+         //check if password is match to retype password
+        if (newpass!== req.body.retypePassword) {
+            throw new Error('Passwords do not match.');
+        }
 
         //validation
         if (!newpass){
