@@ -34,7 +34,44 @@ const createCertificate = async(req, res)=>{
         return res.status(400).json({error: 'Please enter the expiration of the certificate.'})
     }
 
-    //for other skills
+    if (!req.file) {
+        return res.status(400).json({error: 'Please upload a photo.'})
+    }
+
+    //check if the date in the req.body is less than date today
+    const skillCertMoment = moment.utc(req.body.validUntil, 'YYYY-MM-DDTHH:mm:ss.SSSZ');
+    const validUntilDate = skillCertMoment.toDate();
+
+    if (validUntilDate < new Date()) {
+        return res.status(400).json({ error: 'Your NBI Clearance is outdated. Please submit a valid one.' });
+    }
+
+    try{
+
+        //if existing
+        if (title !== "") {
+            const certCheck = await Certificate.findOne({
+                categorySkill:categorySkill,
+                title:title,
+                validUntil: validUntil,
+                skilled_id:skilled_id,
+                skillIsVerified:{$in: ["pending", "false", "true"]},
+                isExpired: {$in: [0, 1]},
+                isDeleted: 0
+            })
+            
+            if(certCheck){
+                return res.status(400).json({error: "Skill Certificate already exists to this user."})
+            }
+        }
+        
+        if (categorySkill === "Select") {
+            res.status(400).send({ error: "Please select skill." });
+            return;
+        }
+
+        //IF ALL ARE OKAY
+        //for other skills
     if (otherTitles && otherTitles.length > 0) {
         //find if existing in otherSkill model
         const existingOtherSkill = await OtherTitle.findOne({
@@ -75,42 +112,6 @@ const createCertificate = async(req, res)=>{
             urlReact:`/SkilledWorker/Experience`
         });
     }
-
-    if (!req.file) {
-        return res.status(400).json({error: 'Please upload a photo.'})
-    }
-
-    //check if the date in the req.body is less than date today
-    const skillCertMoment = moment.utc(req.body.validUntil, 'YYYY-MM-DDTHH:mm:ss.SSSZ');
-    const validUntilDate = skillCertMoment.toDate();
-
-    if (validUntilDate < new Date()) {
-        return res.status(400).json({ error: 'Your NBI Clearance is outdated. Please submit a valid one.' });
-    }
-
-    try{
-
-        //if existing
-        if (title !== "") {
-            const certCheck = await Certificate.findOne({
-                categorySkill:categorySkill,
-                title:title,
-                validUntil: validUntil,
-                skilled_id:skilled_id,
-                skillIsVerified:{$in: ["pending", "false", "true"]},
-                isExpired: {$in: [0, 1]},
-                isDeleted: 0
-            })
-            
-            if(certCheck){
-                return res.status(400).json({error: "Skill Certificate already exists to this user."})
-            }
-        }
-        
-        if (categorySkill === "Select") {
-            res.status(400).send({ error: "Please select skill." });
-            return;
-        }
 
         result = await cloudinary.uploader.upload(req.file.path)
         let certificate = new Certificate({
