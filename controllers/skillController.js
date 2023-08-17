@@ -130,7 +130,7 @@ const createSkills = async (req, res) => {
 
         if ((!otherSkills || otherSkills.length === 0) && (!skills || skills.length === 0)) {
             res.status(400).send({ error: "Please select skill or refer skill to admin." });
-            return;
+            return; // Add this return statement
         }
 
         // Validation for otherSkills
@@ -139,6 +139,7 @@ const createSkills = async (req, res) => {
             if (uniqueOtherSkills.length !== otherSkills.length) {
                 res.status(400).send({ error: "Please remove repeating request skill." });
                 validationPassed = false;
+                return; // Add this return statement
             }
 
             for (const skill of uniqueOtherSkills) {
@@ -148,11 +149,13 @@ const createSkills = async (req, res) => {
                     if (existingOtherSkill.skillIsVerified === 'pending') {
                         res.status(400).send({ error: `Skill "${skill}" is already requested, please wait for it to be approved.` });
                         validationPassed = false;
+                        return; // Add this return statement
                     }
 
                     if (existingOtherSkill.skillIsVerified === 'false') {
                         res.status(400).send({ error: `Skill "${skill}" is already requested and it was not qualified.` });
                         validationPassed = false;
+                        return; // Add this return statement
                     }
                 }
 
@@ -160,6 +163,7 @@ const createSkills = async (req, res) => {
                 if (existingAdminSkill) {
                     res.status(400).send({ error: `Skill "${skill}" already exists in the list of skills.` });
                     validationPassed = false;
+                    return; // Add this return statement
                 }
             }
         }
@@ -180,6 +184,7 @@ const createSkills = async (req, res) => {
                 if (existingSkillNames.includes(skill.skillName)) {
                     res.status(400).send({ error: `Please remove repeating skill.` });
                     validationPassed = false;
+                    return; // Add this return statement
                 }
 
                 existingSkillNames.push(skill.skillName);
@@ -208,13 +213,12 @@ const createSkills = async (req, res) => {
                 urlReact: `/SkilledWorker/Experience`
             });
 
-            res.status(201).send({ message: 'Successfully added.' });
+            res.status(200).send({ message: 'Successfully added.' });
         }
     } catch (error) {
         res.status(400).send(error);
     }
 };
-
 
 
 const createSkill = async(req, res)=>{
