@@ -210,11 +210,11 @@ skilledInfoSchema.statics.signup = async function (
 
 
     //check  length
-    if(username.length <6){
+    if(username.length <7){
         throw Error('Please enter atleast 6 characters in username.')
     }
     //check if strong password
-    if(password.length <6){
+    if(password.length <7){
         throw Error('Please enter atleast 6 characters in password.')
     }
 
@@ -269,12 +269,10 @@ skilledInfoSchema.statics.signup = async function (
         throw new Error('Error uploading profile picture to Cloudinary.');
     }
   }
-    //save the value of updated password
-    const currentDate = new Date();
+
     const skilledInfo = await this.create({
         username, 
         password: hash,// defining the value to password password with hash 
-        passwordUpdated: currentDate,
         lname,
         fname,
         mname,

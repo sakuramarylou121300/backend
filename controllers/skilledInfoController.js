@@ -148,7 +148,7 @@ const updateSkilledUserName = async(req, res) =>{
         }
 
         //check if strong password
-        if(username.length <6){
+        if(username.length <7){
             throw Error('Please enter atleast 6 characters in username.')
         }
 
@@ -189,7 +189,7 @@ const updateSkilledPass = async(req, res) =>{
     try{
         
         //get info
-        const {oldpass, newpass, username} = req.body
+        const {oldpass, newpass, retypePassword, username} = req.body
         
         //find first the accounts
         const skilled_Info = await SkilledInfo.findOne({username})
@@ -215,12 +215,12 @@ const updateSkilledPass = async(req, res) =>{
         // Allow password update only if 30 days have passed since passwordUpdated
         if (daysDifference < 30) {
             // throw Error('You can update your password only after 30 days of the last update.');
-            throw Error(`You can only update password after 30 days of your last update. Next update will be on ${nextUpdateDate.toDateString()}.`);
+            throw Error(`You can only update password after 30 days. Next update will be on ${nextUpdateDate.toDateString()}.`);
         }
 
 
         //validation
-        if (!oldpass || !newpass || !username){
+        if (!oldpass || !newpass || !retypePassword|| !username){
             throw Error('Please enter all the blank fields.')
         }
 
@@ -237,8 +237,12 @@ const updateSkilledPass = async(req, res) =>{
 
 
         //check if strong password
-        if(newpass.length <6){
+        if(newpass.length <7){
             throw Error('Please enter atleast 6 characters in password.')
+        }
+
+        if (newpass!==retypePassword){
+            throw Error('Password confirmation is not matched.')
         }
 
         //salt for additional security of the system

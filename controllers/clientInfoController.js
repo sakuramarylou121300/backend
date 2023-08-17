@@ -126,7 +126,7 @@ const updateClientUsername = async(req, res) =>{
         }
 
         //check if strong password
-        if(username.length <6){
+        if(username.length <7){
             throw Error('Please enter atleast 6 characters in username.')
         }
 
@@ -164,7 +164,7 @@ const updateClientPass = async(req, res) =>{
     try{
         
         //get info
-        const {oldpass, newpass, username} = req.body
+        const {oldpass, newpass, retypePassword, username} = req.body
 
         //find the user first
         const client_Info = await ClientInfo.findOne({username})
@@ -194,7 +194,7 @@ const updateClientPass = async(req, res) =>{
         }
 
         //validation
-        if (!oldpass || !newpass || !username){
+        if (!oldpass || !newpass || !retypePassword || !username){
             throw Error('Please enter all blank fields.')
         }
 
@@ -210,8 +210,13 @@ const updateClientPass = async(req, res) =>{
         }
 
         //check if strong password
-        if(newpass.length <6){
+        if(newpass.length <7){
             throw Error('Please enter atleast 6 characters in password.')
+        }
+
+        //check confirmation of password
+        if (newpass!==retypePassword){
+            throw Error('Password confirmation is not matched.')
         }
 
         //salt for additional security of the system

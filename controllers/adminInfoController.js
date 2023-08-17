@@ -139,7 +139,7 @@ const adminUpdateUserName = async(req, res) =>{
         }
 
         //check if strong password
-        if(username.length <6){
+        if(username.length <7){
             throw Error('Please enter atleast 6 characters in username.')
         }
 
@@ -194,7 +194,7 @@ const adminUpdatePass = async(req, res) =>{
         }
 
         //check if strong password
-        if(newpass.length <6){
+        if(newpass.length <7){
             throw Error('Please enter atleast 6 characters in password.')
         }
 
@@ -355,7 +355,7 @@ const updateAdminPass = async(req, res) =>{
     try{
         
         //get info
-        const {oldpass, newpass, username} = req.body
+        const {oldpass, newpass, retypePassword, username} = req.body
 
         //find the user first
         const admin_Info = await AdminInfo.findOne({username})
@@ -385,7 +385,7 @@ const updateAdminPass = async(req, res) =>{
         }
 
         //validation
-        if (!oldpass || !newpass || !username){
+        if (!oldpass || !newpass || !retypePassword || !username){
             throw Error('Please fill in all the blank fields.')
         }
         //check if the password and password hash in match
@@ -400,8 +400,13 @@ const updateAdminPass = async(req, res) =>{
         }
 
         //check if strong password
-        if(newpass.length <6){
+        if(newpass.length <7){
             throw Error('Please enter atleast 6 characters in password.')
+        }
+
+        //check confirmation of password
+        if (newpass!==retypePassword){
+            throw Error('Password confirmation is not matched.')
         }
 
         //salt for additional security of the system
@@ -571,7 +576,7 @@ const adminUpdateSkilledPass = async(req, res) =>{
         }
 
         //check if strong password
-        if(newpass.length <6){
+        if(newpass.length <7){
             throw Error('Please enter atleast 6 characters in password.')
         }
 
@@ -750,7 +755,7 @@ const adminUpdateClientPass = async(req, res) =>{
         }
 
         //check if strong password
-        if(newpass.length <6){
+        if(newpass.length <7){
             throw Error('Please enter atleast 6 characters in password.')
         }
 
