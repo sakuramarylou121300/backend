@@ -114,11 +114,9 @@ adminInfoSchema.statics.signup = async function (
     const hash = await bcrypt.hash(password, salt)
 
     //save the value of updated password
-    const currentDate = new Date();
     const adminInfo = await this.create({
         username, 
         password: hash,// defining the value to password password with hash 
-        passwordUpdated: currentDate,
         lname,
         fname,
         mname,
