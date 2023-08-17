@@ -194,7 +194,7 @@ const adminUpdatePass = async(req, res) =>{
         }
 
         //check if strong password
-        if(newpass.length <=4){
+        if(newpass.length <7){
             throw Error('Please enter atleast 6 characters in password.')
         }
 
@@ -314,7 +314,7 @@ const updateAdminUserName = async(req, res) =>{
         }
 
         //check if strong password
-        if(username.length <6){
+        if(username.length <7){
             throw Error('Please enter atleast 6 characters in username.')
         }
 
@@ -400,7 +400,7 @@ const updateAdminPass = async(req, res) =>{
         }
 
         //check if strong password
-        if(newpass.length <7){
+        if(newpass.length <=4){
             throw Error('Please enter atleast 6 characters in password.')
         }
 
