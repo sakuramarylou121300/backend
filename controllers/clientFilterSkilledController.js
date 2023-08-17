@@ -703,7 +703,6 @@ const getFilterSkilledSkill = async (req, res) => {
                 skilledWorkersWithSkill.sort((a, b) => new Date(a?.createdAt) - new Date(b?.createdAt));
         }
 
-        // ... remaining code ...
         // Create a new array with the required properties, including the address
         const filteredWorkers = skilledWorkersWithSkill.map((worker) => ({
             _id: worker._id,
