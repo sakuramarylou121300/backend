@@ -114,6 +114,9 @@ const skilledInfoSchema = new Schema({
         type: Number,
         default: 0
     },
+    isDeletedDate:{
+        type: Date
+    },
     //to follow
     skilledDeact:{
         type: Number,
@@ -338,7 +341,9 @@ skilledInfoSchema.statics.login = async function(username, password){
     }
 
     //if deleted then show reason
-    if (skilledInfo.isDeleted === 1) {
+    //get current date
+    const currentDate = new Date();//if greater than or equal to 30, update the passwordUpdated to the current date
+    if (skilledInfo.isDeleted === 1 && skilledInfo.isDeletedDate > currentDate) {
         const messageIds = skilledInfo.message.map(msg => msg.message);
         
         const messages = await Promise.all(messageIds.map(async (msgId) => {
@@ -346,8 +351,24 @@ skilledInfoSchema.statics.login = async function(username, password){
             return msg.reason;
         }));
   
-        throw Error(`Your account has been deleted. Reason: ${messages.join(', ')}.`);
+        //get the value of isDeletedDate
+        const isDeletedDateValue = skilledInfo.isDeletedDate
+        throw Error(`Your account has been deactivated. Reason: ${messages.join(', ')}. Please log in again on  ${isDeletedDateValue.toDateString()} or contact us on contact we have provided below.`);
         
+    }
+    //else if the deleted date is less than the date today then update it to isDelete
+    else  if (skilledInfo.isDeleted === 1 && skilledInfo.isDeletedDate <= currentDate) {
+        //reactivate account
+        const skilledUnsetMessage = await this.updateOne({ _id: skilledInfo._id }, { $unset: { message: 1 } })
+        const skilledReactivate = await this.findOneAndUpdate(
+            { _id: skilledInfo._id },
+            {
+                $set: { 
+                    isDeleted:0
+                }
+            },
+            { new: true }
+        )
     }
 
     //check if the password and password hash in match

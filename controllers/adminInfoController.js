@@ -594,7 +594,8 @@ const adminUpdateSkilledPass = async(req, res) =>{
 }
 
 const adminDeleteSkilled = async (req, res) => {
-    const message = req.body.message;
+    const message  = req.body.message;
+    const isDeletedDate  = req.body.isDeletedDate;
   
     try {
         const hasDuplicates = message.some((obj, index) => {
@@ -614,12 +615,17 @@ const adminDeleteSkilled = async (req, res) => {
         if (hasDuplicates) {
             return res.status(400).json({ error: 'Please remove repeating reason.' });
         }
+        
+        //deactivate account
         await SkilledInfo.updateOne({ _id: req.params.id }, { $unset: { message: 1 } })
         const skilledInfo = await SkilledInfo.findOneAndUpdate(
             { _id: req.params.id },
             {
                 $push: { message },
-                $set: { isDeleted:1 }
+                $set: { 
+                    isDeleted:1,
+                    isDeletedDate: isDeletedDate
+                }
             },
             { new: true }
         )
@@ -768,6 +774,7 @@ const adminUpdateClientPass = async(req, res) =>{
 
 const adminDeleteClient = async (req, res) => {
     const message = req.body.message;
+    const isDeletedDate  = req.body.isDeletedDate;
   
     try {
         const hasDuplicates = message.some((obj, index) => {
@@ -792,7 +799,10 @@ const adminDeleteClient = async (req, res) => {
             { _id: req.params.id },
             {
                 $push: { message },
-                $set: { isDeleted:1 }
+                $set: { 
+                    isDeleted:1,
+                    isDeletedDate: isDeletedDate 
+                }
             },
             { new: true }
         )

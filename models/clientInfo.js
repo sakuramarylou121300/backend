@@ -93,6 +93,9 @@ const clientInfoSchema = new Schema({
         type: Number,
         default: 0
     },
+    isDeletedDate:{
+        type: Date
+    },
     //to follow
     clientDeact:{
         type: Number,
@@ -272,16 +275,34 @@ clientInfoSchema.statics.login = async function(username, password){
     }
 
     //if deleted then show reason
-    if (clientInfo.isDeleted === 1) {
+    const currentDate = new Date();//if greater than or equal to 30, update the passwordUpdated to the current date
+    if (clientInfo.isDeleted === 1 && clientInfo.isDeletedDate > currentDate) {
         const messageIds = clientInfo.message.map(msg => msg.message);
         
         const messages = await Promise.all(messageIds.map(async (msgId) => {
             const msg = await ReasonDeact.findOne({ _id: msgId });
             return msg.reason;
         }));
-  
-        throw Error(`Your account has been deleted because of ${messages.join(', ')}.`);
+
+        //get the value of isDeletedDate
+        const isDeletedDateValue = clientInfo.isDeletedDate
+        throw Error(`Your account has been deleted because of ${messages.join(', ')}. Please log in again on  ${isDeletedDateValue.toDateString()} or contact us on contact we have provided below.`);
         
+    }
+
+    //else if the deleted date is less than the date today then update it to isDelete
+    else  if (clientInfo.isDeleted === 1 && clientInfo.isDeletedDate <= currentDate) {
+        //reactivate account
+        const clientUnsetMessage = await this.updateOne({ _id: clientInfo._id }, { $unset: { message: 1 } })
+        const clientReactivate = await this.findOneAndUpdate(
+            { _id: clientInfo._id },
+            {
+                $set: { 
+                    isDeleted:0
+                }
+            },
+            { new: true }
+        )
     }
 
     //check if the password and password hash in match

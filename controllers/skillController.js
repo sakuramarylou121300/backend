@@ -122,42 +122,104 @@ const createSkills = async (req, res) => {
 };
 
 const createSkill = async(req, res)=>{
-    const {skillName} = req.body
-
-    // check empty fields
-    let emptyFields = []
-    
-    if(!skillName){
-        emptyFields.push('skillName')
-    }
-
-    //send message if there is an empty fields
-    if(emptyFields.length >0){
-        return res.status(400).json({error: 'Please select skill.', emptyFields})
-    }
-    
+    const {otherSkills, skillName} = req.body
+    const skilled_id = req.skilledInfo._id
     try{
-        //this is to assign the job to a specific client user, get id from clientInfo
-        const skilled_id = req.skilledInfo._id
-        const skillCheck = await Skill.findOne({
-            skillName:skillName,
-            skilled_id:skilled_id,
-            isDeleted: 0
-        })
-        
-        if(skillCheck){
-            return res.status(400).json({error: "Skill already exists to this user."})
-        }
-
-        //create query
-        const skill = await Skill.create({
-            skillName,
-            skilled_id
-        })
-        res.status(200).json({ message: 'Successfully added.'})
+        // Check if both otherSkills and skills are empty
+    if ((!otherSkills || otherSkills.length === 0) && (!skillName || skillName.length === 0)) {
+        res.status(400).send({ error: "Please select skill or refer skill to admin." });
+        return;
     }
 
-    catch(error){
+        //OTHER SKILL
+        // Create multiple OtherSkill objects if otherSkills is provided
+        if (otherSkills && otherSkills.length > 0) {
+
+            //find skill that has the same value in the body
+            const uniqueOtherSkills = [...new Set(otherSkills)]; // Remove duplicates
+            if (uniqueOtherSkills.length !== otherSkills.length) {
+                res.status(400).send({ error: "Please remove repeating request skill." });
+                return;
+            }
+
+            //if otherSkills exists to both OtherSkill and AdminSkill documents
+            for (const skill of uniqueOtherSkills) {
+                // Check if the otherSkill is already saved in OtherSkill
+                const existingOtherSkill = await OtherSkill.findOne({
+                    otherSkills: skill
+                });
+
+                if (existingOtherSkill) {
+
+                    //if pending
+                    if (existingOtherSkill.skillIsVerified === 'pending') {
+                        res.status(400).send({ error: `Skill "${skill}" is already requested, please wait for it to be approve.` });
+                        return;
+                    }
+
+                    //if false
+                    if (existingOtherSkill.skillIsVerified === 'false') {
+                        res.status(400).send({ error: `Skill "${skill}" is already requested and it was not qualified.` });
+                        return;
+                    }
+                    
+                }
+
+                // Check if the otherSkill is already saved in AdminSkill
+                const existingAdminSkill = await AdminSkill.findOne({
+                    skill: skill
+                });
+
+                if (existingAdminSkill) {
+                    res.status(400).send({ error: `Skill "${skill}" already exists in the list of skills.` });
+                    return;
+                }
+            }
+
+            //insert the other skill in the document
+            const otherSkillsToAdd = uniqueOtherSkills.map(otherSkill => ({
+                skilled_id,
+                otherSkills: otherSkill
+            }));
+            const otherSkillsAdded = await OtherSkill.insertMany(otherSkillsToAdd);
+
+            // Create a notification after adding otherSkills
+            const notification = await AdminNotification.create({
+                skilled_id,
+                message: `requested skill.`,
+                // url: `https://samplekasawapp.onrender.com/api/admin/getOne/Barangay/${skilledBClearance._id}`,
+                urlReact:`/SkilledWorker/Experience`
+            });
+        }
+    
+        //SKILL
+        if (skillName && skillName.length > 0) {
+            // if (otherSkills && otherSkills.length > 0) {
+            // check empty fields
+            if(!skillName){
+                return res.status(400).json({error: 'Please select skill.'})
+            }
+        
+            //this is to assign the job to a specific client user, get id from clientInfo
+            
+            const skillCheck = await Skill.findOne({
+                skillName:skillName,
+                skilled_id:skilled_id,
+                isDeleted: 0
+            })
+            
+            if(skillCheck){
+                return res.status(400).json({error: "Skill already exists to this user."})
+            }
+
+            //create query
+            const skill = await Skill.create({
+                skillName,
+                skilled_id
+            })
+        }
+        res.status(200).json({ message: 'Successfully added.'})
+    }catch(error){
         res.status(404).json({error: error.message})
     }
 }
