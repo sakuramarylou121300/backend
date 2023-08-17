@@ -603,6 +603,9 @@ const adminDeleteSkilled = async (req, res) => {
     const isDeletedDate  = req.body.isDeletedDate;
   
     try {
+        if(!isDeletedDate){
+            throw new Error('Please set date for account suspension.');
+        }
         const hasDuplicates = message.some((obj, index) => {
             if (obj.message.trim() === '') {
                 throw new Error('Please select a reason.');
@@ -782,6 +785,9 @@ const adminDeleteClient = async (req, res) => {
     const isDeletedDate  = req.body.isDeletedDate;
   
     try {
+        if(!isDeletedDate){
+            throw new Error('Please set date for account suspension.');
+        }
         const hasDuplicates = message.some((obj, index) => {
             if (obj.message.trim() === '') {
                 throw new Error('Please select a reason.');
