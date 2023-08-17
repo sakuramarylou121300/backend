@@ -18,109 +18,7 @@ const upload = require("../utils/multer")
 const moment = require('moment-timezone');
 const mongoose = require('mongoose')
 
-// const createSkills = async (req, res) => {
-//     try {
-//         const { otherSkills, skills } = req.body;
-//         const skilled_id = req.skilledInfo._id;
-
-//         // Check if both otherSkills and skills are empty
-//         if ((!otherSkills || otherSkills.length === 0) && (!skills || skills.length === 0)) {
-//             res.status(400).send({ error: "Please select skill or refer skill to admin." });
-//             return;
-//         }
-        
-//         //OTHER SKILL
-//         // Create multiple OtherSkill objects if otherSkills is provided
-//         if (otherSkills && otherSkills.length > 0) {
-
-//             //find skill that has the same value in the body
-//             const uniqueOtherSkills = [...new Set(otherSkills)]; // Remove duplicates
-//             if (uniqueOtherSkills.length !== otherSkills.length) {
-//                 res.status(400).send({ error: "Please remove repeating request skill." });
-//                 return;
-//             }
-
-//             //if otherSkills exists to both OtherSkill and AdminSkill documents
-//             for (const skill of uniqueOtherSkills) {
-//                 // Check if the otherSkill is already saved in OtherSkill
-//                 const existingOtherSkill = await OtherSkill.findOne({
-//                     otherSkills: skill
-//                 });
-
-//                 if (existingOtherSkill) {
-
-//                     //if pending
-//                     if (existingOtherSkill.skillIsVerified === 'pending') {
-//                         res.status(400).send({ error: `Skill "${skill}" is already requested, please wait for it to be approve.` });
-//                         return;
-//                     }
-
-//                     //if false
-//                     if (existingOtherSkill.skillIsVerified === 'false') {
-//                         res.status(400).send({ error: `Skill "${skill}" is already requested and it was not qualified.` });
-//                         return;
-//                     }
-                    
-//                 }
-
-//                 // Check if the otherSkill is already saved in AdminSkill
-//                 const existingAdminSkill = await AdminSkill.findOne({
-//                     skill: skill
-//                 });
-
-//                 if (existingAdminSkill) {
-//                     res.status(400).send({ error: `Skill "${skill}" already exists in the list of skills.` });
-//                     return;
-//                 }
-//             }
-
-//             //insert the other skill in the document
-//             const otherSkillsToAdd = uniqueOtherSkills.map(otherSkill => ({
-//                 skilled_id,
-//                 otherSkills: otherSkill
-//             }));
-//             const otherSkillsAdded = await OtherSkill.insertMany(otherSkillsToAdd);
-
-//         // Create a notification after adding otherSkills
-//         const notification = await AdminNotification.create({
-//             skilled_id,
-//             message: `requested skill.`,
-//             // url: `https://samplekasawapp.onrender.com/api/admin/getOne/Barangay/${skilledBClearance._id}`,
-//             urlReact:`/SkilledWorker/Experience`
-//         });
-//         }
-//         //SKILL
-//         const skillsToAdd = [];
-//         if (skills && skills.length > 0 && Array.isArray(skills)) {
-//             for (const skillName of skills) {
-//                 if (skillName.skillName && skillName.skillName !== "Select") {
-//                     skillsToAdd.push({ ...skillName, skilled_id });
-//                 }
-//             }
-
-//             const existingSkills = await Skill.find({ skilled_id });
-//             const existingSkillNames = existingSkills.map(skill => skill.skillName);
-//             const newSkills = [];
-
-//             for (const skill of skillsToAdd) {
-//                 if (existingSkillNames.includes(skill.skillName)) {
-//                     res.status(400).send({ error: `Please remove repeating skill.` });
-//                     return;
-//                 }
-
-//                 existingSkillNames.push(skill.skillName);
-//                 newSkills.push(skill);
-//             }
-
-//             const skillsSaved = await Skill.insertMany(newSkills);
-//         }
-
-//         res.status(201).send({ message: 'Successfully added.' });
-//     } catch (error) {
-//         res.status(400).send(error);
-//     }
-// };
-
+//many skills
 const createSkills = async (req, res) => {
     try {
         const { otherSkills, skills } = req.body;
@@ -225,11 +123,14 @@ const createSkill = async(req, res)=>{
     const {otherSkills, skillName} = req.body
     const skilled_id = req.skilledInfo._id
     try{
-        // Check if both otherSkills and skills are empty
-    if ((!otherSkills || otherSkills.length === 0) && (!skillName || skillName.length === 0)) {
-        res.status(400).send({ error: "Please select skill or refer skill to admin." });
-        return;
-    }
+
+        let validationPassed = true; // Track if validation passes
+
+            // Check if both otherSkills and skills are empty
+        if ((!otherSkills || otherSkills.length === 0) && (!skillName || skillName.length === 0)) {
+            res.status(400).send({ error: "Please select skill or refer skill to admin." });
+            return;
+        }
 
         //OTHER SKILL
         // Create multiple OtherSkill objects if otherSkills is provided
@@ -239,6 +140,7 @@ const createSkill = async(req, res)=>{
             const uniqueOtherSkills = [...new Set(otherSkills)]; // Remove duplicates
             if (uniqueOtherSkills.length !== otherSkills.length) {
                 res.status(400).send({ error: "Please remove repeating request skill." });
+                validationPassed = false;
                 return;
             }
 
@@ -254,12 +156,14 @@ const createSkill = async(req, res)=>{
                     //if pending
                     if (existingOtherSkill.skillIsVerified === 'pending') {
                         res.status(400).send({ error: `Skill "${skill}" is already requested, please wait for it to be approve.` });
+                        validationPassed = false;
                         return;
                     }
 
                     //if false
                     if (existingOtherSkill.skillIsVerified === 'false') {
                         res.status(400).send({ error: `Skill "${skill}" is already requested and it was not qualified.` });
+                        validationPassed = false;
                         return;
                     }
                     
@@ -272,24 +176,25 @@ const createSkill = async(req, res)=>{
 
                 if (existingAdminSkill) {
                     res.status(400).send({ error: `Skill "${skill}" already exists in the list of skills.` });
+                    validationPassed = false;
                     return;
                 }
             }
 
-            //insert the other skill in the document
-            const otherSkillsToAdd = uniqueOtherSkills.map(otherSkill => ({
-                skilled_id,
-                otherSkills: otherSkill
-            }));
-            const otherSkillsAdded = await OtherSkill.insertMany(otherSkillsToAdd);
+            // //insert the other skill in the document
+            // const otherSkillsToAdd = uniqueOtherSkills.map(otherSkill => ({
+            //     skilled_id,
+            //     otherSkills: otherSkill
+            // }));
+            // const otherSkillsAdded = await OtherSkill.insertMany(otherSkillsToAdd);
 
-            // Create a notification after adding otherSkills
-            const notification = await AdminNotification.create({
-                skilled_id,
-                message: `requested skill.`,
-                // url: `https://samplekasawapp.onrender.com/api/admin/getOne/Barangay/${skilledBClearance._id}`,
-                urlReact:`/SkilledWorker/Experience`
-            });
+            // // Create a notification after adding otherSkills
+            // const notification = await AdminNotification.create({
+            //     skilled_id,
+            //     message: `requested skill.`,
+            //     // url: `https://samplekasawapp.onrender.com/api/admin/getOne/Barangay/${skilledBClearance._id}`,
+            //     urlReact:`/SkilledWorker/Experience`
+            // });
         }
     
         //SKILL
@@ -309,17 +214,47 @@ const createSkill = async(req, res)=>{
             })
             
             if(skillCheck){
-                return res.status(400).json({error: "Skill already exists to this user."})
+                res.status(400).json({error: "Skill already exists to this user."})
+                validationPassed = false;
+                return 
             }
 
-            //create query
-            const skill = await Skill.create({
-                skillName,
-                skilled_id
-            })
+            // //create query
+            // const skill = await Skill.create({
+            //     skillName,
+            //     skilled_id
+            // })
         }
-        res.status(200).json({ message: 'Successfully added.'})
-    }catch(error){
+        //success
+        if (validationPassed) {
+            if (otherSkills && otherSkills.length > 0) {
+                const uniqueOtherSkills = [...new Set(otherSkills)];
+                const otherSkillsToAdd = uniqueOtherSkills.map(otherSkill => ({
+                    skilled_id,
+                    otherSkills: otherSkill
+                }));
+                const otherSkillsAdded = await OtherSkill.insertMany(otherSkillsToAdd);
+            }
+
+            if (skillsToAdd.length > 0) {
+                // const skillsSaved = await Skill.insertMany(skillsToAdd);
+                const skill = await Skill.create({
+                        skillName,
+                        skilled_id
+                    })
+            }
+
+            // Create notification
+            const notification = await AdminNotification.create({
+                skilled_id,
+                message: `requested skill.`,
+                urlReact: `/SkilledWorker/Experience`
+            });
+
+            res.status(200).json({ message: 'Successfully added.'})
+    
+        }
+       }catch(error){
         res.status(404).json({error: error.message})
     }
 }
