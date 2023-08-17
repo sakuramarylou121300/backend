@@ -15,10 +15,9 @@ const createOtherSkills = async (req, res) => {
         const client_id = req.clientInfo._id;
         
         //OTHER SKILL
-        //if other skill is empty
-        if (!otherSkills) {
-            res.status(400).send({ error: "Please enter skill you want to request." });
-            return;
+        if ((!otherSkills || otherSkills.length === 0) && (!skills || skills.length === 0)) {
+            res.status(400).send({ error: "Please enter the skill you want to refer to admin." });
+            return; // Add this return statement
         }
 
         const uniqueOtherSkills = [...new Set(otherSkills)]; // Remove duplicates
