@@ -5,7 +5,7 @@ const Schema = mongoose.Schema
 const commentSchema = new Schema({
     star: {
         type: Number,
-        default: 0
+        // default: 0
     },
     comment:{
         type: String

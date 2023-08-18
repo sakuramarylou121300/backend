@@ -465,7 +465,7 @@ const createClientComment = async (req, res) => {
         let emptyFields = []
 
         //check if star is empty
-        if (!star || star === 0) {
+        if (!star || req.body.star <= 0) {
             return res.status(400).json({ error: 'Please rate the skilled worker first.' });
         }
 
