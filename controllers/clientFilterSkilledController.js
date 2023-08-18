@@ -113,8 +113,76 @@ const getFilterSkilled = async (req, res) => {
                 select: "skill",
             },
         })
+        .populate({
+            path: "skilledReq",
+            match: { 
+                reqStatus: "reqCompleted",
+                // adminSkill_id: skillId // Filter based on the specific skill_id 
+            },
+            populate: ({
+                path: "skill_id",
+                select: "skillName", // Assuming 'skill' is the field in 'AdminSkill' model that holds the skill name
+                populate:{
+                    path: 'skillName',
+                    select: 'skill',
+                    // match: {
+                    //     "skillName._id": skillId
+                    // }
+                }
+            }),
+        })
+        .populate({
+            path: "skilledReview",
+            match: { 
+                isDeleted: 0,
+                // adminSkill_id: skillId // Filter based on the specific skill_id  
+            }
+        })
+
+        //output
+        // Create a new array with the required properties, including the address
+        const filteredWorkers = skilledInfoUpdated.map((worker) => {
+
+            // Count the completed requests with reqStatus: "reqCompleted"
+            const completedReqCount = worker.skilledReq.filter((req) => req.reqStatus === "reqCompleted").length;
+            // Count the completed requests with reqStatus: "reqCompleted"
+            const countReview = worker.skilledReview.filter((req) => req.isDeleted === 0).length;
+
+            return{
+                _id: worker._id,
+                username: worker.username,
+                password: worker.password,
+                lname: worker.lname,
+                fname: worker.fname,
+                mname: worker.mname,
+                // contact: worker.contact,
+                houseNo: worker.houseNo,
+                street: worker.street,
+                barangayAddr: worker.barangayAddr,
+                cityAddr: worker.cityAddr,
+                provinceAddr: worker.provinceAddr,
+                regionAddr: worker.regionAddr,
+                addIsVerified: worker.addIsVerified,
+                // otp: worker.otp,
+                idIsVerified: worker.idIsVerified,
+                userIsVerified: worker.userIsVerified,
+                isDeleted: worker.isDeleted,
+                skilledDeact: worker.skilledDeact,
+                message: worker.message,
+                createdAt: worker.createdAt,
+                updatedAt: worker.updatedAt,
+                __v: worker.__v,
+                skills: worker.skills,
+                skilledReq: worker.skilledReq, // Include the skilledReq field
+                skilledReview: worker.skilledReview, // Include the skilledReview field
+                completedReqCount: completedReqCount, // Include the completedReqCount
+                countReview: countReview, // Include the reviews
+                id: worker.id
+            }
+
+        });
   
-        res.status(200).json(skilledInfoUpdated);
+        res.status(200).json(filteredWorkers);
         } 
     } catch (error) {
       res.status(400).json({ error: error.message });
