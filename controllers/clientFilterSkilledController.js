@@ -657,7 +657,7 @@ const getFilterSkilledSkill = async (req, res) => {
             path: "skilledReview",
             match: { 
                 isDeleted: 0,
-                // adminSkill_id: skillId // Filter based on the specific skill_id  
+                adminSkill_id: skillId // Filter based on the specific skill_id  
             }
         })
         // Get all the skills registered to the admin
