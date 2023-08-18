@@ -718,13 +718,39 @@ const updateClientComment = async (req, res) => {
       return res.status(404).json({ error: 'Invalid id' });
     }
    
-    if (req.body.star === 0) {
-      return res.status(400).json({ message: 'Please select your skill before submitting.' });
+    //check if star is empty
+    if (!req.body.star || req.body.star <= 0) {
+        return res.status(400).json({ error: 'Please rate the skilled worker first.' });
     }
   
     try {
 
         let clientComment = await ClientComment.findById(req.params.id);
+
+        //can only update comment 15 days after completed
+        // Calculate the time difference between passwordUpdated and the current date
+        const currentTime = new Date();
+        const commentUpdatedTime = clientComment.createdAt;
+        console.log(commentUpdatedTime)
+
+        // Calculate the difference in milliseconds
+        const timeDifference = currentTime - commentUpdatedTime;
+
+        // Calculate the difference in days
+        const daysDifference = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
+
+        // // Calculate the date when the user can update the password again
+        // const nextUpdateDate = new Date(commentUpdatedTime);
+        // nextUpdateDate.setDate(nextUpdateDate.getDate() + 15);
+
+        // Allow password update only if 30 days have passed since passwordUpdated
+        if (daysDifference >= 15) {
+            // throw Error('You can update your password only after 30 days of the last update.');
+            throw Error(`You cannot update feedback after 15 days of completing the request.`);
+        }
+
+        const clientCommentValue = clientComment.createdAt
+        console.log(clientCommentValue)
   
         // Get the previous rating value
         const previousRating = clientComment.star;
