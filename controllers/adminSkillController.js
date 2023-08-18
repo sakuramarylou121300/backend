@@ -1,4 +1,8 @@
 const AdminSkill = require('../models/adminSkill') //for CRUD of skill (admin)
+const SkilledInfo = require('../models/skilledInfo')
+const ClientInfo = require('../models/clientInfo')
+const SkilledNotification = require('../models/skilledNotification')
+const ClientNotification = require('../models/clientNotification')
 const Info = require('../models/skilledInfo')
 const mongoose = require('mongoose')
 
@@ -34,7 +38,31 @@ const createSkill = async(req, res)=>{
         //create new skill
         const newSkill = new AdminSkill({skill})
         await newSkill.save()
-        res.status(200).json(newSkill)
+
+        //notification for all 
+        // Fetch all skilled workers and clients
+        const skilledWorkers = await SkilledInfo.find();
+        const clients = await ClientInfo.find();
+ 
+        // Create notifications for all skilled workers
+        for (const skilledWorker of skilledWorkers) {
+            await SkilledNotification.create({
+                skilled_id: skilledWorker._id,
+                message: `${skill} is added in the list of skills.`,
+                urlReact: `/Profile/Setting`,
+            });
+        }
+
+        // Create notifications for all clients
+        for (const client of clients) {
+            await ClientNotification.create({
+                client_id: client._id,
+                message: `${skill} is added in the list of skills.`,
+                urlReact: `/`,
+            });
+        }
+  
+        res.status(200).json({message: "Successfully added."})
     }
     catch(error){
         res.status(404).json({error: error.message})
@@ -87,9 +115,15 @@ const updateSkill = async(req, res) =>{
         return res.status(400).json({error: "Please enter skill."})
     }
 
+    //update
     const checkAdminSkill = await AdminSkill.findOne({skill})
         if(checkAdminSkill) return res.status(400).json({error: 'This skill already exists.'})
         
+    //value of previous skill
+    const findSkillPreValue = await AdminSkill.findOne({_id: id})
+    const skillPreValue = findSkillPreValue.skill
+    // console.log(skillPreValue)
+
      //delete query
      const adminSkill = await AdminSkill.findOneAndUpdate({_id: id},{
          ...req.body //get new value
@@ -98,6 +132,29 @@ const updateSkill = async(req, res) =>{
      //check if not existing
      if (!adminSkill){
         return res.status(404).json({error: 'Skill not found'})
+    }
+
+    //notification for all 
+    // Fetch all skilled workers and clients
+    const skilledWorkers = await SkilledInfo.find();
+    const clients = await ClientInfo.find();
+
+    // Create notifications for all skilled workers
+    for (const skilledWorker of skilledWorkers) {
+        await SkilledNotification.create({
+            skilled_id: skilledWorker._id,
+            message: `${skillPreValue} is updated to  ${skill}.`,
+            urlReact: `/Profile/Setting`,
+        });
+    }
+
+    // Create notifications for all clients
+    for (const client of clients) {
+        await ClientNotification.create({
+            client_id: client._id,
+            message: `${skillPreValue} is updated to  ${skill}.`,
+            urlReact: `/`,
+        });
     }
 
     res.status(200).json({message: 'Successfully updated'})

@@ -73,7 +73,7 @@ const createOtherSkills = async (req, res) => {
             client_id,
             message: `requested skill.`,
             // url: `https://samplekasawapp.onrender.com/api/admin/getOne/Barangay/${skilledBClearance._id}`,
-            urlReact:`/SkilledWorker/Experience`
+            urlReact:`/Kasaw-App/SkillOptions-Request`
         });
 
         res.status(201).send({ message: 'Successfully added.' });
@@ -202,7 +202,7 @@ const updateOtherSkillAccepted = async (req, res) => {
             await ClientNotification.create({
                 client_id: client._id,
                 message: `${otherSkills} is added in the list of skills.`,
-                urlReact: `/Profile/Setting`,
+                urlReact: `/`,
             });
         }
   

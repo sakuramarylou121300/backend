@@ -114,8 +114,6 @@ const updateOtherTitleAccepted = async (req, res) => {
         //notification for all 
         // Fetch all Titleed workers and clients
         const skilledWorkers = await SkilledInfo.find();
-        const clients = await ClientInfo.find();
-
 
         //find the value of categorySkill
         const categorySkillValue = await AdminSkill.findOne({
@@ -130,15 +128,6 @@ const updateOtherTitleAccepted = async (req, res) => {
             await SkilledNotification.create({
                 skilled_id: skilledWorker._id,
                 message: `${otherTitles} is added in the skill of ${skillValue}.`,
-                urlReact: `/Profile/Setting`,
-            });
-        }
-
-        // Create notifications for all clients
-        for (const client of clients) {
-            await ClientNotification.create({
-                client_id: client._id,
-                message: `${otherTitle} is added in the skill of ${skillValue}.`,
                 urlReact: `/Profile/Setting`,
             });
         }

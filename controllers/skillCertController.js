@@ -101,7 +101,8 @@ const createCertificate = async(req, res)=>{
 
         const otherTitleAdd = await OtherTitle.create({
             categorySkill: categorySkill,
-            otherTitles:otherTitles
+            otherTitles:otherTitles,
+            skilled_id: skilled_id
         })
 
         // Create a notification after adding otherSkills

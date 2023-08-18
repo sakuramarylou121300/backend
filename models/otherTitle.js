@@ -23,7 +23,7 @@ const otherTitleSchema = new Schema({
     },
     skilled_id:{
         type: String,
-        ref: 'TitleedInfo'
+        ref: 'SkilledInfo'
     },
     client_id:{
         type: String,

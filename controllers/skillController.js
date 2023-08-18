@@ -108,7 +108,7 @@ const createSkills = async (req, res) => {
             const notification = await AdminNotification.create({
                 skilled_id,
                 message: `requested skill.`,
-                urlReact: `/SkilledWorker/Experience`
+                urlReact: `/Kasaw-App/SkillOptions-Request`
             });
 
             res.status(200).send({ message: 'Successfully added.' });
@@ -247,7 +247,7 @@ const createSkill = async(req, res)=>{
             const notification = await AdminNotification.create({
                 skilled_id,
                 message: `requested skill.`,
-                urlReact: `/SkilledWorker/Experience`
+                urlReact: `/Kasaw-App/SkillOptions-Request`
             });
 
             res.status(200).json({ message: 'Successfully added.'})
