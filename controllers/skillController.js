@@ -464,6 +464,10 @@ const createClientComment = async (req, res) => {
         //check if the star is empty else click cancel
         let emptyFields = []
 
+        
+        if(!star){
+            return res.status(400).json({error: 'Please select your rate before submitting.'});
+        }
         if(star === 0){
             return res.status(400).json({error: 'Please select your rate before submitting.'});
         }
