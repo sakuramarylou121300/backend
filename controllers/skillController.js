@@ -744,7 +744,7 @@ const updateClientComment = async (req, res) => {
         // nextUpdateDate.setDate(nextUpdateDate.getDate() + 15);
 
         // Allow password update only if 30 days have passed since passwordUpdated
-        if (daysDifference >= 15) {
+        if (daysDifference > 15) {
             // throw Error('You can update your password only after 30 days of the last update.');
             throw Error(`You cannot update feedback after 15 days of completing the request.`);
         }
