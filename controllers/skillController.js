@@ -1196,7 +1196,7 @@ const createClientReq = async (req, res) => {
     
     try {
         const client_id = req.clientInfo._id;
-        const { skill_id, skilled_id } = req.params; // Retrieve skill_id from params
+        const { adminSkill_id, skill_id, skilled_id } = req.params; // Retrieve skill_id from params
         const { reqDate } = req.body;
 
         // If empty
@@ -1230,6 +1230,7 @@ const createClientReq = async (req, res) => {
 
         let newRequest = await ClientReq({
             reqDate: reqDate,
+            adminSkill_id: adminSkill_id,
             skill_id: skill_id,
             skilled_id: skilled_id,
             client_id: client_id

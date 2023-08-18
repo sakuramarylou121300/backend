@@ -103,7 +103,7 @@ router.patch('/update/skilledReply/:id/:comment_id', requireAuth, updateSkilledR
 router.patch('/delete/skilledReply/:id', requireAuth, deleteSkilledReply)
 
 //this is for the labor req
-router.post('/post/req/:skill_id/:skilled_id', clientRequireAuth, createClientReq)
+router.post('/post/req/:adminSkill_id/:skill_id/:skilled_id', clientRequireAuth, createClientReq)
 router.get('/getAll/client/req', clientRequireAuth, getAllClientReq)
 router.get('/getAll/client/req/accepted', clientRequireAuth ,clientVerified, getAllClientReqAccepted)
 router.get('/getAll/client/req/completed', clientRequireAuth ,getAllClientReqCompleted)

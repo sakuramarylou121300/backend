@@ -184,6 +184,16 @@ skilledInfoSchema.virtual('skillNbi', {
     localField: '_id',
     foreignField: 'skilled_id'
 });
+skilledInfoSchema.virtual('skilledReq', {
+    ref: 'ClientReq',
+    localField: '_id',
+    foreignField: 'skilled_id'
+});
+skilledInfoSchema.virtual('skilledReview', {
+    ref: 'ClientComment',
+    localField: '_id',
+    foreignField: 'skilledId'
+});
 //static sign up method
 //when using this, suggest to use regular function
 skilledInfoSchema.statics.signup = async function (

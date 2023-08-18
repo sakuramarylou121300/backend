@@ -19,6 +19,10 @@ const clientReqSchema = new Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "SkilledInfo",
     },
+    adminSkill_id:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "AdminSkill",
+    },
     reqStatus:{
         type: String,
         default: 'pending',
