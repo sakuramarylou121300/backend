@@ -21,6 +21,10 @@ const otherTitleSchema = new Schema({
         default: '',
         trim: true
     },
+    skillCert_id:{
+        type: String,
+        ref: 'SkillCert'
+    },
     skilled_id:{
         type: String,
         ref: 'SkilledInfo'

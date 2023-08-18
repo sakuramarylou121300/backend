@@ -6,6 +6,7 @@ const SkilledInfo = require('../models/skilledInfo')
 const ClientInfo = require('../models/clientInfo')
 const SkilledNotification = require('../models/skilledNotification')
 const ClientNotification = require('../models/clientNotification')
+const Certificate = require('../models/skillCert')
 
 const mongoose = require('mongoose')
 
@@ -85,7 +86,7 @@ const getAllOtherTitleFalse = async(req, res)=>{
 }
 //if accepted
 const updateOtherTitleAccepted = async (req, res) => {
-    const { categorySkill, otherTitles } = req.body;
+    const { categorySkill, otherTitles,  skillCert_id} = req.body;
   
     try {
         //update if approve or not
@@ -110,6 +111,12 @@ const updateOtherTitleAccepted = async (req, res) => {
             skill_id: categorySkill, 
             title: otherTitles
         })
+
+        //update skilled worker skill
+        const updateSkilledWorkerCert = await Certificate.findOneAndUpdate({_id: skillCert_id},{
+            title: otherTitles
+        })
+        console.log(updateSkilledWorkerCert)
 
         //notification for all 
         // Fetch all Titleed workers and clients
@@ -140,7 +147,7 @@ const updateOtherTitleAccepted = async (req, res) => {
 
 //if not accepted
 const updateOtherTitle = async (req, res) => {
-    const { message } = req.body;
+    const { skillCert_id, message } = req.body;
   
     try {
         // Check for duplicate messages in request body
@@ -172,6 +179,12 @@ const updateOtherTitle = async (req, res) => {
             },
             { new: true }
         );
+
+        //update skilled worker skill
+        const updateSkilledWorkerCert = await Certificate.findOneAndUpdate({_id: skillCert_id},{
+            title: "Requested title declined."
+        })
+        console.log(updateSkilledWorkerCert)
   
         // Notification
         const otherTitleNotif = await OtherTitle.findOne({ _id: req.params.id }).populate('message');
@@ -190,7 +203,7 @@ const updateOtherTitle = async (req, res) => {
             })
             );
   
-            messageNotif = `The certificate title you have requested is not approved. Reason ${messages.filter(msg => msg !== null).join(', ')}.`;
+            messageNotif = `The certificate title you have requested is not approved. Reason ${messages.filter(msg => msg !== null).join(', ')}. Please update your certificate detail.`;
   
         const skilled_id = otherTitleNotif.skilled_id;
         const skilledInfo = await SkilledInfo.findOne({ _id: skilled_id });
