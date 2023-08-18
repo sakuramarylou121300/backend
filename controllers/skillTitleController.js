@@ -1,4 +1,8 @@
 const Title = require('../models/skillTitle')   
+const SkilledInfo = require('../models/skilledInfo')
+const SkilledNotification = require('../models/skilledNotification')
+const AdminSkill = require('../models/adminSkill')
+
 const mongoose = require('mongoose')
 
 const createTitle = async(req, res)=>{
@@ -43,6 +47,28 @@ const createTitle = async(req, res)=>{
         //create new skill
         const newTitle = new Title({title, skill_id})
         await newTitle.save()
+
+        //notification for new skill title
+        //notification for all 
+        // Fetch all Titleed workers and clients
+        const skilledWorkers = await SkilledInfo.find();
+
+        //find the value of categorySkill
+        const categorySkillValue = await AdminSkill.findOne({
+            _id: skill_id
+        })
+        console.log(categorySkillValue)
+        const skillValue = categorySkillValue.skill
+        console.log(skillValue)
+ 
+        // Create notifications for all Titleed workers
+        for (const skilledWorker of skilledWorkers) {
+            await SkilledNotification.create({
+                skilled_id: skilledWorker._id,
+                message: `${title} is added in the skill of ${skillValue}.`,
+                urlReact: `/Profile/Setting`,
+            });
+        }
         res.status(200).json(newTitle)
     }
     catch(error){

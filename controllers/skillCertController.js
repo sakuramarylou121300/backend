@@ -99,6 +99,23 @@ const createCertificate = async(req, res)=>{
             
         }
 
+        //find if existing in skill title
+        //find the value of categorySkill
+        const titleValue = await AdminSkill.findOne({
+            _id: categorySkill
+        })
+        const existingAdminSkill = await Title.findOne({ 
+            skill_id: otherTitles,
+            title: categorySkill,
+
+        });
+
+        if (existingAdminSkill) {
+            res.status(400).send({ error: `${otherTitles} already exist in ${titleValue.skill} skill.` });
+            validationPassed = false;
+            return; // Add this return statement
+        }
+
         const otherTitleAdd = await OtherTitle.create({
             categorySkill: categorySkill,
             otherTitles:otherTitles,
