@@ -453,6 +453,7 @@ const rating = async (req, res) => {
 };
 const createClientComment = async (req, res) => {
     const id = req.params._id //this is for update when completed
+    const adminSkill_id = req.params.adminSkill_id; // Retrieve skill_id from params
     const skill_id = req.params.skill_id; // Retrieve skill_id from params
     const skilledId = req.params.skilledId;
     const client_id = req.clientInfo._id;
@@ -484,6 +485,7 @@ const createClientComment = async (req, res) => {
             comment,
             skilledId,
             client_id,
+            adminSkill_id,
             skill_id,
             star,
             photo: uploadedPhotos,
@@ -495,6 +497,7 @@ const createClientComment = async (req, res) => {
             comment,
             skilledId,
             client_id,
+            adminSkill_id,
             skill_id,
             star
         });
