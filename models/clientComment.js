@@ -10,6 +10,10 @@ const commentSchema = new Schema({
     comment:{
         type: String
     },
+    adminSkill_id:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "AdminSkill",
+    },
     skill_id:{
         type: mongoose.Schema.Types.ObjectId, 
         ref: "Skill" 
