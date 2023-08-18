@@ -154,7 +154,29 @@ const updateSkillTitle = async(req, res) =>{
         return res.status(404).json({error: 'Title not found'})
     }
 
-    res.status(200).json(skillTitle)//nadagdag
+    //notification for new skill title
+    //notification for all 
+    // Fetch all Titleed workers and clients
+    const skilledWorkers = await SkilledInfo.find();
+
+    //find the value of categorySkill
+    const categorySkillValue = await AdminSkill.findOne({
+        _id: skill_id
+    })
+    console.log(categorySkillValue)
+    const skillValue = categorySkillValue.skill
+    console.log(skillValue)
+
+    // Create notifications for all Titleed workers
+    for (const skilledWorker of skilledWorkers) {
+        await SkilledNotification.create({
+            skilled_id: skilledWorker._id,
+            message: `Newly updated title ${title} in the skill of ${skillValue}.`,
+            urlReact: `/Profile/Setting`,
+        });
+    }
+
+    res.status(200).json({message: "Successfully added."})//nadagdag
 }
 
 const deleteTitle = async(req, res)=>{
