@@ -639,7 +639,7 @@ const getFilterSkilledSkill = async (req, res) => {
             path: "skilledReq",
             match: { 
                 reqStatus: "reqCompleted",
-                // skill_id: skillId // Filter based on the specific skill_id 
+                adminSkill_id: skillId // Filter based on the specific skill_id 
             },
             populate: ({
                 path: "skill_id",

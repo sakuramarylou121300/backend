@@ -118,7 +118,6 @@ const createSkills = async (req, res) => {
     }
 };
 
-
 const createSkill = async(req, res)=>{
     const {otherSkills, skillName} = req.body
     const skilled_id = req.skilledInfo._id
@@ -236,7 +235,7 @@ const createSkill = async(req, res)=>{
                 const otherSkillsAdded = await OtherSkill.insertMany(otherSkillsToAdd);
             }
 
-            if (skillsToAdd.length > 0) {
+            if (skillName.length > 0) {
                 // const skillsSaved = await Skill.insertMany(skillsToAdd);
                 const skill = await Skill.create({
                         skillName,
