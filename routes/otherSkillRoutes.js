@@ -8,7 +8,7 @@ const {
     updateOtherSkill
 } = require('../controllers/otherSkillController')
 
-const adminControlAdmin = require('../middleware/adminControlAdmin')
+const adminControlSkilled = require('../middleware/adminControlSkilled')
 const adminAuth = require('../middleware/adminAuth')
 const {clientRequireAuth} = require('../middleware/clientRequireAuth')
 
@@ -16,10 +16,10 @@ const {clientRequireAuth} = require('../middleware/clientRequireAuth')
 router = express.Router()
 
 router.post('/post/', clientRequireAuth, createOtherSkills)
-router.get('/getAll/', adminAuth, adminControlAdmin, getAllOtherSkill)
-router.get('/getAll/approved', adminAuth, adminControlAdmin, getAllOtherSkillTrue)
-router.get('/getAll/disapproved', adminAuth, adminControlAdmin, getAllOtherSkillFalse)
-router.patch('/update/accepted/:id', adminAuth, adminControlAdmin, updateOtherSkillAccepted)
-router.patch('/update/:id', adminAuth, adminControlAdmin, updateOtherSkill)
+router.get('/getAll/', adminAuth, adminControlSkilled, getAllOtherSkill)
+router.get('/getAll/approved', adminAuth, adminControlSkilled, getAllOtherSkillTrue)
+router.get('/getAll/disapproved', adminAuth, adminControlSkilled, getAllOtherSkillFalse)
+router.patch('/update/accepted/:id', adminAuth, adminControlSkilled, updateOtherSkillAccepted)
+router.patch('/update/:id', adminAuth, adminControlSkilled, updateOtherSkill)
 //export
 module.exports = router

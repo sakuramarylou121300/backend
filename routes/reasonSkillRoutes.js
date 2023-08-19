@@ -11,6 +11,7 @@ const {
 } = require('../controllers/reasonSkillController')
 
 const adminControlAdmin = require('../middleware/adminControlAdmin')
+const adminControlSkilled = require('../middleware/adminControlSkilled')
 const adminAuth = require('../middleware/adminAuth')
 
 //instance of router
@@ -25,5 +26,9 @@ router.patch('/update/:id', adminAuth, adminControlAdmin, updateReasonSkill)
 router.patch('/update/title/:id', adminAuth, adminControlAdmin, updateReasonSkillTitle)
 router.patch('/delete/:id', adminAuth, adminControlAdmin, deleteReasonSkill)
 
+
+//this is to load for admin with access to skilled and client
+router.get('/getAll/subAdmin', adminAuth, adminControlSkilled, getAllReasonSkill)
+router.get('/getAll/title/subAdmin', adminAuth, adminControlSkilled, getAllReasonTitle)
 //export
 module.exports = router
