@@ -151,7 +151,7 @@ const createCertificate = async(req, res)=>{
                 skilled_id,
                 message: `requested certificate title.`,
                 // url: `https://samplekasawapp.onrender.com/api/admin/getOne/Barangay/${skilledBClearance._id}`,
-                urlReact:`/SkilledWorker/Experience`
+                urlReact:`/Kasaw-App/CertificateTitles-Request`
             });
         }
 
@@ -327,6 +327,12 @@ const updateCertificate = async(req,res)=>{
             return;
         }
 
+        //if both title and other title is empty
+        if ((!req.body.title || req.body.title.length === 0) && (!req.body.otherTitles || req.body.otherTitles.length === 0)) {
+            res.status(400).send({ error: "Please select certificate title or refer certificate title to admin." });
+            return;
+        }
+
         const trueCertificate = await Certificate.findOne({
                 _id: req.params.id,
                 skillIsVerified: "true",
@@ -363,19 +369,21 @@ const updateCertificate = async(req,res)=>{
             message:[]
         }
          //if existing
-         const certCheck = await Certificate.findOne({
-            _id: { $ne: req.params.id },
-            categorySkill: req.body.categorySkill,
-            title: req.body.title,
-            validUntil:req.body.validUntil,
-            skilled_id:skilled_id,
-            skillIsVerified:{$in: ["pending", "false", "true"]},
-            isExpired: {$in: [0, 1]},
-            isDeleted: 0
-        })
-        
-        if(certCheck){
-            return res.status(400).json({error: "Skill Certificate already exists to this user."})
+         if (req.body.title !== "") {
+            const certCheck = await Certificate.findOne({
+                _id: { $ne: req.params.id },
+                categorySkill: req.body.categorySkill,
+                title: req.body.title,
+                validUntil:req.body.validUntil,
+                skilled_id:skilled_id,
+                skillIsVerified:{$in: ["pending", "false", "true"]},
+                isExpired: {$in: [0, 1]},
+                isDeleted: 0
+            })
+            
+            if(certCheck){
+                return res.status(400).json({error: "Skill Certificate already exists to this user."})
+            }
         }
         certificate = await Certificate.findByIdAndUpdate(req.params.id, 
             data, {new: true})
@@ -391,6 +399,68 @@ const updateCertificate = async(req,res)=>{
             // url: `https://samplekasawapp.onrender.com/api/admin/getOne/Barangay/${skilledBClearance._id}`,
             urlReact:`/SkilledWorker/Certificates`
         });
+
+        //if other title is added
+        //for other skills
+        if (req.body.otherTitles && req.body.otherTitles.length > 0) {
+            //find if existing in otherSkill model
+            const existingOtherSkill = await OtherTitle.findOne({
+                categorySkill: req.body.categorySkill,
+                otherTitles: req.body.otherTitles
+            })
+            //find the value of categorySkill
+            const categorySkillValue = await AdminSkill.findOne({
+                _id: req.body.categorySkill
+            })
+
+            if (existingOtherSkill) {
+
+                //if pending
+                if (existingOtherSkill.titleIsVerified === 'pending') {
+                    res.status(400).send({ error: `${req.body.otherTitles} is already requested with the same skill ${categorySkillValue.skill}, please wait for it to be approve.` });
+                    return;
+                }
+
+                //if false
+                if (existingOtherSkill.titleIsVerified === 'false') {
+                    res.status(400).send({ error: `${req.body.otherTitles} with the same skill ${categorySkillValue.skill} is already requested and it was not qualified.` });
+                    return;
+                }
+                
+            }
+
+            //find if existing in skill title
+            //find the value of categorySkill
+            const titleValue = await AdminSkill.findOne({
+                _id: req.body.categorySkill
+            })
+            const existingAdminSkill = await Title.findOne({ 
+                skill_id: req.body.categorySkill,
+                title: req.body.otherTitles,
+
+            });
+
+            if (existingAdminSkill) {
+                res.status(400).send({ error: `${req.body.otherTitles} already exist in ${titleValue.skill} skill.` });
+                return; // Add this return statement
+            }
+
+            const otherTitleAdd = await OtherTitle.create({
+                skillCert_id: certificate._id,
+                categorySkill: req.body.categorySkill,
+                otherTitles:req.body.otherTitles,
+                skilled_id: skilled_id
+            })
+
+            // Create a notification after adding otherSkills
+            const notification = await Notification.create({
+                skilled_id,
+                message: `requested certificate title.`,
+                // url: `https://samplekasawapp.onrender.com/api/admin/getOne/Barangay/${skilledBClearance._id}`,
+                urlReact:`/Kasaw-App/CertificateTitles-Request`
+            });
+        }
+
             res.json({ message: 'Successfully updated.'})
    }
    catch(error){

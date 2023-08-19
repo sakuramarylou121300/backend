@@ -179,10 +179,16 @@ const updateOtherTitle = async (req, res) => {
             },
             { new: true }
         );
+        //if declined
+        //find the category skill, and other skill based on skillCert_id
+        const skillCert_idValue = await OtherTitle.findOne({_id: req.params.id})
+        console.log(skillCert_idValue)
+        //find the value of otherTitles
+        otherTitlesValue = skillCert_idValue.otherTitles
 
         //update skilled worker skill
         const updateSkilledWorkerCert = await Certificate.findOneAndUpdate({_id: skillCert_id},{
-            title: "Requested title declined."
+            title: `Requested ${otherTitlesValue} title not approved.`
         })
         console.log(updateSkilledWorkerCert)
   
@@ -203,7 +209,7 @@ const updateOtherTitle = async (req, res) => {
             })
             );
   
-            messageNotif = `The certificate title you have requested is not approved. Reason ${messages.filter(msg => msg !== null).join(', ')}. Please update your certificate detail.`;
+            messageNotif = `The certificate ${otherTitlesValue} title you have requested is not approved. Reason ${messages.filter(msg => msg !== null).join(', ')}. Please update your certificate detail.`;
   
         const skilled_id = otherTitleNotif.skilled_id;
         const skilledInfo = await SkilledInfo.findOne({ _id: skilled_id });
