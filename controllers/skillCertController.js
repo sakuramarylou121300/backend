@@ -149,7 +149,7 @@ const createCertificate = async(req, res)=>{
             // Create a notification after adding otherSkills
             const notification = await Notification.create({
                 skilled_id,
-                message: `requested certificate title.`,
+                message: `requested certificate ${otherTitles} title in ${categorySkillValue.skill} skill.`,
                 // url: `https://samplekasawapp.onrender.com/api/admin/getOne/Barangay/${skilledBClearance._id}`,
                 urlReact:`/Kasaw-App/CertificateTitles-Request`
             });
@@ -455,7 +455,7 @@ const updateCertificate = async(req,res)=>{
             // Create a notification after adding otherSkills
             const notification = await Notification.create({
                 skilled_id,
-                message: `requested certificate title.`,
+                message: `requested certificate ${req.body.otherTitles} title in ${categorySkillValue.skill} skill.`,
                 // url: `https://samplekasawapp.onrender.com/api/admin/getOne/Barangay/${skilledBClearance._id}`,
                 urlReact:`/Kasaw-App/CertificateTitles-Request`
             });

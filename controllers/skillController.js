@@ -97,19 +97,20 @@ const createSkills = async (req, res) => {
                     skilled_id,
                     otherSkills: otherSkill
                 }));
+
                 const otherSkillsAdded = await OtherSkill.insertMany(otherSkillsToAdd);
+                // Create notification
+                const otherSkillsMessage = otherSkills && otherSkills.length > 0 ? `${otherSkills.join(', ')}` : '';
+                const notification = await AdminNotification.create({
+                    skilled_id,
+                    message: `requested ${otherSkillsMessage} skill.`,
+                    urlReact: `/Kasaw-App/SkillOptions-Request`
+                });
             }
 
             if (skillsToAdd.length > 0) {
                 const skillsSaved = await Skill.insertMany(skillsToAdd);
             }
-
-            // Create notification
-            const notification = await AdminNotification.create({
-                skilled_id,
-                message: `requested skill.`,
-                urlReact: `/Kasaw-App/SkillOptions-Request`
-            });
 
             res.status(200).send({ message: 'Successfully added.' });
         }
@@ -233,6 +234,14 @@ const createSkill = async(req, res)=>{
                     otherSkills: otherSkill
                 }));
                 const otherSkillsAdded = await OtherSkill.insertMany(otherSkillsToAdd);
+
+                // Create notification
+                const otherSkillsMessage = otherSkills && otherSkills.length > 0 ? `${otherSkills.join(', ')}` : '';
+                const notification = await AdminNotification.create({
+                    skilled_id,
+                    message: `requested ${otherSkillsMessage} skill.`,
+                    urlReact: `/Kasaw-App/SkillOptions-Request`
+                });
             }
 
             if (skillName.length > 0) {
@@ -242,13 +251,6 @@ const createSkill = async(req, res)=>{
                         skilled_id
                     })
             }
-
-            // Create notification
-            const notification = await AdminNotification.create({
-                skilled_id,
-                message: `requested skill.`,
-                urlReact: `/Kasaw-App/SkillOptions-Request`
-            });
 
             res.status(200).json({ message: 'Successfully added.'})
     

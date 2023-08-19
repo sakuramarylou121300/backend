@@ -69,9 +69,10 @@ const createOtherSkills = async (req, res) => {
         const otherSkillsAdded = await OtherSkill.create(otherSkillsToAdd);
 
         // Create a notification after adding otherSkills
+        const otherSkillsMessage = otherSkills && otherSkills.length > 0 ? `${otherSkills.join(', ')}` : '';
         const notification = await AdminNotification.create({
             client_id,
-            message: `requested skill.`,
+            message: `requested ${otherSkillsMessage} skill.`,
             // url: `https://samplekasawapp.onrender.com/api/admin/getOne/Barangay/${skilledBClearance._id}`,
             urlReact:`/Kasaw-App/SkillOptions-Request`
         });
