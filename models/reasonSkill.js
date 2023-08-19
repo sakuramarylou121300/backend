@@ -8,6 +8,13 @@ const reasonSkillSchema = new Schema({
         type: String,
         default: ''
     },
+    reasonType:{
+        type: String,
+        enum:[
+            'skill',
+            'title',
+        ]
+    },
     isDeleted:{
         type: Number,
         default: 0

@@ -9,6 +9,7 @@ const createReasonSkill = async(req, res)=>{
         
         const reasonSkillCheck = await ReasonSkill.findOne({
             reason,
+            reasonType: "skill",
             isDeleted: 0
         })
         
@@ -17,9 +18,40 @@ const createReasonSkill = async(req, res)=>{
         }
 
         //create new skill
-        const newReasonSkill = new ReasonSkill({reason})
+        const newReasonSkill = new ReasonSkill({
+            reason,
+            reasonType: "skill"
+        })
         await newReasonSkill.save()
-        res.status(200).json(newReasonSkill)
+        res.status(200).json({message: "Successfully added."})
+    }
+    catch(error){
+        res.status(404).json({error: error.message})
+    }
+}
+
+const createReasonTitle = async(req, res)=>{
+
+    try{
+        const {reason} = req.body
+        
+        const reasonSkillCheck = await ReasonSkill.findOne({
+            reason,
+            reasonType: "title",
+            isDeleted: 0
+        })
+        
+        if(reasonSkillCheck){
+            return res.status(400).json({error: "Reason already exist."})
+        }
+
+        //create new skill
+        const newReasonSkill = new ReasonSkill({
+            reason,
+            reasonType: "title"
+        })
+        await newReasonSkill.save()
+        res.status(200).json({message: "Successfully added."})
     }
     catch(error){
         res.status(404).json({error: error.message})
@@ -29,7 +61,24 @@ const createReasonSkill = async(req, res)=>{
 //GET ALL ReasonSkill
 const getAllReasonSkill = async(req, res)=>{
     try{
-        const reasonSkill = await ReasonSkill.find({isDeleted: 0})
+        const reasonSkill = await ReasonSkill.find({
+            reasonType: "skill",
+            isDeleted: 0
+        })
+        .sort({reason: 1 })
+        res.status(200).json(reasonSkill)
+    }
+    catch(err){
+        return res.status(500).json({messg: err.message})
+    }
+}
+
+const getAllReasonTitle = async(req, res)=>{
+    try{
+        const reasonSkill = await ReasonSkill.find({
+            reasonType: "title",
+            isDeleted: 0
+        })
         .sort({reason: 1 })
         res.status(200).json(reasonSkill)
     }
@@ -107,7 +156,9 @@ const deleteReasonSkill = async(req, res)=>{
 }
 module.exports = {
     createReasonSkill,
+    createReasonTitle,
     getAllReasonSkill,
+    getAllReasonTitle,
     getOneReasonSkill,
     updateReasonSkill,
     deleteReasonSkill
