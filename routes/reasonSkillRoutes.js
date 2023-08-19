@@ -6,6 +6,7 @@ const {
     getAllReasonTitle,
     getOneReasonSkill,
     updateReasonSkill,
+    updateReasonSkillTitle,
     deleteReasonSkill
 } = require('../controllers/reasonSkillController')
 
@@ -21,6 +22,7 @@ router.get('/getAll/', adminAuth, adminControlAdmin, getAllReasonSkill)
 router.get('/getAll/title', adminAuth, adminControlAdmin, getAllReasonTitle)
 router.get('/getOne/:id', adminAuth, adminControlAdmin, getOneReasonSkill)
 router.patch('/update/:id', adminAuth, adminControlAdmin, updateReasonSkill)
+router.patch('/update/title/:id', adminAuth, adminControlAdmin, updateReasonSkillTitle)
 router.patch('/delete/:id', adminAuth, adminControlAdmin, deleteReasonSkill)
 
 //export

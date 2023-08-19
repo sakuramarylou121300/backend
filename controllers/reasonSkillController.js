@@ -116,7 +116,40 @@ const updateReasonSkill = async(req, res) =>{
     if(!mongoose.Types.ObjectId.isValid(id)){
         return res.status(404).json({error: 'Invalid id'})
     }
-    const existingReasonSkill = await ReasonSkill.findOne({reason, isDeleted:0});
+    const existingReasonSkill = await ReasonSkill.findOne({
+        reason, 
+        reasonType: "skill", 
+        isDeleted:0
+    });
+        if (existingReasonSkill) {
+            return res.status(400).json({ message: "Reason already exists." });
+        }
+     //delete query
+     const adminReasonSkill = await ReasonSkill.findOneAndUpdate({_id: id},{
+         ...req.body //get new value
+     })
+    
+     //check if not existing
+     if (!adminReasonSkill){
+        return res.status(404).json({error: 'ReasonSkill not found'})
+    }
+
+    res.status(200).json({message: "Successfully updated."})
+}
+
+const updateReasonSkillTitle = async(req, res) =>{
+    const {id} = req.params    
+    const {reason} = req.body
+
+    //check if id is not existing
+    if(!mongoose.Types.ObjectId.isValid(id)){
+        return res.status(404).json({error: 'Invalid id'})
+    }
+    const existingReasonSkill = await ReasonSkill.findOne({
+        reason, 
+        reasonType: "title", 
+        isDeleted:0
+    });
         if (existingReasonSkill) {
             return res.status(400).json({ message: "Reason already exists." });
         }
@@ -161,5 +194,6 @@ module.exports = {
     getAllReasonTitle,
     getOneReasonSkill,
     updateReasonSkill,
+    updateReasonSkillTitle,
     deleteReasonSkill
 }
