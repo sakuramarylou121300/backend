@@ -205,7 +205,9 @@ const adminUpdatePass = async(req, res) =>{
         //update info
         const adminInfo = await AdminInfo.findOneAndUpdate(
             {_id:id},
-            {password:hash})
+            {
+                password:hash,
+            })
 
         //success
         res.status(200).json({message: "Successfully updated."})
@@ -587,7 +589,8 @@ const adminUpdateSkilledPass = async(req, res) =>{
         //update info
         const skilledInfo = await SkilledInfo.findOneAndUpdate(
             {_id:id},
-            {password:hash})
+            {password:hash,
+            })
 
         //success
         res.status(200).json({message: "Successfully updated."})
@@ -769,7 +772,9 @@ const adminUpdateClientPass = async(req, res) =>{
         //update info
         const skilledInfo = await ClientInfo.findOneAndUpdate(
             {_id:id},
-            {password:hash})
+            {
+                password:hash,
+            })
 
         //success
         res.status(200).json({message: "Successfully updated."})
