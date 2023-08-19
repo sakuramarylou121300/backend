@@ -39,5 +39,20 @@ skillSchema.virtual('comments', {
     localField: '_id',
     foreignField: 'skill_id'
 });
+// skillSchema.virtual('comments', {
+//     ref: 'ClientComment',
+//     localField: '_id',
+//     foreignField: 'skill_id'
+// });
+skillSchema.virtual('skilledReq', {
+    ref: 'ClientReq',
+    localField: '_id',
+    foreignField: 'skill_id'
+});
+skillSchema.virtual('skilledReview', {
+    ref: 'ClientComment',
+    localField: '_id',
+    foreignField: 'skill_id'
+});
 
 module.exports = mongoose.model('Skill',skillSchema)

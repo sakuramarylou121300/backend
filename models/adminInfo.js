@@ -70,11 +70,11 @@ adminInfoSchema.statics.signup = async function (
     }
 
     //check  length
-    if(username.length <7){
+    if(username.length  <=5){
         throw Error('Please enter atleast 6 characters in user name.')
     }
     //check if strong password
-    if(password.length <7){
+    if(password.length  <=5){
         throw Error('Please enter atleast 6 characters in password.')
     }
     const mobileNumberRegex = /^09\d{9}$|^639\d{9}$/;

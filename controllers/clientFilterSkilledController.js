@@ -10,6 +10,8 @@ const SkilledNClearance = require('../models/skilledNClearance')
 const ClientBClearance = require('../models/clientBClearance') 
 const ClientNClearance = require('../models/clientNClearance') 
 const SkilledDate = require('../models/skilledDate') 
+const ClientReq = require('../models/clientReq')
+const ClientComment = require('../models/clientComment')
 const jwt = require('jsonwebtoken')
 const mongoose = require('mongoose')
 
@@ -864,30 +866,50 @@ const getClientSkilledInfo = async(req, res)=>{
 
     res.status(200).json(skilledInfo)   
 }
-//get one skilled worker, get skilled worker skills
-const getClientSkilledSkill = async(req, res)=>{
-    const _id = req.params._id//this is for the skille worker _id
 
-    //find skill worker first
-    const skilledInfo = await SkilledInfo.findOne({_id: _id})
-    //check if not existing
-    if (!skilledInfo){
-        return res.status(404).json({error: 'Skilled Worker not found'})
+const getClientSkilledSkill = async (req, res) => {
+    const _id = req.params._id; // this is for the skilled worker _id
+
+    try {
+        const skilledInfo = await SkilledInfo.findOne({ _id: _id });
+
+        if (!skilledInfo) {
+            return res.status(404).json({ error: 'Skilled Worker not found' });
+        }
+
+        const skilledWorkerSkills = await Skill.find({
+            skilled_id: skilledInfo._id,
+            isDeleted: 0
+        }).populate('skillName');
+
+        //count completed and reviews 
+        const populatedSkills = await Promise.all(
+            skilledWorkerSkills.map(async (skill) => {
+                const skilledReqCount = await ClientReq.countDocuments({
+                    reqStatus: 'reqCompleted',
+                    skill_id: skill._id
+                });
+
+                const skilledReviewCount = await ClientComment.countDocuments({
+                    isDeleted: 0,
+                    skill_id: skill._id
+                });
+
+                return {
+                    ...skill._doc,
+                    skilledReqCount,
+                    skilledReviewCount
+                };
+            })
+        );
+
+        res.status(200).json(populatedSkills);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Internal server error' });
     }
+};
 
-    const skilledWorkerSkill = await Skill
-    .find({
-        skilled_id: skilledInfo._id, 
-        isDeleted: 0})
-    .populate('skillName')
-    // .populate('skilled_id')
-    .populate({
-        path: 'skilled_id',
-        select: '-otp -contact'
-    })
-
-    res.status(200).json(skilledWorkerSkill)   
-}
 //get one skilled worker, get skilled worker cert
 const getClientSkilledCert = async(req, res)=>{ 
 
