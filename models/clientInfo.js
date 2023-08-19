@@ -223,6 +223,7 @@ clientInfoSchema.statics.signup = async function (
 
     //find if it has the same info with the other client
     const clientInfoWithSameDetails = await this.findOne({
+        _id: { $ne: clientInfo._id },
         fname: fname,
         mname: mname,
         lname: lname,

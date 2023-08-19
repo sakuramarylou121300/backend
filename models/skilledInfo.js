@@ -299,6 +299,7 @@ skilledInfoSchema.statics.signup = async function (
 
     //find if it has the same info with the other user
     const skilledInfoWithSameDetails = await this.findOne({
+        _id: { $ne: skilledInfo._id },
         fname: fname,
         mname: mname,
         lname: lname,
@@ -323,6 +324,7 @@ skilledInfoSchema.statics.signup = async function (
             urlReact:`/SkilledWorker/Information`
         });
     }
+    console.log(`duplicate to${skilledInfoWithSameDetails}`)
 
     //this is notification
     const skilledUserName = skilledInfo.username;
