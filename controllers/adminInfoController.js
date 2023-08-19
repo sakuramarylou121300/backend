@@ -376,7 +376,7 @@ const updateAdminPass = async(req, res) =>{
 
         // Calculate the date when the user can update the password again
         const nextUpdateDate = new Date(passwordUpdatedTime);
-        nextUpdateDate.setDate(nextUpdateDate.getDate() + 30);
+        nextUpdateDate.setDate(nextUpdateDate.getDate() + 31);
 
         // Allow password update only if 30 days have passed since passwordUpdated
         if (daysDifference < 30) {
