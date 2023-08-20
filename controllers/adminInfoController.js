@@ -207,6 +207,7 @@ const adminUpdatePass = async(req, res) =>{
             {_id:id},
             {
                 password:hash,
+                $unset: { passwordUpdated: 1 }
             })
 
         //success
@@ -589,7 +590,9 @@ const adminUpdateSkilledPass = async(req, res) =>{
         //update info
         const skilledInfo = await SkilledInfo.findOneAndUpdate(
             {_id:id},
-            {password:hash,
+            {
+                password:hash,
+                $unset: { passwordUpdated: 1 }
             })
 
         //success
@@ -771,10 +774,12 @@ const adminUpdateClientPass = async(req, res) =>{
 
         //update info
         const skilledInfo = await ClientInfo.findOneAndUpdate(
-            {_id:id},
+            { _id: id },
             {
-                password:hash,
-            })
+                password: hash,
+                $unset: { passwordUpdated: 1 } // Use $unset to remove the field
+            }
+        );
 
         //success
         res.status(200).json({message: "Successfully updated."})
