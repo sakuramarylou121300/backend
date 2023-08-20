@@ -250,6 +250,15 @@ const updateOtherSkill = async (req, res) => {
   
         // Notification
         const otherSkillNotif = await OtherSkill.findOne({ _id: req.params.id }).populate('message');
+        
+        //detector either the user is skilled_id or client_id,  which one will have the value
+        const skilledId = otherSkill.skilled_id;
+        const clientId = otherSkill.client_id;
+
+        // Determine who requested the skill and create the appropriate notification
+        const skilledInfo = await SkilledInfo.findOne({ _id: skilledId });
+        const clientInfo = await ClientInfo.findOne({ _id: clientId });
+
         const messageIds = otherSkillNotif.message.map(msg => msg.message);
         let messageNotif = '';
         let isVerified = otherSkillNotif.skillIsVerified;
@@ -275,15 +284,31 @@ const updateOtherSkill = async (req, res) => {
             messageNotif = `The skill you have requested is not approved. Reason ${messages.filter(msg => msg !== null).join(', ')}.`;
         // }
   
-        const skilled_id = otherSkillNotif.skilled_id;
-        const skilledInfo = await SkilledInfo.findOne({ _id: skilled_id });
+        // const skilled_id = otherSkillNotif.skilled_id;
+        // const skilledInfo = await SkilledInfo.findOne({ _id: skilled_id });
   
-        // Create a notification after updating creating barangay
-        const notification = await SkilledNotification.create({
-            skilled_id,
-            message: messageNotif,
-            urlReact: `/Profile/Setting`,
-        });
+        // // Create a notification after updating creating barangay
+        // const notification = await SkilledNotification.create({
+        //     skilled_id,
+        //     message: messageNotif,
+        //     urlReact: `/Profile/Setting`,
+        // });
+        //NOTIFICATION WILL DETECT EITHER SKILLED OR CLIENT REQUESTED THE SKILL
+        if (skilledInfo) {
+            // Requester is a skilled
+            const notification = await SkilledNotification.create({
+                skilled_id: skilledId,
+                message: messageNotif,
+                urlReact: `/Profile/Setting`,
+            });
+        } else if (clientInfo) {
+            // Requester is a client
+            const notification = await ClientNotification.create({
+                client_id: clientId,
+                message: messageNotif,
+                urlReact: `/Profile/Setting`,
+            });
+        }
   
         res.status(200).json({ message: 'Successfully updated.' });
     } catch (error) {
