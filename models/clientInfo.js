@@ -284,7 +284,7 @@ clientInfoSchema.statics.login = async function(username, password){
 
         //get the value of isDeletedDate
         const isDeletedDateValue = clientInfo.isDeletedDate
-        throw Error(`Your account has been deleted because of ${messages.join(', ')}. Please log in again on  ${isDeletedDateValue.toDateString()} or contact us on contact we have provided below.`);
+        throw Error(`Your account has been deactivated because of ${messages.join(', ')}. Please log in again on  ${isDeletedDateValue.toDateString()} or contact us on contact we have provided below.`);
         
     }
 
