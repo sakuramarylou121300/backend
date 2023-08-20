@@ -649,7 +649,7 @@ const adminDeleteSkilled = async (req, res) => {
         console.log(adminSkilledNotif)
         const messageIds = adminSkilledNotif.message.map(msg => msg.message)
         let messageNotif = '';
-        let isDeletedValue  = 'deleted';
+        let isDeletedValue  = 'deactivated';
             const messages = await Promise.all(
                 messageIds.map(async (msgId) => {
                     if (msgId) {
@@ -832,7 +832,7 @@ const adminDeleteClient = async (req, res) => {
         .populate('message');
         const messageIds = adminClientNotif.message.map(msg => msg.message)
         let messageNotif = '';
-        let isDeletedValue  = 'deleted';
+        let isDeletedValue  = 'deactivated';
             const messages = await Promise.all(
                 messageIds.map(async (msgId) => {
                     if (msgId) {
