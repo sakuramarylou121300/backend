@@ -307,7 +307,7 @@ const updateOtherSkill = async (req, res) => {
             const notification = await ClientNotification.create({
                 client_id: clientId,
                 message: messageNotif,
-                urlReact: `/Profile/Setting`,
+                urlReact: `/`,
             });
         }
   
