@@ -209,7 +209,7 @@ const updateOtherTitle = async (req, res) => {
             })
             );
   
-            messageNotif = `The certificate ${otherTitlesValue} title you have requested is not approved. Reason ${messages.filter(msg => msg !== null).join(', ')}. Please update your certificate detail.`;
+            messageNotif = `The certificate ${otherTitlesValue} title you have requested is not approved. Reason: ${messages.filter(msg => msg !== null).join(', ')}. Please update your certificate detail.`;
   
         const skilled_id = otherTitleNotif.skilled_id;
         const skilledInfo = await SkilledInfo.findOne({ _id: skilled_id });

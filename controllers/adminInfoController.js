@@ -659,7 +659,7 @@ const adminDeleteSkilled = async (req, res) => {
                     return null;
                 })
             );
-            messageNotif = `Your account has been ${isDeletedValue} because of ${messages.join(', ')}.`;
+            messageNotif = `Your account has been ${isDeletedValue}. Reason: ${messages.join(', ')}.`;
   
     const skilled_id = adminSkilledNotif._id;
     // Create a notification after updating creating barangay
@@ -842,7 +842,7 @@ const adminDeleteClient = async (req, res) => {
                     return null;
                 })
             );
-            messageNotif = `Your account has been ${isDeletedValue} because of ${messages.join(', ')}.`;
+            messageNotif = `Your account has been ${isDeletedValue}. Reason: ${messages.join(', ')}.`;
   
     const client_id = adminClientNotif._id;
     // Create a notification after updating creating barangay

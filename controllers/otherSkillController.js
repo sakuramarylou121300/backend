@@ -281,7 +281,7 @@ const updateOtherSkill = async (req, res) => {
             })
             );
   
-            messageNotif = `The skill you have requested is not approved. Reason ${messages.filter(msg => msg !== null).join(', ')}.`;
+            messageNotif = `The skill you have requested is not approved. Reason: ${messages.filter(msg => msg !== null).join(', ')}.`;
         // }
   
         // const skilled_id = otherSkillNotif.skilled_id;
