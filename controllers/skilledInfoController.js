@@ -210,12 +210,12 @@ const updateSkilledPass = async(req, res) =>{
 
         // Calculate the date when the user can update the password again
         const nextUpdateDate = new Date(passwordUpdatedTime);
-        nextUpdateDate.setDate(nextUpdateDate.getDate() + 31);
+        nextUpdateDate.setDate(nextUpdateDate.getDate() + 8);
 
         // Allow password update only if 30 days have passed since passwordUpdated
-        if (daysDifference < 30) {
+        if (daysDifference < 7) {
             // throw Error('You can update your password only after 30 days of the last update.');
-            throw Error(`You can only update password after 30 days. Next update will be on ${nextUpdateDate.toDateString()}.`);
+            throw Error(`You can only update password after 7 days. Next update will be on ${nextUpdateDate.toDateString()}.`);
         }
 
 
