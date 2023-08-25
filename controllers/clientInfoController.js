@@ -174,24 +174,24 @@ const updateClientPass = async(req, res) =>{
 
         //the user can updated password after 30 days
         // Calculate the time difference between passwordUpdated and the current date
-        const currentTime = new Date();
-        const passwordUpdatedTime = client_Info.passwordUpdated;
+        // const currentTime = new Date();
+        // const passwordUpdatedTime = client_Info.passwordUpdated;
 
-        // Calculate the difference in milliseconds
-        const timeDifference = currentTime - passwordUpdatedTime;
+        // // Calculate the difference in milliseconds
+        // const timeDifference = currentTime - passwordUpdatedTime;
 
-        // Calculate the difference in days
-        const daysDifference = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
+        // // Calculate the difference in days
+        // const daysDifference = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
 
-        // Calculate the date when the user can update the password again
-        const nextUpdateDate = new Date(passwordUpdatedTime);
-        nextUpdateDate.setDate(nextUpdateDate.getDate() + 7);
+        // // Calculate the date when the user can update the password again
+        // const nextUpdateDate = new Date(passwordUpdatedTime);
+        // nextUpdateDate.setDate(nextUpdateDate.getDate() + 7);
 
-        // Allow password update only if 30 days have passed since passwordUpdated
-        if (daysDifference < 7) {
-            // throw Error('You can update your password only after 30 days of the last update.');
-            throw Error(`You can only update password after 7 days of your last update. Next update will be on ${nextUpdateDate.toDateString()}.`);
-        }
+        // // Allow password update only if 30 days have passed since passwordUpdated
+        // if (daysDifference < 7) {
+        //     // throw Error('You can update your password only after 30 days of the last update.');
+        //     throw Error(`You can only update password after 7 days of your last update. Next update will be on ${nextUpdateDate.toDateString()}.`);
+        // }
 
         //validation
         if (!oldpass || !newpass || !retypePassword || !username){
